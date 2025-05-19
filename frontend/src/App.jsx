@@ -1,16 +1,20 @@
 
 import { Routes, Route } from "react-router-dom";
-import './App.css'
 import Landing from "./pages/LandingPage.jsx";
 import Navbar from "./components/sections/Navbar";
+import LoginPage from "./pages/LoginPage.jsx";
+import AuthContextProvider from './context/AuthContext.jsx';
 export default function App() {
 
   return (
     <div className="overflow-x-auto">
-      <Navbar />
-       <Routes>
-        <Route path="/" element={<Landing />}></Route>
-       </Routes>
+      <AuthContextProvider>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Landing />}></Route>
+          <Route path="/login" element={<LoginPage />}></Route>
+        </Routes>
+       </AuthContextProvider>
     </div>
   )
 }
