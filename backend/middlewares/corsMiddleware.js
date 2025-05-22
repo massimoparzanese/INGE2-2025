@@ -1,6 +1,6 @@
 import cors from "cors";
 
-const allowedOrigins = "http://localhost:3001"; // Cambia esto por los dominios permitidos
+const allowedOrigins = "http://localhost:5173"; // Cambia esto por los dominios permitidos
 
 const corsMiddleware = cors({
   origin: (origin, callback) => {
