@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import Landing from "./pages/LandingPage.jsx";
 import Navbar from "./components/sections/Navbar";
 import LoginPage from "./pages/LoginPage.jsx";
+import FormReserva from "./pages/FormReserva.jsx";
 import AuthContextProvider from './context/AuthContext.jsx';
 export default function App() {
 
@@ -13,6 +14,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Landing />}></Route>
           <Route path="/login" element={<LoginPage />}></Route>
+          <Route path="/reserva" element={<FormReserva/>}></Route>
         </Routes>
        </AuthContextProvider>
     </div>

@@ -6,7 +6,7 @@ export default function LandingPage() {
   const [modalAbierto, setModalAbierto] = useState(false);
   const navigate = useNavigate();
    const handleAdminClick = () => {
-    navigate('/login'); // Redirige a la página de registro
+    navigate('/reserva'); // Redirige a la página de registro
   };
   return (
     <div className="flex flex-col items-center justify-center min-h-screen w-full">
