@@ -1,11 +1,14 @@
-import {useState, useEffect} from "react";
+import {useState} from "react";
 import Calendario from "../components/Calendario.jsx"
+import { useSucursalesFetch } from "../hooks/useSucursalesFetch.jsx";
 export default function FormReserva (){
+  const {sucursales,cargando} = useSucursalesFetch();
   const [fechaInicio, setFechaInicio] = useState(false);
   const [fechaFin, setFechaFin] = useState(false);
-    const [sucursales, setSucursales] = useState([]);
+   const [sucursalSeleccionada, setSucursalSeleccionada] = useState(null);
+   /* const [sucursales, setSucursales] = useState([]);
     const [cargando, setCargando] = useState(false);
-  const [sucursalSeleccionada, setSucursalSeleccionada] = useState(null);
+ 
   useEffect(() => {
       const fetchSucursales = async () => {
         setCargando(true);
@@ -27,14 +30,15 @@ export default function FormReserva (){
       };
   
       fetchSucursales();
-    }, []);
+    }, []);*/
+
   const handleSeleccionar = (sucursal) => {
     setSucursalSeleccionada(sucursal);
   };
     return(
      
-    <div className="fixed inset-0 flex items-center justify-center z-50">
-    <div className="bg-green-50 rounded-lg shadow-lg max-w-lg w-full p-6 relative pointer-events-auto">
+    <div className="flex justify-center items-center min-h-screen ">
+    <div className="bg-green-50 rounded-lg shadow-lg max-w-lg w-full p-6 relative">
 
         <h2 className="text-xl font-semibold mb-4">Rerservar un Vehículo</h2>
 

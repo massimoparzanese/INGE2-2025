@@ -5,6 +5,7 @@ import Navbar from "./components/sections/Navbar";
 import LoginPage from "./pages/LoginPage.jsx";
 import FormReserva from "./pages/FormReserva.jsx";
 import AuthContextProvider from './context/AuthContext.jsx';
+import Footer from "./components/sections/Footer.jsx";
 export default function App() {
 
   return (
@@ -16,6 +17,7 @@ export default function App() {
           <Route path="/login" element={<LoginPage />}></Route>
           <Route path="/reserva" element={<FormReserva/>}></Route>
         </Routes>
+        <Footer/>
        </AuthContextProvider>
     </div>
   )
