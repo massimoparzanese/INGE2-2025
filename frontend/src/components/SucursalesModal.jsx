@@ -1,9 +1,11 @@
-import { useEffect, useState } from 'react';
-
+import {useState } from 'react';
+import { useSucursalesFetch } from '../hooks/useSucursalesFetch';
 export default function SucursalSelector({ onCerrar }) {
+
+  const [sucursalSeleccionada, setSucursalSeleccionada] = useState(null);
+ /* 
   const [sucursales, setSucursales] = useState([]);
   const [cargando, setCargando] = useState(false);
-  const [sucursalSeleccionada, setSucursalSeleccionada] = useState(null);
   useEffect(() => {
     const fetchSucursales = async () => {
       setCargando(true);
@@ -25,8 +27,8 @@ export default function SucursalSelector({ onCerrar }) {
     };
 
     fetchSucursales();
-  }, []);
-
+  }, []);*/
+  const {sucursales,cargando} = useSucursalesFetch();
   const handleSeleccionar = (sucursal) => {
     setSucursalSeleccionada(sucursal);
   };
