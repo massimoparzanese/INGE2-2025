@@ -5,7 +5,7 @@ dotenv.config();
 import express from "express";
 import corsMiddleware from "./middlewares/corsMiddleware.js";
 import sucursalesInfo from "./routes/sucursales/sucursalesInfo.js";
-import autosInfo from "./routes/autos/autosInfo.js";
+import autosInfo from "./routes/vehiculos/vehiculosInfo.js";
 const app = express();
 const PORT = 3001;
 
