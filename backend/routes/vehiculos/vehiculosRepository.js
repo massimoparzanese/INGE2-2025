@@ -149,4 +149,47 @@ export class autosRepository {
         }
     }
 
+    static async agregarVehiculo(nuevoVehiculo) {
+   
+        const { patente } = nuevoVehiculo;
+         // Verifico que no exista la patente
+        const { data: existe, error: errorExistencia } = await supabase
+            .from("Vehiculo")
+            .select("*")
+            .eq("patente", patente)
+            .maybeSingle();
+
+        if (errorExistencia && errorExistencia.code !== "PGRST116") {
+            return {
+                status: 500,
+                message: "Error al verificar la patente",
+                metaData: errorExistencia,
+            };
+        }
+
+        if (existe) {
+            return {
+                status: 400,
+                message: "Ya existe un vehículo con esa patente",
+            };
+        }
+
+        const { error: errorInsert } = await supabase
+            .from("Vehiculo")
+            .insert(nuevoVehiculo);
+
+        if (errorInsert) {
+            return {
+                status: 500,
+                message: "Error al insertar el vehículo",
+                metaData: errorInsert,
+            };
+        }
+
+        return {
+            status: 201,
+            message: "Vehículo agregado exitosamente",
+        };
+    }
+
 }

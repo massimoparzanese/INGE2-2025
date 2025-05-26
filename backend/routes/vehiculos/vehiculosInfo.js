@@ -61,6 +61,22 @@ autosInfoRouter.put("/:patente", async (req, res) => {
     }
 });
 
+autosInfoRouter.post("/agregar", async (req, res) => {
+    const nuevoVehiculo = req.body;
 
+    try {
+        const result = await autosRepository.agregarVehiculo(nuevoVehiculo);
+
+        return res.status(result.status).json({
+            message: result.message,
+            metaData: result.metaData || null,
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error interno al intentar agregar el vehículo",
+            metaData: error,
+        });
+    }
+});
 
 export default autosInfoRouter;
