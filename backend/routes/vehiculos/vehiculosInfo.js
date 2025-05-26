@@ -42,4 +42,25 @@ autosInfoRouter.delete("/patente", async (req, res) => {
     }
 })
 
+autosInfoRouter.put("/:patente", async (req, res) => {
+  const { patente } = req.params;
+  const nuevosDatos = req.body;
+
+  try {
+        const result = await autosRepository.editarVehiculo(patente, nuevosDatos);
+
+        return res.status(result.status).json({
+            message: result.message,
+            metaData: result.metaData || null,
+        });
+    }  catch (error) {
+        return res.status(500).json({
+            message: "Error al intentar editar el vehículo",
+            metaData: error,
+        });
+    }
+});
+
+
+
 export default autosInfoRouter;

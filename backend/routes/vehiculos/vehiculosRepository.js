@@ -128,4 +128,25 @@ export class autosRepository {
 
     }
 
+    static async editarVehiculo (patente, nuevosDatos){
+        const { data, error } = await supabase
+        .from ('Vehiculo')
+        .update(nuevosDatos)
+        .eq('patente', patente);
+
+        if(error) {
+            return {
+                status: 400,
+                message: "Error al actualizar el vehículo",
+                metaData: error,
+            };
+        }
+
+        return {
+            status: 200,
+            message: "Vehículo actualizado correctamente",
+            metaData: data,
+        }
+    }
+
 }
