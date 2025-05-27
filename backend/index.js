@@ -5,6 +5,7 @@ dotenv.config();
 import express from "express";
 import corsMiddleware from "./middlewares/corsMiddleware.js";
 import sucursalesInfo from "./routes/sucursales/sucursalesInfo.js";
+import autenticacionRoutes from "./routes/acceso/autenticacion.js";
 import autosInfo from "./routes/vehiculos/vehiculosInfo.js";
 const app = express();
 const PORT = 3001;
@@ -14,6 +15,7 @@ app.use(express.json());
 app.use(corsMiddleware);
 app.use("/sucursales", sucursalesInfo);
 app.use("/vehiculos", autosInfo);
+app.use("/acceso", autenticacionRoutes);
 app.get("/", (req, res) => {
   res.send("🚗 Bienvenido a María Alquileres API");
 });

@@ -7,6 +7,7 @@ import FormReserva from "./pages/FormReserva.jsx";
 import AuthContextProvider from './context/AuthContext.jsx';
 import Footer from "./components/sections/Footer.jsx";
 import AgregarVehiculo from "./components/AgregarVehiculoForm.jsx";
+import RegisterForm from "./pages/RegisterPage.jsx";
 export default function App() {
 
   return (
@@ -18,6 +19,7 @@ export default function App() {
           <Route path="/login" element={<LoginPage />}></Route>
           <Route path="/reserva" element={<FormReserva/>}></Route>
           <Route path="/agregar-vehiculo" element={<AgregarVehiculo/>} />
+          <Route path="/registro" element={<RegisterForm />} />
         </Routes>
         <Footer/>
        </AuthContextProvider>

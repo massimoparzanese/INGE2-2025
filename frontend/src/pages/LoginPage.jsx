@@ -1,5 +1,6 @@
 import { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContextFunct';
+import { useNavigate } from 'react-router-dom';
 
 
 export default function LoginPage() {
@@ -10,6 +11,17 @@ export default function LoginPage() {
   const handleSubmit = (e) => {
     console.log(e);
   };
+
+//Esto es para la redireccion al registro
+  const navigate = useNavigate(); // Hook para navegar entre rutas
+
+  const irARegistro = () => {
+    navigate('/registro');
+  };
+
+
+
+
 
 
   return (
@@ -26,6 +38,15 @@ export default function LoginPage() {
             <button type="submit" className="w-full bg-[#CDA053] text-[#FEFFFB] font-bold py-2 px-4 rounded-2xl">
               Iniciar sesión
             </button>
+            <div className="mt-4 text-center">
+                <p className="mb-2">¿No tenés una cuenta?</p>
+                <button
+                  onClick={irARegistro}
+                  className="text-blue-600 hover:underline"
+                >
+                  Registrarme
+                </button>
+            </div>
           </div>
         </form>
       </div>
