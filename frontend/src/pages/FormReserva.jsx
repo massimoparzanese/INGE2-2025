@@ -41,16 +41,18 @@ export default function FormReserva (){
     <div className="bg-green-50 rounded-lg shadow-lg max-w-lg w-full p-6 relative">
 
         <h2 className="text-xl font-semibold mb-4">Rerservar un Vehículo</h2>
-
         {cargando ? (
+          <>
+          <div className="text-center">
           <p className="text-xl font-semibold mb-4">Cargando sucursales...</p>
-        ) : (<>
-        <p>Sucursales Disponibles</p>
+          <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+        </div>
+          </>
+        ) : sucursales.length > 0 ? (
           <ul className="space-y-3 max-h-64 overflow-y-auto">
             {sucursales.map(sucursal => (
               <li
                 key={sucursal.nombre}
-  
                 onClick={() => handleSeleccionar(sucursal)}
                 className={`p-4 rounded-lg border cursor-pointer transition-colors ${
                   sucursalSeleccionada === sucursal
@@ -63,8 +65,10 @@ export default function FormReserva (){
               </li>
             ))}
           </ul>
-          </>
+        ) : (
+          <p className="font-medium">No hay sucursales disponibles</p>
         )}
+
         {sucursalSeleccionada && (
             <>
           <div className="mt-4 p-4 bg-blue-100 rounded-md text-center">

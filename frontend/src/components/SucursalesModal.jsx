@@ -45,10 +45,15 @@ export default function SucursalSelector({ onCerrar }) {
           ×
         </button>
 
-        <h2 className="text-xl font-semibold mb-4">Seleccioná una sucursal</h2>
+        <h2 className="text-xl font-semibold mb-4">Sucursales de Alquileres María</h2>
 
         {cargando ? (
-          <p>Cargando sucursales...</p>
+          <>
+          <div className="text-center">
+          <p className="text-xl font-semibold mb-4">Cargando sucursales...</p>
+          <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+        </div>
+          </>
         ) : (
           <ul className="space-y-3 max-h-64 overflow-y-auto">
             {sucursales.map(sucursal => (
@@ -67,6 +72,9 @@ export default function SucursalSelector({ onCerrar }) {
               </li>
             ))}
           </ul>
+        )}
+        {sucursales.length === 0 && !cargando &&(
+           <p className="font-medium">No hay sucursales disponibles</p>
         )}
         {sucursalSeleccionada && (
           <div className="mt-4 p-4 bg-blue-100 rounded-md text-center">
