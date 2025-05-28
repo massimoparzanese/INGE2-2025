@@ -50,6 +50,7 @@ const RegistroUsuario = () => {
         setError(`❌ ${result.error}`);
       }
     } catch (err) {
+      console.error('❌ Error detectado:', err);
       setError('❌ Error inesperado al intentar registrar.');
     }
   };
