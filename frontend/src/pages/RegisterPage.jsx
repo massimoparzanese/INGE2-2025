@@ -7,7 +7,8 @@ const RegistroUsuario = () => {
     apellido: '',
     email: '',
     fechanacimiento: '',
-    rol: 'cliente' // O el valor predeterminado que uses
+    rol: 'cliente', // O el valor predeterminado que uses
+    password: ''
   });
 
   const [mensaje, setMensaje] = useState('');
@@ -63,6 +64,7 @@ const RegistroUsuario = () => {
       {error && <p className="text-red-600 mb-2 text-center">{error}</p>}
 
       <form onSubmit={handleSubmit} className="space-y-4">
+        <label htmlFor="DNI"></label>
         <input
           type="text"
           name="dni"
@@ -105,6 +107,14 @@ const RegistroUsuario = () => {
           value={formData.fechanacimiento}
           onChange={handleChange}
           className="w-full p-2 border rounded-md"
+          required
+        />
+        <input
+          type="password" name="password" 
+          value={formData.password}
+          onChange={handleChange}
+          className="w-full p-2 border rounded-md"
+          placeholder='Contrasenia'
           required
         />
         {/* Si necesitás que el usuario elija rol: */}

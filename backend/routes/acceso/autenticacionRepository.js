@@ -2,7 +2,7 @@ import supabase from "../supabaseClient.js";
 
 export class autenticacionRepository {
 
-    static async registrarPersona(dni, nombre, apellido, email, fechanacimiento, rol ){
+    static async registrarPersona(dni, nombre, apellido, email, fechanacimiento, rol, password ){
 
         // Validar que tenga más de 18 años
         const nacimiento = new Date(fechanacimiento);
@@ -43,7 +43,15 @@ export class autenticacionRepository {
                 error: 'Error al registrar el usuario.' 
             };
         }
-
+        const { data: persona, error: err } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+        })
+        if(err)
+            return { 
+                status: 500,
+                error: 'Error al registrar el usuario.' 
+            };
         return {
             status:200,
             mensaje: 'Registro exitoso',
