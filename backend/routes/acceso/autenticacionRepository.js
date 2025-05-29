@@ -18,32 +18,18 @@ export class autenticacionRepository {
                 error: 'El usuario debe ser mayor de 18 años.' };
         }
 
-        // Validar que el email no esté registrado
-        const { data: existente, error: errorBuscar } = await supabase
-            .from('Persona')
-            .select('id')
-            .eq('email', email)
-            .maybeSingle();
-
-        if (existente) {
-            return { 
-                status: 400,
-                error: 'El email ya se encuentra registrado.' };
-        }
-
         // Insertar nueva persona
         const { data, error } = await supabase
             .from('Persona')
             .insert([{ dni, nombre, apellido, email, fechanacimiento, rol }])
             .select('id');
-
-        if (error) {
+        if (error || !data) {
             return { 
                 status: 500,
                 error: 'Error al registrar el usuario.' 
             };
         }
-        const { data: persona, error: err } = await supabase.auth.signInWithPassword({
+        const { data: persona, error: err } = await supabase.auth.signUp({
         email: email,
         password: password,
         })

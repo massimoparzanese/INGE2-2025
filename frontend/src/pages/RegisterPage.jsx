@@ -36,9 +36,8 @@ const RegistroUsuario = () => {
       });
 
       const result = await response.json();
-
-      if (response.ok) {
-        setMensaje(`✅ Registro exitoso. Tu legajo es: ${result.legajo}`);
+      if (response.ok && result.status < 400) {
+        setMensaje(`✅ Registro exitoso. Bienvenido/a ${result.nombre}`);
         setFormData({
           dni: '',
           nombre: '',
@@ -57,14 +56,15 @@ const RegistroUsuario = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 bg-white p-6 rounded-2xl shadow-md">
-      <h2 className="text-2xl font-bold mb-4 text-center">Registro de Usuario</h2>
+    <section className="pt-10 pb-10">
+    <div className="max-w-md mx-auto mt-10 bg-white p-6  rounded-2xl shadow-md ">
+      <h2 className="text-2xl font-bold mb-4 text-center ">Registro de Usuario</h2>
 
       {mensaje && <p className="text-green-600 mb-2 text-center">{mensaje}</p>}
       {error && <p className="text-red-600 mb-2 text-center">{error}</p>}
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <label htmlFor="DNI"></label>
+        <label htmlFor="DNI">Número de DNI</label>
         <input
           type="text"
           name="dni"
@@ -74,6 +74,7 @@ const RegistroUsuario = () => {
           className="w-full p-2 border rounded-md"
           required
         />
+        <label htmlFor="Nombre">Nombre</label>
         <input
           type="text"
           name="nombre"
@@ -83,6 +84,7 @@ const RegistroUsuario = () => {
           className="w-full p-2 border rounded-md"
           required
         />
+        <label htmlFor="Apellido">Apellido</label>
         <input
           type="text"
           name="apellido"
@@ -92,6 +94,7 @@ const RegistroUsuario = () => {
           className="w-full p-2 border rounded-md"
           required
         />
+        <label htmlFor="Email">Dirección de correo</label>
         <input
           type="email"
           name="email"
@@ -101,6 +104,7 @@ const RegistroUsuario = () => {
           className="w-full p-2 border rounded-md"
           required
         />
+        <label htmlFor="FechaNacimiento">Fecha de Nacimiento</label>
         <input
           type="date"
           name="fechanacimiento"
@@ -109,6 +113,7 @@ const RegistroUsuario = () => {
           className="w-full p-2 border rounded-md"
           required
         />
+        <label htmlFor="password">Contraseña</label>
         <input
           type="password" name="password" 
           value={formData.password}
@@ -136,6 +141,7 @@ const RegistroUsuario = () => {
         </button>
       </form>
     </div>
+    </section>
   );
 };
 
