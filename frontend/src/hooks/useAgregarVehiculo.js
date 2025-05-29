@@ -7,7 +7,7 @@ export function useAgregarVehiculo(){
     const agregarVehiculo = async (vehiculo) => {
         setCargando(true);
         try{    // comunicación con el backend"
-            const response = await fetch ('http://localhost:3001/vehiculos',{
+            const response = await fetch ('http://localhost:3001/vehiculos/agregar',{
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { useAgregarVehiculo } from '../hooks/useAgregarVehiculo';
-
+import { useSucursalesFetch } from "../hooks/useSucursalesFetch";
 const AgregarVehiculo = () => {
+  const { sucursales, cargando } = useSucursalesFetch();
+  const [sucursalSeleccionada] = useState(null);
   const [form, setForm] = useState({
     marca: "",  
     modelo: "",
@@ -11,7 +13,7 @@ const AgregarVehiculo = () => {
     imagenUrl: "",  // nuevo campo
   });
 
-  const { agregarVehiculo, mensaje, cargando } = useAgregarVehiculo();
+  const { agregarVehiculo, mensaje } = useAgregarVehiculo();
   const [mostrarFormulario, setMostrarFormulario] = useState(true);
 
   const handleChange = (e) => {
@@ -45,6 +47,7 @@ const AgregarVehiculo = () => {
           onSubmit={handleSubmit}
           className="bg-white bg-opacity-90 p-6 rounded-lg shadow-lg max-w-md w-full space-y-4"
         >
+          <p>Marca</p>
           <input
             type="text"
             name="marca"
@@ -55,6 +58,7 @@ const AgregarVehiculo = () => {
             required pattern="[A-Za-z\s]+"
             title="Solo letras y espacios"
             />
+            <p>Modelo</p>
           <input
             type="text"
             name="modelo"
@@ -64,6 +68,7 @@ const AgregarVehiculo = () => {
             className="w-full p-2 border rounded"
             required
           />
+          <label htmlFor="Estado">Estado del vehiculo</label>
           <input
             type="number"
             name="anio"
@@ -75,6 +80,7 @@ const AgregarVehiculo = () => {
             max={new Date().getFullYear()}
             required
           />
+          <label htmlFor="patente">Patente</label>
           <input
             type="text"
             name="patente"
@@ -84,6 +90,7 @@ const AgregarVehiculo = () => {
             className="w-full p-2 border rounded"
             required
           />
+          <label htmlFor="Estado">Estado del vehiculo</label>
           <select
             name="estado"
             value={form.estado}
@@ -96,6 +103,7 @@ const AgregarVehiculo = () => {
             <option value="alquilado">Alquilado</option>
             <option value="mantenimiento">Mantenimiento</option>
           </select>
+          <label htmlFor="Foto">Ingrese una imagen</label>
           <input
             type="url"
             name="imagenUrl"
@@ -105,6 +113,29 @@ const AgregarVehiculo = () => {
             className="w-full p-2 border rounded"
             required
           />
+          {cargando ? (
+            <p>Cargando sucursales...</p>
+          )
+           : (
+            <>
+                  <label htmlFor="sucursal">Selecciona una sucursal:</label>
+                    <select
+                      id="sucursal"
+                      value={sucursalSeleccionada}
+                      className="w-full p-2 border rounded"
+                      onChange={handleChange}
+                    >
+                      <option value="">-- Seleccionar --</option>
+                      {sucursales.map((sucursal) => (
+                        <option key={sucursal.id} value={sucursal.id}>
+                          {sucursal.nombre}
+                        </option>
+                      ))}
+                    </select>
+            </>
+            
+          )}
+          
           <button
             type="submit"
             className="bg-red-600 hover:bg-black text-white font-bold py-2 px-4 rounded transition duration-300 w-full"

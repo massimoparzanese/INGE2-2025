@@ -6,7 +6,7 @@ import LoginPage from "./pages/LoginPage.jsx";
 import FormReserva from "./pages/FormReserva.jsx";
 import AuthContextProvider from './context/AuthContext.jsx';
 import Footer from "./components/sections/Footer.jsx";
-import AgregarVehiculo from "./components/AgregarVehiculoForm.jsx";
+import AgregarVehiculo from "./pages/AgregarVehiculoPage.jsx";
 import RegisterForm from "./pages/RegisterPage.jsx";
 export default function App() {
 

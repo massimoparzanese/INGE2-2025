@@ -67,12 +67,14 @@ autosInfoRouter.post("/agregar", async (req, res) => {
     try {
         const result = await autosRepository.agregarVehiculo(nuevoVehiculo);
 
-        return res.status(result.status).json({
+        return res.send({
+            status: 200,
             message: result.message,
             metaData: result.metaData || null,
         });
     } catch (error) {
-        return res.status(500).json({
+        return res.send({
+            status: 500,
             message: "Error interno al intentar agregar el vehículo",
             metaData: error,
         });
