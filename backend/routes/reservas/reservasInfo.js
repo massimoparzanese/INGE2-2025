@@ -2,11 +2,10 @@ import { Router } from "express";
 import { reservasRepository } from "./reservasRepository.js";
 const reservasInfoRouter = Router();
 
-reservasInfoRouter.get("/:patente", async(req, res) => {
+reservasInfoRouter.post("/disponibles", async(req, res) => {
     try{
-        const { patente } = req.params;
         const {sucursal, fechaInicio, fechaFin} = req.body;
-        const data = await reservasRepository.patenteEnReservas(patente,fechaInicio,fechaFin,sucursal);
+        const data = await reservasRepository.patenteEnReservas(fechaInicio,fechaFin,sucursal);
         res.send(data);
     }
     catch(e){

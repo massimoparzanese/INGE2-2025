@@ -3,7 +3,7 @@ import { autosRepository } from "../vehiculos/vehiculosRepository.js";
 
 export class reservasRepository {
 
-    static async patenteEnReservas(patente, fechaInicio, fechaFin, sucursal){
+    static async patenteEnReservas(fechaInicio, fechaFin, sucursal){
             // 1. Traer todos los autos de la sucursal
             const data = await autosRepository.getSpecifyAutosInfo(sucursal);
 
