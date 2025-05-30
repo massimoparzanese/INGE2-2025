@@ -19,7 +19,7 @@ export default function VehiculoPortada(vehiculo, i){
                   <img
                     src={vehiculo.vehiculo.foto}
                     alt={vehiculo.vehiculo.modelo}
-                    className="w-24 h-16 object-cover rounded-md border"
+                    className="w-34 h-16 object-cover rounded-md border"
                   />
                   <div>
                     <p className="font-semibold text-lg">{vehiculo.vehiculo.modelo}</p>
