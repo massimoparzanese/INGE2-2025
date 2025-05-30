@@ -102,12 +102,7 @@ export class vehiculosRepository {
             };
         }
 
-        if (!estadoData) {
-            return {
-                status: 200,
-                message: `Vehículo con patente ${patente} eliminado exitosamente (no tenía estado asociado).`,
-            };
-        }
+        
         if (estadoData?.EstadoVehiculo?.estado?.toLowerCase() === "en uso") {
             return {
                 status: 400,
@@ -122,7 +117,7 @@ export class vehiculosRepository {
         .delete()
         .eq("patente", patente)
         .select();
-
+        console.log(errorEliminar)
         if (errorEliminar){
             return {
                 status: 500,
