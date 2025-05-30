@@ -37,14 +37,16 @@ export default function AdminCatalogoVehiculos (){
           </button>
 
         <h2 className="text-2xl font-bold mb-6 text-red-700">Vehículos de la Empresa</h2>
-
-        <input
-          type="text"
-          placeholder="Buscar por modelo..."
-          value={filtroModelo}
-          onChange={(e) => setFiltroModelo(e.target.value)}
-          className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-red-500"
-        />
+        {vehiculos.length !== 0 && !cargando &&(
+                <input
+                type="text"
+                placeholder="Buscar por modelo..."
+                value={filtroModelo}
+                onChange={(e) => setFiltroModelo(e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-red-500"
+              />
+              )}
+        
 
         {cargando ? (
           <div className="text-center">
@@ -57,12 +59,13 @@ export default function AdminCatalogoVehiculos (){
               {vehiculosFiltrados.map((vehiculo, i) => (
                 <VehiculoPortada vehiculo={vehiculo} i={i}/>
               ))}
-              {vehiculosFiltrados.length === 0 && (
-                <p className="text-center font-medium text-gray-500">No hay vehículos con ese modelo</p>
+              {vehiculos.length === 0 && !cargando &&(
+                <p className="font-medium">La empresa no cuenta con vehiculos para listar.</p>
               )}
             </div>
           </>
         )}
+        
       </div>
     </div>
 
