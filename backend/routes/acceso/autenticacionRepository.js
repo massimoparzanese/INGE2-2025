@@ -18,6 +18,23 @@ export class autenticacionRepository {
                 error: 'El usuario debe ser mayor de 18 años.' };
         }
 
+
+
+        // Verificar si el email ya existe en la tabla Persona
+        const { data: existingUser, error: emailCheckError } = await supabase
+            .from('Persona')
+            .select('id')
+            .eq('email', email)
+            .single();
+
+        if (existingUser) {
+            return {
+                status: 400,
+                error: 'El mail ya se encuentra registrado en el sistema.'
+            };
+        }    
+
+
         // Insertar nueva persona
         const { data, error } = await supabase
             .from('Persona')
@@ -38,10 +55,11 @@ export class autenticacionRepository {
                 status: 500,
                 error: 'Error al registrar el usuario.' 
             };
+        
         return {
-            status:200,
-            mensaje: 'Registro exitoso',
-            legajo: data[0].id
+        status:200,
+        mensaje: 'Registro exitoso',
+        legajo: data[0].id
         };
     }
 }
