@@ -2,7 +2,7 @@ import { PencilIcon, Trash2Icon } from 'lucide-react';
 import { useState } from 'react';
 import { Link} from 'react-router-dom';
 export default function VehiculoPortada(vehiculo, i){
-
+    console.log(vehiculo)
     const handleDeleteWarning = (vehiculo) => {
         const [confirmationModal, setConfirmationModal] = useState(false);
         const [targetVehiculo, setTargetVehiculo] = useState({});
@@ -17,16 +17,15 @@ export default function VehiculoPortada(vehiculo, i){
                   className={`p-4 rounded-lg border cursor-pointer flex gap-4 items-center transition-all`}
                 >
                   <img
-                    src={vehiculo.foto}
-                    alt={vehiculo.modelo}
+                    src={vehiculo.vehiculo.foto}
+                    alt={vehiculo.vehiculo.modelo}
                     className="w-24 h-16 object-cover rounded-md border"
                   />
                   <div>
-                    <p className="font-semibold text-lg">{vehiculo.modelo}</p>
-                    <p className="text-sm text-gray-600">Patente: {vehiculo.patente}</p>
-                    <p className="text-sm text-gray-600">Capacidad: {vehiculo.capacidad} personas</p>
-                    <p className="text-sm text-gray-600">Km: {vehiculo.kilometros}</p>
-                    <p className="text-sm text-gray-600">Sucursal: {vehiculo.sucursal}</p>
+                    <p className="font-semibold text-lg">{vehiculo.vehiculo.modelo}</p>
+                    <p className="text-sm text-gray-600">Capacidad:{vehiculo.vehiculo.capacidad}</p>
+                    <p className="text-sm text-gray-600">Km: {vehiculo.vehiculo.kms}</p>
+                    <p className="text-sm text-gray-600">{vehiculo.vehiculo.sucursal}</p>
                   </div>
                   <div className={`relative w-full right-0 grid col-span-4 z-10`}>
                     <div className={`absolute right-0 flex gap-2 -translate-y-2`}>

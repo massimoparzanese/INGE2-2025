@@ -51,6 +51,37 @@ export default function Navbar() {
               </a>
 
             </li>
+           <li className="relative group hidden md:block">
+            <span className="cursor-pointer text-white font-medium transition-colors duration-200 group-hover:text-yellow-600">
+              Vehículos
+            </span>
+
+            {/* Dropdown */}
+            <ul
+              className="absolute right-0 mt-2 w-56 max-w-[90vw] bg-white border border-gray-200 rounded-xl shadow-lg 
+                        opacity-0 translate-y-2 invisible group-hover:visible group-hover:opacity-100 
+                        group-hover:translate-y-0 transition-all duration-300 z-50"
+            >
+              <li>
+                <a
+                  href="/agregar-vehiculo"
+                  className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 rounded-t-xl transition-colors duration-200"
+                >
+                  Agregar Vehículo
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/admin/catalogoVehiculos"
+                  className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 rounded-t-xl transition-colors duration-200"
+                >
+                  Ver listado de vehículos
+                </a>
+              </li>
+            </ul>
+          </li>
+
+
         </ul>
       </div>
     </nav>

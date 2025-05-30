@@ -80,6 +80,7 @@ export class autenticacionRepository {
       try {
         if (!refToken) {
           res.status(401).send({message: "Usuario no autorizado"})
+          return {data: false}
         }
         // Intenta refrescar la sesión usando el refresh_token
         const { data, error } = await supabase.auth.refreshSession({
@@ -89,13 +90,13 @@ export class autenticacionRepository {
         if (error) {
           res.clearCookie("access_token", {
             httpOnly: true,
-            secure: true, // Cambiar a true en producción
+            secure: false, // Cambiar a true en producción
             maxAge: DURATION_REFRESH_COOKIE, // Largo para refresh token
             sameSite: "None",
           });
           res.clearCookie("refresh_token", {
             httpOnly: true,
-            secure: true, // Cambiar a true en producción
+            secure: false, // Cambiar a true en producción
             maxAge: DURATION_REFRESH_COOKIE, // Largo para refresh token
             sameSite: "None",
           });
@@ -110,14 +111,14 @@ export class autenticacionRepository {
         // Establece las cookies con los nuevos tokens
         res.cookie("access_token", session.access_token, {
           httpOnly: true,
-          secure: true, // Cambiar a true en producción
+          secure: false, // Cambiar a true en producción
           maxAge: DURATION_ACCESS_COOKIE, // 20 minutos para la cookie de access_token
           sameSite: "None",
         });
 
         res.cookie("refresh_token", session.refresh_token, {
           httpOnly: true,
-          secure: true, // Cambiar a true en producción
+          secure: false, // Cambiar a true en producción
           maxAge: DURATION_REFRESH_COOKIE, // Largo para refresh token
           sameSite: "None",
         });

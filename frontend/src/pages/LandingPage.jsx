@@ -59,15 +59,7 @@ export default function LandingPage() {
           onCerrar={() => setModalAbierto(false)}
         />
       )}
-      {(
-        <div className="flex justify-end w-full px-6 mt-4 mb-10">
-        <Link to="/agregar-vehiculo">
-          <button className="bg-red-600 text-white border border-black px-4 py-2 rounded-full hover:bg-black transition">
-            Agregar un vehiculo
-          </button>
-        </Link>
-      </div>
-      )}
+      
   </div>
   );
 }

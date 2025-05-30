@@ -10,6 +10,7 @@ export class autosRepository {
             foto,
             capacidad,
             kms,
+            sucursal,
             Modelo (
             marca
             )
