@@ -1,11 +1,11 @@
 import supabase from "../supabaseClient.js";
-import { autosRepository } from "../vehiculos/vehiculosRepository.js";
+import { vehiculosRepository } from "../vehiculos/vehiculosRepository.js";
 
 export class reservasRepository {
 
     static async patenteEnReservas(fechaInicio, fechaFin, sucursal){
             // 1. Traer todos los autos de la sucursal
-            const data = await autosRepository.getSpecifyAutosInfo(sucursal);
+            const data = await vehiculosRepository.getSpecifyAutosInfo(sucursal);
 
             if (data.status >= 400) {
                 return {

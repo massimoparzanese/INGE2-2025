@@ -1,12 +1,12 @@
 import { Router } from "express";
-import { autosRepository } from "./vehiculosRepository.js";
+import { vehiculosRepository } from "../vehiculos/vehiculosRepository.js";
 
 const autosInfoRouter = Router();
 
 autosInfoRouter.get("/por-sucursal", async (req, res) =>{
     try{
         const {sucursal} = req.body;
-        const data = await autosRepository.getSpecifyAutosInfo(sucursal);
+        const data = await vehiculosRepository.getSpecifyAutosInfo(sucursal);
         res.send(data)
     }
     catch (err){
@@ -16,7 +16,7 @@ autosInfoRouter.get("/por-sucursal", async (req, res) =>{
 
 autosInfoRouter.get("/todos", async (req, res) => {
     try{
-        const data = await autosRepository.getAllAutos();
+        const data = await vehiculosRepository.getAllAutos();
         res.send(data);
     }
     catch (err){
@@ -24,7 +24,7 @@ autosInfoRouter.get("/todos", async (req, res) => {
     }
 })
 
-autosInfoRouter.delete("/patente", async (req, res) => {
+autosInfoRouter.delete("/patente/:patente", async (req, res) => {
     const { patente } = req.params;
 
     try {
@@ -47,7 +47,7 @@ autosInfoRouter.put("/:patente", async (req, res) => {
   const nuevosDatos = req.body;
 
   try {
-        const result = await autosRepository.editarVehiculo(patente, nuevosDatos);
+        const result = await vehiculosRepository.editarVehiculo(patente, nuevosDatos);
 
         return res.status(result.status).json({
             message: result.message,
@@ -65,7 +65,7 @@ autosInfoRouter.post("/agregar", async (req, res) => {
     const nuevoVehiculo = req.body;
 
     try {
-        const result = await autosRepository.agregarVehiculo(nuevoVehiculo);
+        const result = await vehiculosRepository.agregarVehiculo(nuevoVehiculo);
 
         return res.send({
             status: 200,

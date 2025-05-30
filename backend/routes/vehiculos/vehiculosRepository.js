@@ -1,11 +1,12 @@
 import supabase from "../supabaseClient.js";
 
-export class autosRepository {
+export class vehiculosRepository {
 
     static async getAllAutos(){
         const { data, error } = await supabase
         .from('Vehiculo')
         .select(`
+            patente,
             modelo,
             foto,
             capacidad,
@@ -32,6 +33,7 @@ export class autosRepository {
         const { data, error } = await supabase
         .from('Vehiculo')
         .select(`
+            patente
             modelo,
             foto,
             capacidad,
@@ -90,7 +92,7 @@ export class autosRepository {
             )
         `)
         .eq("idauto", patente)
-        .single();
+        .maybeSingle();
 
         if (errorEstado) {
             return {
@@ -100,6 +102,12 @@ export class autosRepository {
             };
         }
 
+        if (!estadoData) {
+            return {
+                status: 200,
+                message: `Vehículo con patente ${patente} eliminado exitosamente (no tenía estado asociado).`,
+            };
+        }
         if (estadoData?.EstadoVehiculo?.estado?.toLowerCase() === "en uso") {
             return {
                 status: 400,
@@ -112,7 +120,8 @@ export class autosRepository {
         const { error: errorEliminar } = await supabase
         .from("Vehiculo")
         .delete()
-        .eq("patente", patente);
+        .eq("patente", patente)
+        .select();
 
         if (errorEliminar){
             return {

@@ -3,8 +3,9 @@ import VehiculoPortada from "../../components/VehiculoPortada";
 import { Plus } from "lucide-react";
 export default function AdminCatalogoVehiculos (){
     const [vehiculos, setVehiculos] = useState([]);
-      const [cargando, setCargando] = useState(true);
+    const [cargando, setCargando] = useState(true);
     const [filtroModelo, setFiltroModelo] = useState("");
+    const [vehiculoAEliminar, setVehiculoAEliminar] = useState(null);
       useEffect(() => {
         
         const fetchVehiculos = async () => {
@@ -15,6 +16,7 @@ export default function AdminCatalogoVehiculos (){
             });
             if (!response.ok) throw new Error('Error en la respuesta de la API');
             const data = await response.json();
+            console.log("Vehículos recibidos desde backend:", JSON.stringify(data.metaData, null, 2));
             setVehiculos(data.metaData || []);
         } catch (e) {
           console.error('Error al obtener sucursales:', e);
@@ -25,6 +27,37 @@ export default function AdminCatalogoVehiculos (){
         fetchVehiculos();
       },[])
      
+
+        // Eliminar Vehículo
+        const eliminarVehiculo = async (patente) => {
+          const confirmar = window.confirm("¿Confirmas que quieres eliminar el vehículo?");
+          if (!confirmar) return;
+
+          try{
+            const response = await fetch(`http://localhost:3001/vehiculos/patente/${patente}`, {
+              method: 'DELETE',
+              credentials: 'include',
+            });
+
+            let data = null;
+
+            try{
+              data = await response.json();
+            }catch (jsonError){
+            }
+
+            if (response.ok){
+              alert("Vehículo eliminado correctamente");
+              setVehiculos(prev => prev.filter(v => v.patente !== patente));
+            }else{
+              alert("Error al eliminar: " + data.message);
+            }
+          } catch (error){
+            console.error("Error al eliminar vehiculo: " + error);
+            alert ("Error en la eliminación");
+          }
+        }
+
         // Filtra los vehículos para la barra de busqueda
         const vehiculosFiltrados = vehiculos.filter(v =>
         v.modelo.toLowerCase().includes(filtroModelo.toLowerCase())
@@ -55,7 +88,11 @@ export default function AdminCatalogoVehiculos (){
           <>
             <div className="space-y-4 overflow-y-auto max-h-[50vh] pr-2">
               {vehiculosFiltrados.map((vehiculo, i) => (
-                <VehiculoPortada vehiculo={vehiculo} i={i}/>
+                <VehiculoPortada
+                key={i}
+                vehiculo={vehiculo}
+                onDelete={eliminarVehiculo}
+                />
               ))}
               {vehiculosFiltrados.length === 0 && (
                 <p className="text-center font-medium text-gray-500">No hay vehículos con ese modelo</p>
