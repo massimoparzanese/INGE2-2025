@@ -19,11 +19,6 @@ export default function LoginPage() {
     navigate('/registro');
   };
 
-
-
-
-
-
   return (
     <div className="bg-[#24222B] min-h-screen font-sans pt-28">
       <div className="max-w-md bg-gradient-to-t from-[#24222B] to-[#19171e] rounded-3xl p-8 pt-20 border-4 border-[#24222B] shadow-blog-main m-5 mx-auto">
