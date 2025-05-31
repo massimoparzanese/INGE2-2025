@@ -1,6 +1,11 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const RegistroUsuario = () => {
+
+export default function RegistroUsuario(){
+
+  const navigate = useNavigate(); // Hook para navegar entre rutas
+
   const [formData, setFormData] = useState({
     dni: '',
     nombre: '',
@@ -37,15 +42,9 @@ const RegistroUsuario = () => {
 
       const result = await response.json();
       if (response.ok && result.status < 400) {
-        setMensaje(`✅ Registro exitoso. Bienvenido/a ${result.nombre}`);
-        setFormData({
-          dni: '',
-          nombre: '',
-          apellido: '',
-          email: '',
-          fechanacimiento: '',
-          rol: 'cliente'
-        });
+        setMensaje(`✅ Registro exitoso.`);
+        navigate('/login')
+        
       } else {
         setError(`❌ ${result.error}`);
       }
@@ -122,17 +121,6 @@ const RegistroUsuario = () => {
           placeholder='Contrasenia'
           required
         />
-        {/* Si necesitás que el usuario elija rol: */}
-        {/* <select
-          name="rol"
-          value={formData.rol}
-          onChange={handleChange}
-          className="w-full p-2 border rounded-md"
-        >
-          <option value="cliente">Cliente</option>
-          <option value="admin">Admin</option>
-        </select> */}
-
         <button
           type="submit"
           className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition"
@@ -144,5 +132,3 @@ const RegistroUsuario = () => {
     </section>
   );
 };
-
-export default RegistroUsuario;
