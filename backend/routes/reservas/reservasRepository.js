@@ -55,7 +55,47 @@ export class reservasRepository {
 
     return (
         (from2 <= to1 && to2 >= from1) 
-    );
-}   
+        );
+    }
+    
+    static async crearReserva(reservaData, estadoData){
+        const {data : reserva, error: errorReserva } = await supabase 
+            .from('Reserva')
+            .insert([reservaData])
+            .select
+            .single();
+
+        if (errorReserva) {
+            return {
+                status: 400,
+                message: "Error al insertar la reserva en la base de datos",
+                metaData: errorReserva,
+        };
+    }
+
+        const estadoReserva = {
+            reserva: reserva.id, 
+            estado: estadoData.estado,
+            fechainicio: estadoData.fechainicio || reserva.fechainicio,
+            fechafin: estadoData.fechafin || reserva.fechafin
+        };
+
+        const { data: estado, error: errorEstado } = await supabase 
+            .from('reserva_estado')
+            .insert([estadoReserva])
+            .select
+            .single(); 
+
+        if (errorEstado) {
+            return {
+                status: 400,
+                message: "Error al insertar el estado de la reserva en la base de datos",
+                metaData: errorEstado,
+           };
+         }
+
+        return { reserva, estado};
+    }
+
 
 }
