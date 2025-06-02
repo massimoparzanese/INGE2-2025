@@ -6,8 +6,48 @@ import { AuthContext } from '../../context/AuthContextFunct'
 export default function Navbar() {
   const [showNavbar] = useState(true);
   const [activeRoute] = useState(true);
-  const { user } = useContext(AuthContext);
+  const [cuentaOpen, setCuentaOpen] = useState(false);
+  const [vehiculosOpen, setVehiculosOpen] = useState(false);
+  const { user, isAuthenticated, setIsAuthenticated, setRole, setUser } = useContext(AuthContext);
   const navigate = useNavigate();
+
+
+    const toggleCuenta = () => {
+      setCuentaOpen((open) => !open);
+      // Si querés cerrar Vehículos al abrir Cuenta:
+      if (!cuentaOpen) setVehiculosOpen(false);
+    };
+
+    const toggleVehiculos = () => {
+      setVehiculosOpen((open) => !open);
+      // Si querés cerrar Cuenta al abrir Vehículos:
+      if (!vehiculosOpen) setCuentaOpen(false);
+    };
+  const handleLogout = async () => {
+
+      try {
+          const response = await fetch('http://localhost:3001/session/logout', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include', // Para enviar y recibir cookies
+          });
+          if(!response.ok){
+            console.log("Error al cerrar sesión")
+          }
+          else {
+            const data = response.json();
+            setIsAuthenticated(false);
+            setUser(null);
+            setRole("");
+            console.log(data);
+          }
+        }
+        catch (e){
+          console.log(e);
+        }
+  }
   return (
     <nav
       className={`fixed top-0 w-full z-50 bg-[#24222B]/35 backdrop-blur-sm transition-transform duration-300 ${
@@ -15,7 +55,7 @@ export default function Navbar() {
       }`}
       style={{ minHeight: '60px' }}
     >
-      <div className="flex items-center justify-between w-full px-4 py-3">
+      <div className="flex items-center justify-between w-full px-4 py-3"  onClick={() => setCuentaOpen(!cuentaOpen)}>
         {/* Imagen alineada a la izquierda */}
         <img
           src={imagenEmprendimiento} // Asegurate de que este importado correctamente si está en src/assets
@@ -28,7 +68,10 @@ export default function Navbar() {
         <ul className="flex items-center gap-5 afacad-bold text-base text-[#CDA053]">
             {/* Cuenta */}
             <li className="relative group cursor-pointer">
-              <div className="flex items-center space-x-1 text-white hover:text-yellow-500 transition-colors duration-200">
+              <div className="flex items-center space-x-1 text-white hover:text-yellow-500 transition-colors duration-200"
+              onClick={toggleCuenta}
+              aria-expanded={cuentaOpen}
+              aria-haspopup="true">
                 
                 <ChevronRight className="ml-1 h-4 w-4 text-white group-hover:text-yellow-600 transition-transform duration-300 group-hover:rotate-90" />
                 <UserCircle className="h-6 w-6" />
@@ -43,19 +86,39 @@ export default function Navbar() {
                           transition-all duration-300 z-50"
               >
                 <li>
-                  <a
+                  {!isAuthenticated ? (
+                    <a
                     href="/login"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-xl"
                   >
                     Iniciar sesión
                   </a>
+                  )
+                : (
+                   <a
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleLogout();
+                    }}
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-b-xl"
+                  >
+                    Cerrar sesión
+                  </a>
+
+
+                )}
+                  
                 </li>
               </ul>
             </li>
 
             {/* Vehículos */}
             <li className="relative group cursor-pointer">
-              <div className="flex items-center">
+              <div className="flex items-center"
+              onClick={toggleVehiculos}
+            aria-expanded={vehiculosOpen}
+            aria-haspopup="true">
                 <ChevronRight className="ml-1 h-4 w-4 text-white group-hover:text-yellow-600 transition-transform duration-300 group-hover:rotate-90" />
                 <span className="text-white font-medium transition-colors duration-200 group-hover:text-yellow-600">
                   Vehículos

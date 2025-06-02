@@ -12,6 +12,7 @@ import autenticacionInfoRouter from "./routes/acceso/autenticacion.js";
 import logedUserCookiesRouter from "./routes/acceso/cookies/userCookies.js";
 import cookieParser from "cookie-parser";
 import loginInfoRouter from "./routes/acceso/login.js" 
+import logoutInfoRouter from "./routes/acceso/logout.js";
 
 const app = express();
 const PORT = 3001;
@@ -21,10 +22,17 @@ app.use(express.json());
 app.use(corsMiddleware);
 app.use(cookieParser());
 app.use("/sucursales", sucursalesInfo);
+
+// Vehículos
 app.use("/vehiculos", autosInfo);
-app.use("/acceso" , loginInfoRouter);
+
+// Reservas
 app.use("/reservas", reservasInfoRouter);
+
+// Usuarios
+app.use("/acceso" , loginInfoRouter);
 app.use("/auth", autenticacionInfoRouter);
+app.use("/session", logoutInfoRouter);
 
 // COOKIES
 app.use("/api/verify", logedUserCookiesRouter);

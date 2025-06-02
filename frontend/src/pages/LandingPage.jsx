@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useContext,useState } from "react";
 import imagenConsecionaria from "../imgs/imagenConsecionaria.jpg";
 import SucursalSelector from '../components/SucursalesModal'
 import { useNavigate } from 'react-router-dom';
 import ProductCard from "../components/ProductCard";
+import { AuthContext } from "../context/AuthContextFunct";
 
 export default function LandingPage() {
   const [modalAbierto, setModalAbierto] = useState(false);
+  const { user} = useContext(AuthContext);
   const navigate = useNavigate();
    const handleAdminClick = () => {
     navigate('/reserva'); // Redirige a la página de registro
@@ -13,7 +15,7 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen w-full">
       <h1 className="text-4xl font-bold text-white mb-4 pt-20">Alquileres María</h1>
-      <p className="text-lg text-white mb-8">Bienvenido/a</p>
+      <p className="text-lg text-white mb-8">Bienvenido/a {user}</p>
       <section >
        
             <img className="rounded-2xl"src={imagenConsecionaria} alt="Imagen de consecionaria" />

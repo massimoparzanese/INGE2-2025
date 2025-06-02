@@ -7,7 +7,8 @@ export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [error, setError] = useState('');
   const [password, setPassword] = useState('');
-  const { setIsAuthenticated , setRole } = useContext(AuthContext);
+  const [mensaje, setMensaje] = useState('');
+  const { setIsAuthenticated , setRole, setUser } = useContext(AuthContext);
   const navigate = useNavigate();
   
   const handleSubmit = async (e) => {
@@ -31,10 +32,12 @@ export default function LoginPage() {
         setError(data.message || 'Error al iniciar sesión');
         return;
       }
-
-      setRole(data.rol);
-      setIsAuthenticated(true);
-      navigate('/');
+      if(response.status < 400){
+        setRole(data.rol);
+        setUser(data.nombre)
+        setIsAuthenticated(true);
+        navigate('/');
+      }
     } catch (err) {
       console.error('Error al conectar:', err);
       setError('Error al conectar con el servidor');

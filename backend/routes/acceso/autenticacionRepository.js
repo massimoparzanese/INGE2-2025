@@ -126,19 +126,16 @@ export class autenticacionRepository {
       }
 
       const { user, session } = authData;
-
       // Paso 2: Traer el rol desde la tabla `usuarios`
-      const { data: usuarioData, error: userError } = await supabase
+      const { data: userData, error: userError } = await supabase
         .from('Persona')
-        .select('rol')
-        .eq('id', user.id) // depende del nombre del campo que estés usando
+        .select('rol, nombre')
+        .eq('email', user.email.trim())
 
       if (userError) {
         return res.status(500).json({ error: 'Error obteniendo rol' });
       }
-
-      const rol = usuarioData.rol;
-
+     
       // Paso 3: Guardar token Y rol en cookies HTTP-only
       res.cookie('sb-access-token', session.access_token, {
         httpOnly: true,
@@ -155,7 +152,8 @@ export class autenticacionRepository {
       });
 
       // Si querés devolver algo extra para el frontend (no sensible)
-      res.json({ message: 'Login exitoso'  , rol: rol });
+      return { message: 'Login exitoso'  , rol: userData[0].rol, nombre: userData[0].nombre }
+      ;
           
 
     }
@@ -179,6 +177,10 @@ export class autenticacionRepository {
             maxAge: DURATION_REFRESH_COOKIE, // Largo para refresh token
             sameSite: "Lax",
           });
+          return {
+            status: 200,
+            message: "Cierre de sesión exitoso"
+          }
         }
     }
 
@@ -202,17 +204,17 @@ export class autenticacionRepository {
         });
 
         if (error) {
-          res.clearCookie("access_token", {
+          res.clearCookie("sb-access_token", {
             httpOnly: true,
             secure: false, // Cambiar a true en producción
             maxAge: DURATION_REFRESH_COOKIE, // Largo para refresh token
-            sameSite: "None",
+            sameSite: "Lax",
           });
-          res.clearCookie("refresh_token", {
+          res.clearCookie("sb-refresh_token", {
             httpOnly: true,
             secure: false, // Cambiar a true en producción
             maxAge: DURATION_REFRESH_COOKIE, // Largo para refresh token
-            sameSite: "None",
+            sameSite: "Lax",
           });
           return {
             status: 401,

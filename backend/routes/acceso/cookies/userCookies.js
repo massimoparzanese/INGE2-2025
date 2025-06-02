@@ -5,9 +5,8 @@ const logedUserCookiesRouter = Router();
 
 logedUserCookiesRouter.post("/", async (req, res) => {
   try {
-    const accessToken = req.cookies["access_token"];
-    const refreshToken = req.cookies["refresh_token"];
-
+    const accessToken = req.cookies["sb-access-token"];
+    const refreshToken = req.cookies["sb-refresh-token"];
     // Verificar si existen cookies
     if (!accessToken && !refreshToken) {
       throw new Error(
