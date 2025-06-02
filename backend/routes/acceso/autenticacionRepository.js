@@ -1,5 +1,5 @@
 import supabase from "../supabaseClient.js";
-import { createClient } from '@supabase/supabase-js';
+
 // La duración de las cookies en JavaScript se establece en milisegundos (ms).
 // Calculamos el equivalente a 1 hora
 // - 1 hora tiene 60 minutos
@@ -17,10 +17,6 @@ const DURATION_ACCESS_COOKIE = 60 * 60 * 1000;
 
 const DURATION_REFRESH_COOKIE = 7 * 24 * 60 * 60 * 1000;
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
 
 export class autenticacionRepository {
 
@@ -255,6 +251,35 @@ export class autenticacionRepository {
     }
 
     return { data: true }; // Sesión verificada con éxito
+  }
+
+  static async resetPassword({email, res}){
+    try {
+    // Busca el usuario en la tabla 
+    const { data: usuario, error: fetchError } = await supabase
+      .from('Persona')
+      .select('*')
+      .eq('email', email)
+      .single();
+
+    if (fetchError || !usuario) {
+      return res.status(401).json({ error: 'El mail no se encuentra registrado' });
+    }
+
+    // Envia código al correo
+    // const { error: otpError } = await supabase.auth.signInWithOtp({ email });
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: 'http://localhost:5173/resetPassword/newPassword',
+    })
+
+    if (error) {
+      return res.status(500).json({ error: 'Error al enviar el código al mail' });
+    }
+    return  { status: 200, message: 'El código fue enviado al mail ingresado' };
+
+  } catch (err) {
+    return res.status(500).json({ error: 'Ocurrió un error inesperado' });
+  }
   }
 
 }

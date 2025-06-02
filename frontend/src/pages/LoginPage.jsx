@@ -1,6 +1,7 @@
 import { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContextFunct';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 
 export default function LoginPage() {
@@ -57,7 +58,12 @@ export default function LoginPage() {
           <input required className="w-full bg-[#FEFFFB] border-none p-4 rounded-2xl mt-4 shadow-blog-main border-transparent focus:outline-none focus:border-[#12B1D1]" type="email" name="email" id="email" onChange={(e) => setUsername(e.target.value)} placeholder="E-mail" />
           <input required className="w-full bg-[#FEFFFB] border-none p-4 rounded-2xl mt-4 shadow-blog-main border-transparent focus:outline-none focus:border-[#12B1D1]" type="password" name="password" id="password" onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
           {<p className="text-red-500 text-sm mt-4 mb-6">{error}</p>}
-
+          <Link
+            to="/resetPassword"
+            className="text-green-600 hover:underline cursor-pointer"
+            >
+           Olvidé mi contraseña
+         </Link>
           <div className="mt-16">
             <button type="submit" className="w-full bg-[#CDA053] text-[#FEFFFB] cursor-pointer font-bold py-2 px-4 rounded-2xl">
               Iniciar sesión
