@@ -257,10 +257,5 @@ export class autenticacionRepository {
     return { data: true }; // Sesión verificada con éxito
   }
 
-  static async validarToken(accessToken) {
-    const { data, error } = await supabase.auth.getUser(accessToken);
-    if (error || !data?.user) return null;
-    return data.user;
-  }
 }
   
