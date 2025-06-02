@@ -1,4 +1,5 @@
 import supabase from "../supabaseClient.js";
+import { createClient } from '@supabase/supabase-js';
 // La duración de las cookies en JavaScript se establece en milisegundos (ms).
 // Calculamos el equivalente a 1 hora
 // - 1 hora tiene 60 minutos
@@ -15,6 +16,12 @@ const DURATION_ACCESS_COOKIE = 60 * 60 * 1000;
 // - Cada segundo tiene 1000 milisegundos
 
 const DURATION_REFRESH_COOKIE = 7 * 24 * 60 * 60 * 1000;
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
+
 export class autenticacionRepository {
 
     static async registrarPersona(dni, nombre, apellido, email, fechanacimiento, rol, password ){
@@ -249,5 +256,11 @@ export class autenticacionRepository {
 
     return { data: true }; // Sesión verificada con éxito
   }
-      
+
+  static async validarToken(accessToken) {
+    const { data, error } = await supabase.auth.getUser(accessToken);
+    if (error || !data?.user) return null;
+    return data.user;
+  }
 }
+  

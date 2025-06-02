@@ -38,16 +38,16 @@ logedUserCookiesRouter.post("/establecer", async(req, res) =>{
 
     res.cookie("sb-access-token", access_token, {
       httpOnly: true,
-      secure: false, // true en producción
+      secure: false, 
       sameSite: "Lax",
-      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 días
+      maxAge: 1000 * 60 * 60 * 24 * 7, 
     });
 
     res.cookie("sb-refresh-token", refresh_token, {
       httpOnly: true,
       secure: false,
       sameSite: "Lax",
-      maxAge: 1000 * 60 * 60 * 24 * 30, // 30 días
+      maxAge: 1000 * 60 * 60 * 24 * 30, 
     });
 
     res.json({message: "Sesion establecida correctamente"})
