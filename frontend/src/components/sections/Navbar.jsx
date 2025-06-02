@@ -1,4 +1,5 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
+import { Link } from 'react-router-dom';
 import imagenEmprendimiento from "../../imgs/LogoEmpresa.png"; // ✅ Ajustá el path al que uses tú (por ejemplo: /public/imgs/logo.png)
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight, UserCircle } from "lucide-react";
@@ -6,6 +7,9 @@ import { AuthContext } from '../../context/AuthContextFunct'
 export default function Navbar() {
   const [showNavbar] = useState(true);
   const [activeRoute] = useState(true);
+  const [cuentaOpen, setCuentaOpen] = useState(false);
+  const [vehiculosOpen, setVehiculosOpen] = useState(false);
+
   const { user, isAuthenticated, setIsAuthenticated, setRole, setUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -34,6 +38,16 @@ export default function Navbar() {
           console.log(e);
         }
   }
+  useEffect(() => {
+  if (cuentaOpen || vehiculosOpen) {
+    const timer = setTimeout(() => {
+      setCuentaOpen(false);
+      setVehiculosOpen(false);
+    }, 8000);
+    return () => clearTimeout(timer);
+  }
+}, [cuentaOpen, vehiculosOpen]);
+
   return (
     <nav
       className={`fixed top-0 w-full z-50 bg-[#24222B]/35 backdrop-blur-sm transition-transform duration-300 ${
@@ -49,92 +63,109 @@ export default function Navbar() {
           className="h-12 w-auto"
           onClick={() => navigate("/")} // Redirige a la página principal al hacer clic
         />
-
+        
         {/* Contenido a la derecha */}
         <ul className="flex items-center gap-5 afacad-bold text-base text-[#CDA053]">
             {/* Cuenta */}
-            <li className="relative group cursor-pointer">
-              <div className="flex items-center space-x-1 text-white hover:text-yellow-500 transition-colors duration-200">
-                
-                <ChevronRight className="ml-1 h-4 w-4 text-white group-hover:text-yellow-600 transition-transform duration-300 group-hover:rotate-90" />
-                <UserCircle className="h-6 w-6" />
-                <span className="hidden md:inline">
-                {user ? user : 'Mi cuenta'}
-              </span>
-                
-              </div>
-              <ul
-                className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-xl shadow-lg
-                          opacity-0 invisible group-hover:visible group-hover:opacity-100
-                          transition-all duration-300 z-50"
-              >
+            <li className="relative cursor-pointer z-50">
+            <div
+              onClick={() => setCuentaOpen(!cuentaOpen)}
+              className="flex items-center space-x-1 text-white hover:text-yellow-500 transition-colors duration-200"
+            >
+              <ChevronRight
+                className={`ml-1 h-4 w-4 text-white transition-transform duration-300 ${
+                  cuentaOpen ? 'rotate-90 text-yellow-600' : ''
+                }`}
+              />
+              <UserCircle className="h-6 w-6" />
+              <span className="hidden md:inline">{user ? user : 'Mi cuenta'}</span>
+            </div>
+
+            <div
+              className={`absolute right-0 mt-2 w-44 max-w-[90vw] bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden transition-all duration-300 ease-in-out ${
+                cuentaOpen ? 'opacity-100 scale-100 max-h-96' : 'opacity-0 scale-95 max-h-0 pointer-events-none'
+              }`}
+            >
+              <ul>
                 <li>
                   {!isAuthenticated ? (
-                    <a
-                    href="/login"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-xl"
-                  >
-                    Iniciar sesión
-                  </a>
-                  )
-                : (
-                   <a
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleLogout();
-                    }}
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-b-xl"
-                  >
-                    Cerrar sesión
-                  </a>
-
-
-                )}
-                  
+                    <Link
+                      to="/login"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-xl"
+                    >
+                      Iniciar sesión
+                    </Link>
+                  ) : (
+                    <Link
+                      to="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleLogout();
+                        setCuentaOpen(false);
+                      }}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-b-xl"
+                    >
+                      Cerrar sesión
+                    </Link>
+                  )}
                 </li>
               </ul>
-            </li>
+            </div>
+          </li>
+
 
             {/* Vehículos */}
-            <li className="relative group cursor-pointer">
-              <div className="flex items-center">
-                <ChevronRight className="ml-1 h-4 w-4 text-white group-hover:text-yellow-600 transition-transform duration-300 group-hover:rotate-90" />
-                <span className="text-white font-medium transition-colors duration-200 group-hover:text-yellow-600">
-                  Vehículos
-                </span>
-              </div>
-              <ul
-                className="absolute right-0 mt-2 w-56 max-w-[90vw] bg-white border border-gray-200 rounded-xl shadow-lg 
-                          opacity-0 translate-y-2 invisible group-hover:visible group-hover:opacity-100 
-                          group-hover:translate-y-0 transition-all duration-300 z-50"
-              >
+            <li className="relative cursor-pointer z-50">
+            <div
+              onClick={() => setVehiculosOpen(!vehiculosOpen)}
+              className="flex items-center"
+            >
+              <ChevronRight
+                className={`ml-1 h-4 w-4 text-white transition-transform duration-300 ${
+                  vehiculosOpen ? 'rotate-90 text-yellow-600' : ''
+                }`}
+              />
+              <span className="text-white font-medium transition-colors duration-200 hover:text-yellow-600">
+                Vehículos
+              </span>
+            </div>
+
+            <div
+              className={`absolute right-0 mt-2 w-60 max-w-[92vw] bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden transition-all duration-300 ease-in-out ${
+                vehiculosOpen ? 'opacity-100 scale-100 max-h-[400px]' : 'opacity-0 scale-95 max-h-0 pointer-events-none'
+              }`}
+            >
+              <ul>
                 <li>
-                  <a
-                    href="/agregar-vehiculo"
-                    className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 rounded-t-xl transition-colors duration-200"
+                  <Link
+                    to="/agregar-vehiculo"
+                    className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors duration-200"
                   >
                     Agregar Vehículo
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="/admin/catalogoVehiculos"
-                    className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 rounded-t-xl transition-colors duration-200"
+                  <Link
+                    to="/admin/catalogoVehiculos"
+                    className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors duration-200"
                   >
                     Ver listado de vehículos
-                  </a>
+                  </Link>
                 </li>
-                <li className="hidden md:block">
-                  <a
-                    href="/reserva"
-                    className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 rounded-t-xl transition-colors duration-200"
-                  >
-                    Alquilar un vehículo
-                  </a>
+                {isAuthenticated && (
+                  <li className="hidden md:block">
+                    <Link to="/reserva" 
+                    className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 rounded-b-xl transition-colors duration-200">
+                      Alquilar un vehículo
+                    </Link>
                 </li>
+                )}
+                
               </ul>
-            </li>
+            </div>
+          </li>
+
+
         </ul>
       </div>
     </nav>

@@ -1,14 +1,18 @@
-import {useState, useEffect} from "react";
+import {useState, useEffect, useContext} from "react";
 import Calendario from "../components/Calendario.jsx"
 import { useSucursalesFetch } from "../hooks/useSucursalesFetch.jsx";
+import { AuthContext } from "../context/AuthContextFunct.jsx";
+import { useNavigate } from "react-router-dom";
 export default function FormReserva (){
   const {sucursales,cargando} = useSucursalesFetch();
   const [fechaInicio, setFechaInicio] = useState(false);
   const [fechaFin, setFechaFin] = useState(false);
-   const [sucursalSeleccionada, setSucursalSeleccionada] = useState(null);
+  const [sucursalSeleccionada, setSucursalSeleccionada] = useState(null);
   const [accept, setAccept] = useState(false);
   const [aceptarSucursal, setAceptarSucursal] = useState(false);
   const [vehicles, setVehicles] = useState([]);
+  const navigate = useNavigate();
+  const { isAuthenticated } = useContext(AuthContext);
   const handleSeleccionar = (sucursal) => {
     setSucursalSeleccionada(sucursal);
   };
@@ -54,6 +58,12 @@ export default function FormReserva (){
         return () => clearTimeout(timer); // Limpieza del timeout si cambia antes
       }
     }, [accept]);
+    useEffect(() => {
+      console.log(isAuthenticated)
+      if(!isAuthenticated)
+        navigate('/');
+
+    }, [isAuthenticated, navigate]);
 
     return(
      

@@ -59,14 +59,14 @@ export default function LoginPage() {
           {<p className="text-red-500 text-sm mt-4 mb-6">{error}</p>}
 
           <div className="mt-16">
-            <button type="submit" className="w-full bg-[#CDA053] text-[#FEFFFB] font-bold py-2 px-4 rounded-2xl">
+            <button type="submit" className="w-full bg-[#CDA053] text-[#FEFFFB] cursor-pointer font-bold py-2 px-4 rounded-2xl">
               Iniciar sesión
             </button>
             <div className="mt-4 text-center">
-                <p className="mb-2">¿No tenés una cuenta?</p>
+                <p className="mb-2 text-white">¿No tenés una cuenta?</p>
                 <button
                   onClick={irARegistro}
-                  className="text-blue-600 hover:underline"
+                  className="text-green-600 hover:underline cursor-pointer"
                 >
                   Registrarme
                 </button>

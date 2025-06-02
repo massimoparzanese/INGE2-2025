@@ -7,10 +7,11 @@ import { AuthContext } from "../context/AuthContextFunct";
 
 export default function LandingPage() {
   const [modalAbierto, setModalAbierto] = useState(false);
-  const { user} = useContext(AuthContext);
+  const { user, isAuthenticated } = useContext(AuthContext);
   const navigate = useNavigate();
    const handleAdminClick = () => {
-    navigate('/reserva'); // Redirige a la página de registro
+    const text = isAuthenticated ? '/reserva' : '/login';
+    navigate(text); // Redirige a la página de registro
   };
   return (
     <div className="flex flex-col items-center justify-center min-h-screen w-full">
@@ -20,13 +21,14 @@ export default function LandingPage() {
        
             <img className="rounded-2xl"src={imagenConsecionaria} alt="Imagen de consecionaria" />
           <div className="flex items-center justify-center mt-4 mb-4">
-            <button className={`nav-link inline-block px-4 py-2 rounded-md font-semibold transition duration-300 ease-in-out
-                  ${
-                    
-                       "bg-black text-white hover:bg-green-700 hover:brightness-140"
-                  }`} onClick={handleAdminClick}>
-              Alquila tu auto ya
-            </button>
+           <button
+            className={`nav-link inline-block px-4 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out
+              bg-green-600 text-white hover:bg-green-500 hover:scale-105 shadow-md hover:shadow-lg cursor-pointer`}
+            onClick={handleAdminClick}
+          >
+            Alquila tu auto ya
+          </button>
+
           </div>
       </section>
     <h3 className="text-4xl font-bold text-white mb-4 pt-20">Todo sobre nosotros</h3>
