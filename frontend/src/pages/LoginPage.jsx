@@ -7,13 +7,39 @@ export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [error, setError] = useState('');
   const [password, setPassword] = useState('');
-  const { setIsAuthenticated } = useContext(AuthContext);
-  const handleSubmit = (e) => {
-    console.log(e);
-  };
+  const { setIsAuthenticated , setRole } = useContext(AuthContext);
+  const navigate = useNavigate();
+  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setMensaje('');
+    setError('');
 
-//Esto es para la redireccion al registro
-  const navigate = useNavigate(); // Hook para navegar entre rutas
+    try {
+      const response = await fetch('http://localhost:3001/acceso/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include', // Para enviar y recibir cookies
+        body: JSON.stringify({ email: username, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.message || 'Error al iniciar sesión');
+        return;
+      }
+
+      setRole(data.rol);
+      setIsAuthenticated(true);
+      navigate('/');
+    } catch (err) {
+      console.error('Error al conectar:', err);
+      setError('Error al conectar con el servidor');
+    }
+  };
 
   const irARegistro = () => {
     navigate('/registro');
@@ -46,5 +72,5 @@ export default function LoginPage() {
         </form>
       </div>
     </div>
-  )
-}
+  );
+};

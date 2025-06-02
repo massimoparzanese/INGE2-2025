@@ -110,7 +110,7 @@ export class autenticacionRepository {
         mensaje: 'Registro exitoso'
     };
     }
-    static async iniciarSesion({  username, password, res }) {
+    static async iniciarSesion({  email, password, res }) {
         // Llamar a login de supabase
       /*
       Siguiente tarea: Traerse el rol del usuario de la tabla
@@ -118,7 +118,68 @@ export class autenticacionRepository {
       en el frontend y no pueda ser accedida
       */
 
-      
+        const { data: authData, error: authError } = await supabase.auth
+        .signInWithPassword({email, password});
+
+      if (authError) {
+        return res.status(401).json({ error: 'Credenciales inválidas' });
+      }
+
+      const { user, session } = authData;
+
+      // Paso 2: Traer el rol desde la tabla `usuarios`
+      const { data: usuarioData, error: userError } = await supabase
+        .from('Persona')
+        .select('rol')
+        .eq('id', user.id) // depende del nombre del campo que estés usando
+
+      if (userError) {
+        return res.status(500).json({ error: 'Error obteniendo rol' });
+      }
+
+      const rol = usuarioData.rol;
+
+      // Paso 3: Guardar token Y rol en cookies HTTP-only
+      res.cookie('sb-access-token', session.access_token, {
+        httpOnly: true,
+        secure: false,
+        sameSite: 'Lax',
+        maxAge: DURATION_ACCESS_COOKIE
+      });
+
+      res.cookie('sb-refresh-token', session.refresh_token, {
+        httpOnly: true,
+        secure: false,
+        sameSite: 'Lax',
+        maxAge: DURATION_REFRESH_COOKIE
+      });
+
+      // Si querés devolver algo extra para el frontend (no sensible)
+      res.json({ message: 'Login exitoso'  , rol: rol });
+          
+
+    }
+
+    static async cerrarSesion(token , res){
+
+        const { error } = await supabase.auth.signOut();
+
+        if (error) {
+          return res.status(402).json({ error: 'Error en el cierre de sesion' });
+        } else {
+          res.clearCookie("sb-access-token", {
+            httpOnly: true,
+            secure: false, // Cambiar a true en producción
+            maxAge: DURATION_REFRESH_COOKIE, // Largo para refresh token
+            sameSite: "Lax",
+          });
+          res.clearCookie("sb-refresh-token", {
+            httpOnly: true,
+            secure: false, // Cambiar a true en producción
+            maxAge: DURATION_REFRESH_COOKIE, // Largo para refresh token
+            sameSite: "Lax",
+          });
+        }
     }
 
     static async refreshUserCookie(token, refToken, res) {

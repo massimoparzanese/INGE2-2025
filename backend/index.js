@@ -11,6 +11,8 @@ import reservasInfoRouter from "./routes/reservas/reservasInfo.js";
 import autenticacionInfoRouter from "./routes/acceso/autenticacion.js";
 import logedUserCookiesRouter from "./routes/acceso/cookies/userCookies.js";
 import cookieParser from "cookie-parser";
+import loginInfoRouter from "./routes/acceso/login.js" 
+
 const app = express();
 const PORT = 3001;
 
@@ -20,7 +22,7 @@ app.use(corsMiddleware);
 app.use(cookieParser());
 app.use("/sucursales", sucursalesInfo);
 app.use("/vehiculos", autosInfo);
-
+app.use("/acceso" , loginInfoRouter);
 app.use("/reservas", reservasInfoRouter);
 app.use("/auth", autenticacionInfoRouter);
 
@@ -29,7 +31,6 @@ app.use("/api/verify", logedUserCookiesRouter);
 app.get("/", (req, res) => {
   res.send("🚗 Bienvenido a María Alquileres API");
 });
-
 
 app.listen(PORT, () => {
   console.log(process.env.SUPABASE_URL)
