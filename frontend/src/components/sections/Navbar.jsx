@@ -6,23 +6,9 @@ import { AuthContext } from '../../context/AuthContextFunct'
 export default function Navbar() {
   const [showNavbar] = useState(true);
   const [activeRoute] = useState(true);
-  const [cuentaOpen, setCuentaOpen] = useState(false);
-  const [vehiculosOpen, setVehiculosOpen] = useState(false);
   const { user, isAuthenticated, setIsAuthenticated, setRole, setUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
-
-    const toggleCuenta = () => {
-      setCuentaOpen((open) => !open);
-      // Si querés cerrar Vehículos al abrir Cuenta:
-      if (!cuentaOpen) setVehiculosOpen(false);
-    };
-
-    const toggleVehiculos = () => {
-      setVehiculosOpen((open) => !open);
-      // Si querés cerrar Cuenta al abrir Vehículos:
-      if (!vehiculosOpen) setCuentaOpen(false);
-    };
   const handleLogout = async () => {
 
       try {
@@ -55,7 +41,7 @@ export default function Navbar() {
       }`}
       style={{ minHeight: '60px' }}
     >
-      <div className="flex items-center justify-between w-full px-4 py-3"  onClick={() => setCuentaOpen(!cuentaOpen)}>
+      <div className="flex items-center justify-between w-full px-4 py-3">
         {/* Imagen alineada a la izquierda */}
         <img
           src={imagenEmprendimiento} // Asegurate de que este importado correctamente si está en src/assets
@@ -68,10 +54,7 @@ export default function Navbar() {
         <ul className="flex items-center gap-5 afacad-bold text-base text-[#CDA053]">
             {/* Cuenta */}
             <li className="relative group cursor-pointer">
-              <div className="flex items-center space-x-1 text-white hover:text-yellow-500 transition-colors duration-200"
-              onClick={toggleCuenta}
-              aria-expanded={cuentaOpen}
-              aria-haspopup="true">
+              <div className="flex items-center space-x-1 text-white hover:text-yellow-500 transition-colors duration-200">
                 
                 <ChevronRight className="ml-1 h-4 w-4 text-white group-hover:text-yellow-600 transition-transform duration-300 group-hover:rotate-90" />
                 <UserCircle className="h-6 w-6" />
@@ -115,10 +98,7 @@ export default function Navbar() {
 
             {/* Vehículos */}
             <li className="relative group cursor-pointer">
-              <div className="flex items-center"
-              onClick={toggleVehiculos}
-            aria-expanded={vehiculosOpen}
-            aria-haspopup="true">
+              <div className="flex items-center">
                 <ChevronRight className="ml-1 h-4 w-4 text-white group-hover:text-yellow-600 transition-transform duration-300 group-hover:rotate-90" />
                 <span className="text-white font-medium transition-colors duration-200 group-hover:text-yellow-600">
                   Vehículos
