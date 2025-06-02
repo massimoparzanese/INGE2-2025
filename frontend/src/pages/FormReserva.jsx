@@ -7,6 +7,7 @@ export default function FormReserva (){
   const [fechaFin, setFechaFin] = useState(false);
    const [sucursalSeleccionada, setSucursalSeleccionada] = useState(null);
   const [accept, setAccept] = useState(false);
+  const [aceptarSucursal, setAceptarSucursal] = useState(false);
   const [vehicles, setVehicles] = useState([]);
   const handleSeleccionar = (sucursal) => {
     setSucursalSeleccionada(sucursal);
@@ -42,6 +43,17 @@ export default function FormReserva (){
 
       fetchVehiculos();
     }, [accept, sucursalSeleccionada, fechaInicio, fechaFin]);
+    useEffect(() => {
+      if (vehicles.length === 0) {
+        const timer = setTimeout(() => {
+          setFechaInicio(null); // o "" según cómo manejes el estado
+          setFechaFin(null);
+          setAccept(false)
+        }, 2000);
+
+        return () => clearTimeout(timer); // Limpieza del timeout si cambia antes
+      }
+    }, [accept]);
 
     return(
      
@@ -77,8 +89,17 @@ export default function FormReserva (){
         ) : (
           <p className="font-medium">No hay sucursales disponibles</p>
         )}
-
-        {sucursalSeleccionada && (
+        {sucursalSeleccionada && !aceptarSucursal && (
+          <div className="pt-5">
+          <button
+                className="mb-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+                onClick={() => {setAceptarSucursal(true)}}
+            >
+                Aceptar
+              </button>
+          </div>
+        )}
+        {sucursalSeleccionada && aceptarSucursal && (
           <>
             <div className="mt-4 p-4 bg-blue-100 rounded-md text-center">
               <p className="text-blue-700 font-medium">
@@ -127,6 +148,9 @@ export default function FormReserva (){
         </ul>
 
       </div>
+    )}
+    {accept && vehicles.length === 0 && (
+      <p>No hay vehículos en las fechas solicitadas</p>
     )}
       </div>
     </div>

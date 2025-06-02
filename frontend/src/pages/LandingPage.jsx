@@ -3,7 +3,6 @@ import imagenConsecionaria from "../imgs/imagenConsecionaria.jpg";
 import SucursalSelector from '../components/SucursalesModal'
 import { useNavigate } from 'react-router-dom';
 import ProductCard from "../components/ProductCard";
-import { Link } from 'react-router-dom';
 
 export default function LandingPage() {
   const [modalAbierto, setModalAbierto] = useState(false);
@@ -14,12 +13,16 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen w-full">
       <h1 className="text-4xl font-bold text-white mb-4 pt-20">Alquileres María</h1>
-      <p className="text-lg text-white mb-8">Bienvenido.</p>
-      <section className="bg-amber-900 rounded-2xl">
+      <p className="text-lg text-white mb-8">Bienvenido/a</p>
+      <section >
        
-            <img src={imagenConsecionaria} alt="Imagen de consecionaria" />
+            <img className="rounded-2xl"src={imagenConsecionaria} alt="Imagen de consecionaria" />
           <div className="flex items-center justify-center mt-4 mb-4">
-            <button className=" bg-[#CDA053] text-[#FEFFFB] font-bold py-2 px-4 rounded-2xl" onClick={handleAdminClick}>
+            <button className={`nav-link inline-block px-4 py-2 rounded-md font-semibold transition duration-300 ease-in-out
+                  ${
+                    
+                       "bg-black text-white hover:bg-green-700 hover:brightness-140"
+                  }`} onClick={handleAdminClick}>
               Alquila tu auto ya
             </button>
           </div>
