@@ -28,16 +28,17 @@ export default function LoginPage() {
       });
 
       const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.message || 'Error al iniciar sesión');
+      if (!response.ok || data.status >= 400) {
+        setError(data.message);
         return;
       }
-      if(response.status < 400){
+      if(data.status < 400){
         setRole(data.rol);
         setUser(data.nombre)
         setIsAuthenticated(true);
-        navigate('/');
+        navigate('/', {
+          state: { success: true }
+        });
       }
     } catch (err) {
       console.error('Error al conectar:', err);

@@ -121,23 +121,24 @@ export class autenticacionRepository {
       en el frontend y no pueda ser accedida
       */
 
-        const { data: authData, error: authError } = await supabase.auth
-        .signInWithPassword({email, password});
+       const { data: userData, error: userError } = await supabase
+      .from('Persona')
+      .select('email, rol, nombre') // podés incluir rol y nombre de una vez
+      .eq('email', email.trim())
 
-      if (authError) {
-        return res.status(401).json({ error: 'Credenciales inválidas' });
-      }
+    if (userError || userData.length === 0) {
+      return { status: 401, message: 'El usuario no existe en el sistema' };
+    }
 
-      const { user, session } = authData;
-      // Paso 2: Traer el rol desde la tabla `usuarios`
-      const { data: userData, error: userError } = await supabase
-        .from('Persona')
-        .select('rol, nombre')
-        .eq('email', user.email.trim())
+    // Si existe, intento autenticar
+    const { data: authData, error: authError } = await supabase.auth
+      .signInWithPassword({ email, password });
 
-      if (userError) {
-        return res.status(500).json({ error: 'Error obteniendo rol' });
-      }
+    if (authError) {
+      return { status: 401, message: 'La contraseña es incorrecta' };
+    }
+
+    const { user, session } = authData;
      
       // Paso 3: Guardar token Y rol en cookies HTTP-only
       res.cookie('sb-access-token', session.access_token, {
