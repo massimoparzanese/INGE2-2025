@@ -1,7 +1,9 @@
-import {useState, useEffect} from "react";
+import {useState, useEffect, useContext} from "react";
 import VehiculoPortada from "../../components/VehiculoPortada";
 import { Plus } from "lucide-react";
+import { AuthContext } from "../../context/AuthContextFunct";
 export default function AdminCatalogoVehiculos (){
+  const { isAuthenticated, role } = useContext(AuthContext);
     const [vehiculos, setVehiculos] = useState([]);
     const [cargando, setCargando] = useState(true);
     const [filtroModelo, setFiltroModelo] = useState("");
@@ -65,10 +67,12 @@ export default function AdminCatalogoVehiculos (){
       return (
         <div className="flex justify-center items-center h-screen bg-red-800">
         <div className="relative w-full max-w-7xl mx-auto bg-white p-6 rounded-xl shadow-md">
+          {
+            isAuthenticated && role === 'admin' &&(
            <button className="absolute top-4 right-4 text-white hover:text-red-700 bg-green-500 rounded-4xl transition-colors">
             <Plus className="w-8 h-8 " />
           </button>
-
+          )} 
         <h2 className="text-2xl font-bold mb-6 text-red-700">Vehículos de la Empresa</h2>
         {vehiculos.length !== 0 && !cargando &&(
                 <input

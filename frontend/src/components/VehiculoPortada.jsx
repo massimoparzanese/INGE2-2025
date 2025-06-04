@@ -1,7 +1,9 @@
 import { PencilIcon, Trash2Icon } from 'lucide-react';
-import { useState } from 'react';
+import { useContext } from 'react';
 import { Link} from 'react-router-dom';
+import { AuthContext } from '../context/AuthContextFunct';
 export default function VehiculoPortada({ vehiculo, onDelete }){
+    const { isAuthenticated, role } = useContext(AuthContext);
     console.log("Vehiculo recibido: ", vehiculo)
     console.log(vehiculo.patente)
     return (
@@ -19,7 +21,8 @@ export default function VehiculoPortada({ vehiculo, onDelete }){
                     <p className="text-sm text-gray-600">Km: {vehiculo.kms}</p>
                     <p className="text-sm text-gray-600">{vehiculo.sucursal}</p>
                   </div>
-                  <div className={`relative w-full right-0 grid col-span-4 z-10`}>
+                  {isAuthenticated && role === 'admin' (
+                    <div className={`relative w-full right-0 grid col-span-4 z-10`}>
                     <div className={`absolute right-0 flex gap-2 -translate-y-2`}>
                         <Link to={`/`}
                             state={{ vehiculo: vehiculo }}  // Pasa el objeto 'content' completo
@@ -30,7 +33,9 @@ export default function VehiculoPortada({ vehiculo, onDelete }){
                             <Trash2Icon />
                         </div>
                     </div>
-                </div>
+                  </div>
+                  )}
+                 
         </div>
     )
 
