@@ -26,9 +26,10 @@ export default function LoginPage() {
         credentials: 'include', // Para enviar y recibir cookies
         body: JSON.stringify({ email: username, password }),
       });
-
+      
       const data = await response.json();
-      if (!response.ok || data.status >= 400) {
+      console.log(data)
+      if (data.status >= 400) {
         setError(data.message);
         return;
       }
@@ -36,6 +37,7 @@ export default function LoginPage() {
         setRole(data.rol);
         setUser(data.nombre)
         setIsAuthenticated(true);
+        console.log("Bien")
         navigate('/', {
           state: { success: true }
         });

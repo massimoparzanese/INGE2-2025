@@ -59,13 +59,13 @@ export default function SucursalSelector({ onCerrar }) {
             {sucursales.map(sucursal => (
               <li
                 key={sucursal.nombre}
-  
+                /*
                 onClick={() => handleSeleccionar(sucursal)}
                 className={`p-4 rounded-lg border cursor-pointer transition-colors ${
                   sucursalSeleccionada === sucursal
                     ? 'border-blue-500 bg-blue-50'
                     : 'border-gray-200 hover:bg-gray-100'
-                }`}
+                }`}*/
               >
                 <p className="font-medium">{sucursal.nombre}</p>
                 <p className="text-sm text-gray-600">{sucursal.direccion}</p>

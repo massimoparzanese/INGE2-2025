@@ -156,7 +156,7 @@ export class autenticacionRepository {
       });
 
       // Si querés devolver algo extra para el frontend (no sensible)
-      return { message: 'Login exitoso'  , rol: userData[0].rol, nombre: userData[0].nombre }
+      return { status: 200, message: 'Login exitoso'  , rol: userData[0].rol, nombre: userData[0].nombre }
       ;
           
 

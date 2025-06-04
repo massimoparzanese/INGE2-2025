@@ -9,6 +9,7 @@ export default function Navbar() {
   const [activeRoute] = useState(true);
   const [cuentaOpen, setCuentaOpen] = useState(false);
   const [vehiculosOpen, setVehiculosOpen] = useState(false);
+  const [sucursalesOpen, setSucursalesOpen] = useState(false);
 
   const { user, isAuthenticated, setIsAuthenticated, setRole, setUser } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -39,14 +40,15 @@ export default function Navbar() {
         }
   }
   useEffect(() => {
-  if (cuentaOpen || vehiculosOpen) {
+  if (cuentaOpen || vehiculosOpen || sucursalesOpen) {
     const timer = setTimeout(() => {
       setCuentaOpen(false);
       setVehiculosOpen(false);
+      setSucursalesOpen(false);
     }, 8000);
     return () => clearTimeout(timer);
   }
-}, [cuentaOpen, vehiculosOpen]);
+}, [cuentaOpen, vehiculosOpen, sucursalesOpen]);
 
   return (
     <nav
@@ -112,7 +114,43 @@ export default function Navbar() {
               </ul>
             </div>
           </li>
-
+           {/* Sucursales */}
+          {isAuthenticated && (
+            <li className="relative cursor-pointer z-50">
+            <div
+              onClick={() => setSucursalesOpen(!sucursalesOpen)}
+              className="flex items-center"
+            >
+              <ChevronRight
+                className={`ml-1 h-4 w-4 text-white transition-transform duration-300 ${
+                  sucursalesOpen ? 'rotate-90 text-yellow-600' : ''
+                }`}
+              />
+              <span className="text-white font-medium transition-colors duration-200 hover:text-yellow-600">
+                Sucursales
+              </span>
+            </div>
+            
+            <div
+              className={`absolute right-0 mt-2 w-60 max-w-[92vw] bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden transition-all duration-300 ease-in-out ${
+                sucursalesOpen ? 'opacity-100 scale-100 max-h-[400px]' : 'opacity-0 scale-95 max-h-0 pointer-events-none'
+              }`}
+            >
+              <ul>
+                
+                  <li className="hidden md:block">
+                    <Link to="/reserva" 
+                    className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 rounded-b-xl transition-colors duration-200">
+                      Ver sucursales disponibles
+                    </Link>
+                </li>
+                
+                
+              </ul>
+            </div>
+            
+          </li>
+          )}
 
             {/* Vehículos */}
             <li className="relative cursor-pointer z-50">

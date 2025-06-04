@@ -13,7 +13,7 @@ export default function LandingPage() {
   const { user, isAuthenticated } = useContext(AuthContext);
   const navigate = useNavigate();
    const handleAdminClick = () => {
-    const text = isAuthenticated ? '/reserva' : '/login';
+    const text = isAuthenticated ? '/reserva' : '/registro';
     navigate(text); // Redirige a la página de registro
   };
    useEffect(() => {
@@ -41,21 +41,25 @@ export default function LandingPage() {
               </div>
             )}
             <img className="rounded-2xl"src={imagenConsecionaria} alt="Imagen de consecionaria" />
+           {!isAuthenticated && 
+           <p className="flex items-center justify-center text-white p-4">¿No tenés una cuenta?</p>
+           }
           <div className="flex items-center justify-center mt-4 mb-4">
-           <button
-            className={`nav-link inline-block px-4 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out
-              bg-green-600 text-white hover:bg-green-500 hover:scale-105 shadow-md hover:shadow-lg cursor-pointer`}
-            onClick={handleAdminClick}
-          >
-            Alquila tu auto ya
-          </button>
+           
+            <button
+              className="nav-link inline-block px-4 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out
+                        bg-green-600 text-white hover:bg-green-500 hover:scale-105 shadow-md hover:shadow-lg cursor-pointer"
+              onClick={handleAdminClick}
+            >
+              {isAuthenticated ? 'Ver sucursales disponibles' : 'Registrarme'}
+            </button>
+
 
           </div>
       </section>
     <h3 className="text-4xl font-bold text-white mb-4 pt-20">Todo sobre nosotros</h3>
     <section className="grid gap-6 w-full px-4 md:px-0 md:w-11/12 md:mx-auto 
     grid-cols-1 md:grid-cols-2 lg:grid-cols-3 h-auto min-h-[70vh] pb-20">
-      
       <ProductCard 
       title={"Nuestras sucursales"} 
       subtitle={"Aquí encontrarás todo lo que necestias"}
