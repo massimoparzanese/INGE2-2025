@@ -4,8 +4,6 @@ import { Link} from 'react-router-dom';
 import { AuthContext } from '../context/AuthContextFunct';
 export default function VehiculoPortada({ vehiculo, onDelete }){
     const { isAuthenticated, role } = useContext(AuthContext);
-    console.log("Vehiculo recibido: ", vehiculo)
-    console.log(vehiculo.patente)
     return (
         <div
                   className={`p-4 rounded-lg border cursor-pointer flex gap-4 items-center transition-all`}

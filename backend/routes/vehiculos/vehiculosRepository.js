@@ -132,10 +132,17 @@ export class vehiculosRepository {
 
     }
 
+    //editar vehiculo
     static async editarVehiculo (patente, nuevosDatos){
         const { data, error } = await supabase
         .from ('Vehiculo')
-        .update(nuevosDatos)
+        .update({
+            modelo: nuevosDatos.modelo,
+            foto: nuevosDatos.foto,
+            capacidad: nuevosDatos.capacidad,
+            kms: nuevosDatos.kms,
+            sucursal: nuevosDatos.sucursal
+        })
         .eq('patente', patente);
 
         if(error) {

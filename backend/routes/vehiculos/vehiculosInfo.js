@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { vehiculosRepository } from "../vehiculos/vehiculosRepository.js";
+import supabase from "../supabaseClient.js";
 
 const autosInfoRouter = Router();
 

@@ -12,9 +12,10 @@ export default function EditarVehiculoForm({ patenteSeleccionada, onVolver }){
     useEffect(() => {
         async function fetchVehiculo() {
             try {
-                const res = await fetch(`/vehiculos/${patenteSeleccionada}`);
+                const res = await fetch(`http://localhost:3001/vehiculos/${patenteSeleccionada}`);
+                console.log("🧪 Solicitando:", `/vehiculos/${patenteSeleccionada}`);
                 const json = await res.json();
-                setVehiculo(json.metaData); // Asegurate de que el backend responde así
+                setVehiculo(json.metaData);
             } catch (err) {
                 console.error("Error al obtener datos del vehículo:", err);
            }
@@ -34,8 +35,9 @@ export default function EditarVehiculoForm({ patenteSeleccionada, onVolver }){
     const handleSubmit = async (e) => {
     e.preventDefault();
 
+
     try {
-      const res = await fetch(`/vehiculos/${patenteSeleccionada}`, {
+      const res = await fetch(`http://localhost:3001/vehiculos/${patenteSeleccionada}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
