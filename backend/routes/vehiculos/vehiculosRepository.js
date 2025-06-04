@@ -115,10 +115,9 @@ export class vehiculosRepository {
         const { error: errorEliminar } = await supabase
         .from("Vehiculo")
         .delete()
-        .eq("patente", patente)
-        .select();
-        console.log(errorEliminar)
+        .eq("patente", patente) //borre el .select()
         if (errorEliminar){
+            console.log(errorEliminar)
             return {
                 status: 500,
                 message: "Error al eliminar el vehiculo",
