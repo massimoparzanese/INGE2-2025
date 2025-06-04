@@ -61,6 +61,35 @@ autosInfoRouter.put("/:patente", async (req, res) => {
     }
 });
 
+autosInfoRouter.get("/:patente", async (req, res) => {
+    const { patente } = req.params;
+
+    try {
+        const { data, error } = await supabase
+            .from("Vehiculo")
+            .select("*")
+            .eq("patente", patente)
+            .maybeSingle();
+
+        if (error) {
+            return res.status(400).json({
+                message: "Error al obtener datos del vehículo",
+                metaData: error,
+            });
+        }
+
+        return res.status(200).json({
+            message: "Vehículo encontrado",
+            metaData: data,
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error interno del servidor",
+            metaData: error,
+        });
+    }
+});
+
 autosInfoRouter.post("/agregar", async (req, res) => {
     const nuevoVehiculo = req.body;
 

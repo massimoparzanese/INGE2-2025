@@ -10,6 +10,8 @@ import AgregarVehiculo from "./pages/AgregarVehiculoPage.jsx";
 import RegisterForm from "./pages/RegisterPage.jsx";
 import AdminCatalogoVehiculos from "./pages/adminVehicles/AdminCatalogoVehiculos.jsx";
 import ResetPasswordPage from "./pages/ResetPasswordPage.jsx";
+import EditarVehiculoFormWrapper from "./pages/adminVehicles/EditarVehiculoFormWrapper.jsx";
+
 export default function App() {
 
   return (
@@ -24,6 +26,7 @@ export default function App() {
           <Route path="/registro" element={<RegisterForm />} />
           <Route path="/admin/catalogoVehiculos" element={<AdminCatalogoVehiculos/>}/>
           <Route path="/resetPassword" element={<ResetPasswordPage/>}/>
+          <Route path="/admin/editar-vehiculo/:patente" element={<EditarVehiculoFormWrapper />} />
         </Routes>
         <Footer/>
        </AuthContextProvider>
