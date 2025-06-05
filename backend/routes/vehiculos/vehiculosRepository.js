@@ -187,7 +187,7 @@ export class vehiculosRepository {
         if (existe) {
             return {
                 status: 400,
-                message: "Ya existe un vehículo con esa patente",
+                message: "La patente ya se encuentra en uso",
             };
         }
         let resultado;

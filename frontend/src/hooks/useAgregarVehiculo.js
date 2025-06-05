@@ -20,7 +20,7 @@ export function useAgregarVehiculo(){
             setMensaje(result.message);
             return response.status
         }catch(error){  // en caso de error
-            setMensaje("Error al agregar vehiculo");
+            setMensaje("Error inesperado, intente más tarde");
             return false;
         }finally{
             setCargando(false);
