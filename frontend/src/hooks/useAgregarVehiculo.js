@@ -16,8 +16,13 @@ export function useAgregarVehiculo(){
             });
             // respuesta
             const result = await response.json();
-            setMensaje(result.mensaje || "Vehiculo agregado con éxito");
-            return response.ok;
+            if(!response.ok || response.status >= 400){
+                setMensaje(result.menssage);
+            }
+            else{
+            setMensaje("Vehiculo agregado con éxito")
+            }
+            return response.status
         }catch(error){  // en caso de error
             setMensaje("Error al agregar vehiculo");
             return false;

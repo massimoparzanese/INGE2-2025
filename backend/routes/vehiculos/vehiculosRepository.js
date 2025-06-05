@@ -1,4 +1,9 @@
+import { estadoVehiculoRepository } from "../estadoVehiculo/estadoVehiculoRepository.js";
+import { marcaRepository } from "../marca/marcaRepository.js";
+import { modeloRepository } from "../modelo/modeloRepository.js";
+import { politicaDeReembolsoRepository } from "../politicaDeReembolso/politicaDeReembolsoRepository.js";
 import supabase from "../supabaseClient.js";
+import { vehiculoEstadoRepository } from "../vehiculoEstado/vehiculoEstadoRepository.js";
 
 export class vehiculosRepository {
 
@@ -163,6 +168,7 @@ export class vehiculosRepository {
     static async agregarVehiculo(nuevoVehiculo) {
    
         const { patente } = nuevoVehiculo;
+        const { marca, modelo, anio } = nuevoVehiculo;
          // Verifico que no exista la patente
         const { data: existe, error: errorExistencia } = await supabase
             .from("Vehiculo")
@@ -184,23 +190,50 @@ export class vehiculosRepository {
                 message: "Ya existe un vehículo con esa patente",
             };
         }
+        let resultado;
+
+        // 1. Insertar o verificar marca
+        resultado = await marcaRepository.insertarMarca(marca);
+        if (resultado.status > 400) return resultado;
+
+        // 2. Insertar o verificar modelo
+        resultado = await modeloRepository.insertModelo(modelo, anio, marca);
+        if (resultado.status > 400) return resultado;
+
+        // 3. Insertar estado si no existe (Disponible)
+        resultado = await estadoVehiculoRepository.insertarEstado("Disponible");
+        if (resultado.status > 400) return resultado;
+
+        // 4. Insertar política si no existe
+        resultado = await politicaDeReembolsoRepository.insertPolitica(nuevoVehiculo.politica);
+        if (resultado.status > 400) return resultado;
+
+        // 5. Insertar el vehículo (sin campo 'marca' si no forma parte del schema)
+        const { marca: _, ...vehiculoSinMarca } = nuevoVehiculo;
 
         const { error: errorInsert } = await supabase
-            .from("Vehiculo")
-            .insert(nuevoVehiculo);
+        .from("Vehiculo")
+        .insert(vehiculoSinMarca)
+        .select(); // Podés agregar campos específicos si querés el ID u otros
 
         if (errorInsert) {
-            return {
-                status: 500,
-                message: "Error al insertar el vehículo",
-                metaData: errorInsert,
-            };
+        return {
+            status: 500,
+            message: "Error al insertar el vehículo",
+            metaData: errorInsert,
+        };
         }
 
+        // 6. Insertar en tabla intermedia VehiculoEstado con estado = Disponible
+        resultado = await vehiculoEstadoRepository.insertVehiculoEstado(vehiculoSinMarca.patente);
+        if (resultado.status > 400) return resultado;
+
+        // 7. Retornar éxito
         return {
-            status: 201,
-            message: "Vehículo agregado exitosamente",
+        status: 200,
+        message: "Vehículo insertado correctamente",
         };
+
     }
 
 }
