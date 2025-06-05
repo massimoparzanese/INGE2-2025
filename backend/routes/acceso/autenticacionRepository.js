@@ -24,13 +24,12 @@ export class autenticacionRepository {
 
         
         // Validar que los campos sean correctos
-         
+        // Validar DNI
         if (!/^\d+$/.test(dni)) {
              return { 
                 status: 400,
                 error: 'El DNI debe contener solo números' }
-        }
-
+        } 
         // Validar que tenga exactamente 8 dígitos
         else if (dni.length !== 8) {
             return { 
@@ -38,6 +37,24 @@ export class autenticacionRepository {
                 error: 'El DNI debe contener 8 numeros' };
         }
 
+        // El dni debe ser unico
+        const {data: data1, error: error1} = await supabase
+          .from('Persona')
+          .select('dni')
+          .eq('dni', dni)
+
+        if (error1) {
+            console.error('Error al consultar DNI:', dniError)
+            throw new Error('Error al acceder a la base de datos')
+        }
+
+        if (data1.length > 0) {
+            return {
+                status: 400,
+                error: 'El DNI ya está registrado'
+            }  
+        }
+      
         // Validar nombre 
        if (/\d/.test(nombre)) {
             return { 
@@ -58,6 +75,24 @@ export class autenticacionRepository {
             return { 
                 status: 400,
                 error: 'El correo no es válido' };
+        }
+
+        // Validar email unico
+        const {data: data2, error: error2} = await supabase
+          .from('Persona')
+          .select('email')
+          .eq('email', email)
+
+        if (error2) {
+            console.error('Error al consultar DNI:', dniError)
+            throw new Error('Error al acceder a la base de datos')
+        }
+
+        if (data2.length > 0) {
+            return {
+                status: 400,
+                error: 'El email ya se encuentra registrado'
+            }  
         }
 
         // Validar contra
