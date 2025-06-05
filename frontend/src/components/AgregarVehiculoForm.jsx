@@ -28,7 +28,7 @@ const AgregarVehiculo = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const exito = await agregarVehiculo(form);
-    if (exito) {
+    if (exito.status < 400) {
       setForm({
         marca: "",  
         modelo: "",
