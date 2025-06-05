@@ -6,7 +6,11 @@ export default function AdminCatalogoVehiculos (){
   const { isAuthenticated, role } = useContext(AuthContext);
     const [vehiculos, setVehiculos] = useState([]);
     const [cargando, setCargando] = useState(true);
-    const [filtroModelo, setFiltroModelo] = useState('');
+    const [inputModelo, setInputModelo] = useState("");
+    const [inputMarca, setInputMarca] = useState("");
+    const [filtroModelo, setFiltroModelo] = useState("");
+    const [filtroMarca, setFiltroMarca] = useState("");
+
     const [vehiculoAEliminar, setVehiculoAEliminar] = useState(null);
       useEffect(() => {
         
@@ -62,8 +66,11 @@ export default function AdminCatalogoVehiculos (){
 
         // Filtra los vehículos para la barra de busqueda
         const vehiculosFiltrados = vehiculos.filter(v =>
-        v.Modelo.nombre.toLowerCase().includes(filtroModelo.toLowerCase())
-        );
+  v.Modelo.nombre.toLowerCase().includes(filtroModelo.toLowerCase()) &&
+  v.Modelo.Marca.nombre.toLowerCase().includes(filtroMarca.toLowerCase())
+);
+
+
       return (
         <div className="flex justify-center items-center h-screen bg-red-800">
         <div className="relative w-full max-w-7xl mx-auto bg-white p-6 rounded-xl shadow-md">
@@ -74,15 +81,34 @@ export default function AdminCatalogoVehiculos (){
           </button>
           )} 
         <h2 className="text-2xl font-bold mb-4 text-red-700">Vehículos de la Empresa</h2>
-        {vehiculos.length !== 0 && !cargando &&(
-                <input
-                type="text"
-                placeholder="Buscar por modelo..."
-                value={filtroModelo}
-                onChange={(e) => setFiltroModelo(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-red-500"
-              />
-              )}
+        {vehiculos.length !== 0 && !cargando && (
+        <>
+        <input
+            type="text"
+            placeholder="Buscar por marca..."
+            value={inputMarca}
+            onChange={(e) => setInputMarca(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-lg mb-2 focus:outline-none focus:ring-2 focus:ring-red-500"
+          />
+          <input
+            type="text"
+            placeholder="Buscar por modelo..."
+            value={inputModelo}
+            onChange={(e) => setInputModelo(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-lg mb-2 focus:outline-none focus:ring-2 focus:ring-red-500"
+          />
+          <button
+            onClick={() => {
+              setFiltroModelo(inputModelo);
+              setFiltroMarca(inputMarca);
+            }}
+            className="w-1/4 p-3 bg-red-500 text-white rounded-lg hover:bg-red-600"
+          >
+            Aceptar
+          </button>
+        </>
+      )}
+
         
 
         {cargando ? (
@@ -92,7 +118,7 @@ export default function AdminCatalogoVehiculos (){
           </div>
         ) : (
           <>
-            <div className="space-y-4 overflow-y-auto max-h-[50vh] pr-2">
+            <div className="space-y-4 overflow-y-auto max-h-[50vh] pr-2 pt-4">
               {vehiculosFiltrados.map((vehiculo, i) => (
                 <VehiculoPortada
                 key={i}
