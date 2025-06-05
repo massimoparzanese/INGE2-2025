@@ -11,14 +11,19 @@ export class vehiculosRepository {
         const { data, error } = await supabase
         .from('Vehiculo')
         .select(`
-            patente,
-            modelo,
-            foto,
+            politica,
             capacidad,
             kms,
+            foto,
+            patente,
             sucursal,
+            precio,
+            anio,
             Modelo (
-            marca
+            nombre,
+            Marca (
+                nombre
+            )
             )
         `);
         if (error)

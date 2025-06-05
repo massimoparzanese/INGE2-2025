@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import { AuthContext } from '../context/AuthContextFunct';
 
 export default function RegistroUsuario(){
 
   const navigate = useNavigate(); // Hook para navegar entre rutas
-
+  const { isAuthenticated} = useContext(AuthContext);
   const [formData, setFormData] = useState({
     dni: '',
     nombre: '',
@@ -53,6 +53,11 @@ export default function RegistroUsuario(){
       setError('❌ Error inesperado al intentar registrar.');
     }
   };
+  useEffect(() => {
+    if(isAuthenticated){
+      navigate('/')
+    }
+    }, [isAuthenticated, navigate]);
 
   return (
     <section className="pt-10 pb-10">

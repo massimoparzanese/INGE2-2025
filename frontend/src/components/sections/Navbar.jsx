@@ -32,6 +32,7 @@ export default function Navbar() {
             setIsAuthenticated(false);
             setUser(null);
             setRole("");
+            navigate('/', { state: { loggedOut: true } });
             console.log(data);
           }
         }

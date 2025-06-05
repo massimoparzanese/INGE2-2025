@@ -6,7 +6,7 @@ export default function AdminCatalogoVehiculos (){
   const { isAuthenticated, role } = useContext(AuthContext);
     const [vehiculos, setVehiculos] = useState([]);
     const [cargando, setCargando] = useState(true);
-    const [filtroModelo, setFiltroModelo] = useState("");
+    const [filtroModelo, setFiltroModelo] = useState('');
     const [vehiculoAEliminar, setVehiculoAEliminar] = useState(null);
       useEffect(() => {
         
@@ -62,7 +62,7 @@ export default function AdminCatalogoVehiculos (){
 
         // Filtra los vehículos para la barra de busqueda
         const vehiculosFiltrados = vehiculos.filter(v =>
-        v.modelo.toLowerCase().includes(filtroModelo.toLowerCase())
+        v.Modelo.nombre.toLowerCase().includes(filtroModelo.toLowerCase())
         );
       return (
         <div className="flex justify-center items-center h-screen bg-red-800">
@@ -73,7 +73,7 @@ export default function AdminCatalogoVehiculos (){
             <Plus className="w-8 h-8 " />
           </button>
           )} 
-        <h2 className="text-2xl font-bold mb-6 text-red-700">Vehículos de la Empresa</h2>
+        <h2 className="text-2xl font-bold mb-4 text-red-700">Vehículos de la Empresa</h2>
         {vehiculos.length !== 0 && !cargando &&(
                 <input
                 type="text"
