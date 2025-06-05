@@ -72,8 +72,9 @@ export default function AdminCatalogoVehiculos (){
 
 
       return (
-        <div className="flex justify-center items-center h-screen bg-red-800">
-        <div className="relative w-full max-w-7xl mx-auto bg-white p-6 rounded-xl shadow-md">
+        <div className="flex justify-center items-center min-h-screen bg-red-800 p-4 pt-20 pb-10">
+
+        <div className="relative w-full max-w-7xl mx-auto bg-white p-5 rounded-xl shadow-md">
           {
             isAuthenticated /*&& role === 'admin'*/ &&(
            <button className="absolute top-4 right-4 text-white hover:text-red-700 bg-green-500 rounded-4xl transition-colors">
