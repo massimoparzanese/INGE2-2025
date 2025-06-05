@@ -43,15 +43,16 @@ export class autenticacionRepository {
           .select('dni')
           .eq('dni', dni)
 
-        console.log(dni);
-        console.log(JSON.stringify(error1));
-        console.log(data1);
-
         if (error1) {
+            console.error('Error al consultar DNI:', dniError)
+            throw new Error('Error al acceder a la base de datos')
+        }
+
+        if (data1.length > 0) {
             return {
-              status: 400,
-              error: 'El dni ya se encuentra registrado en el sistema'
-            }
+                status: 400,
+                error: 'El DNI ya está registrado'
+            }  
         }
       
         // Validar nombre 
@@ -77,16 +78,21 @@ export class autenticacionRepository {
         }
 
         // Validar email unico
-        const {data2, error2} = await supabase
+        const {data: data2, error: error2} = await supabase
           .from('Persona')
           .select('email')
           .eq('email', email)
 
         if (error2) {
+            console.error('Error al consultar DNI:', dniError)
+            throw new Error('Error al acceder a la base de datos')
+        }
+
+        if (data2.length > 0) {
             return {
-              status: 400,
-              error: 'El email ya se encuentra registrado en el sistema'
-            }
+                status: 400,
+                error: 'El email ya se encuentra registrado'
+            }  
         }
 
         // Validar contra
