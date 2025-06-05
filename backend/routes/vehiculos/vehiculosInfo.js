@@ -103,6 +103,7 @@ autosInfoRouter.post("/agregar", async (req, res) => {
             metaData: result.metaData || null,
         });
     } catch (error) {
+        console.log(error)
         return res.send({
             status: 500,
             message: "Error interno al intentar agregar el vehículo",
