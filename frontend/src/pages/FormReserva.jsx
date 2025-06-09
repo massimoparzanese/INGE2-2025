@@ -15,6 +15,14 @@ export default function FormReserva (){
   const [aceptarVehiculo, setAceptarVehiculo] = useState(false);
   const navigate = useNavigate();
   const { isAuthenticated } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
+  const calcularMonto = () => {
+  const dias = Math.ceil(
+    (new Date(fechaFin) - new Date(fechaInicio)) / (1000 * 60 * 60 * 24)
+  );
+  const precioPorDia = vehiculoSeleccionado?.precio || 0;
+  return dias * precioPorDia;
+};
   const handleSeleccionar = (sucursal) => {
     setSucursalSeleccionada(sucursal);
   };
@@ -181,6 +189,17 @@ export default function FormReserva (){
             </button>
           </div>
         )}
+
+        {aceptarVehiculo && (
+          <div className="pt-4">
+            <button
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+              onClick={registrarReservaEIniciarPago}
+            >
+              Confirmar y Pagar
+            </button>
+          </div>
+        )}
       </div>
 
     )}
@@ -193,5 +212,50 @@ export default function FormReserva (){
 
   
   )
+
+  const registrarReservaEIniciarPago = async () => {
+    try {
+      // 1. Crear la reserva en el backend
+      const response = await fetch("http://localhost:3001/reservas", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: 'include',
+        body: JSON.stringify({
+          vehiculo: vehiculoSeleccionado.patente,
+          fechaInicio,
+          fechaFin,
+          monto: calcularMonto(),
+          email: user.email,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!data?.id) {
+        alert("Error al registrar la reserva.");
+        return;
+      }
+
+      // 2. Crear preferencia de pago
+      const pagoResponse = await fetch("http://localhost:3001/api/pagos/crear-preferencia", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idReserva: data.id }),
+      });
+
+      const pagoData = await pagoResponse.json();
+
+      if (pagoData.id) {
+        // 3. Redirigir a Mercado Pago
+        window.location.href = `https://www.mercadopago.com.ar/checkout/v1/redirect?pref_id=${pagoData.id}`;
+      } else {
+        alert("Error al generar el pago.");
+      }
+
+    } catch (error) {
+      console.error("Error en la reserva o pago:", error);
+      alert("Hubo un problema al procesar la reserva y el pago.");
+    }
+  };
 }
 

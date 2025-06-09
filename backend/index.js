@@ -14,6 +14,8 @@ import cookieParser from "cookie-parser";
 import loginInfoRouter from "./routes/acceso/login.js" 
 import logoutInfoRouter from "./routes/acceso/logout.js";
 
+import pagosRoutes from "./routes/pago/pagosRoutes.js";
+
 const app = express();
 const PORT = 3001;
 
@@ -39,6 +41,9 @@ app.use("/api/verify", logedUserCookiesRouter);
 app.get("/", (req, res) => {
   res.send("🚗 Bienvenido a María Alquileres API");
 });
+
+//Pagos
+app.use("/api/pagos", pagosRoutes);
 
 app.listen(PORT, () => {
   console.log(process.env.SUPABASE_URL)
