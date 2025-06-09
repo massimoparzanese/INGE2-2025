@@ -37,10 +37,8 @@ export default function LoginPage() {
         setRole(data.rol);
         setUser(data.nombre)
         setIsAuthenticated(true);
-        console.log("Bien")
-        navigate('/', {
-          state: { success: true }
-        });
+        sessionStorage.setItem('loginSuccess', 'true');
+        navigate('/');
       }
     } catch (err) {
       console.error('Error al conectar:', err);

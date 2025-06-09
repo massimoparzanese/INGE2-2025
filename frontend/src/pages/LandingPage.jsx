@@ -8,7 +8,7 @@ import { useLocation } from "react-router-dom";
 
 export default function LandingPage() {
   const location = useLocation();
-  const [showSuccess, setShowSuccess] = useState(location.state?.success ?? false);
+  const [showSuccess, setShowSuccess] = useState(false);
   const [modalAbierto, setModalAbierto] = useState(false);
   const [showLogoutMessage, setShowLogoutMessage] = useState(false);
   const { user, isAuthenticated } = useContext(AuthContext);
@@ -17,15 +17,17 @@ export default function LandingPage() {
     const text = isAuthenticated ? '/reserva' : '/registro';
     navigate(text); // Redirige a la página de registro
   };
-   useEffect(() => {
-    if (showSuccess) {
-      const timer = setTimeout(() => {
-        setShowSuccess(false);
-      }, 3000); // 3 segundos
 
-      return () => clearTimeout(timer); // Limpieza si el componente se desmonta
-    }
-  }, [showSuccess]);
+useEffect(() => {
+  if (sessionStorage.getItem('loginSuccess') === 'true') {
+    setShowSuccess(true);
+    sessionStorage.removeItem('loginSuccess');
+
+    setTimeout(() => {
+      setShowSuccess(false);
+    }, 3000);
+  }
+}, []);
   useEffect(() => {
   if (location.state?.loggedOut) {
     setShowLogoutMessage(true);
