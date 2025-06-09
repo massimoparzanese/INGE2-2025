@@ -28,10 +28,12 @@ export default function Navbar() {
             console.log("Error al cerrar sesión")
           }
           else {
-            const data = response.json();
+            const data = await response.json();
             setIsAuthenticated(false);
             setUser(null);
             setRole("");
+            sessionStorage.setItem('loggedOut', 'true');
+            navigate('/');
             console.log(data);
           }
         }

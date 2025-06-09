@@ -16,10 +16,11 @@ export function useAgregarVehiculo(){
             });
             // respuesta
             const result = await response.json();
-            setMensaje(result.mensaje || "Vehiculo agregado con éxito");
-            return response.ok;
+            console.log(result)
+            setMensaje(result.message);
+            return response.status
         }catch(error){  // en caso de error
-            setMensaje("Error al agregar vehiculo");
+            setMensaje("Error inesperado, intente más tarde");
             return false;
         }finally{
             setCargando(false);

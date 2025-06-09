@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContextFunct';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
@@ -9,7 +9,7 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [password, setPassword] = useState('');
   const [mensaje, setMensaje] = useState('');
-  const { setIsAuthenticated , setRole, setUser } = useContext(AuthContext);
+  const { isAuthenticated,setIsAuthenticated , setRole, setUser } = useContext(AuthContext);
   const navigate = useNavigate();
   
   const handleSubmit = async (e) => {
@@ -37,17 +37,20 @@ export default function LoginPage() {
         setRole(data.rol);
         setUser(data.nombre)
         setIsAuthenticated(true);
-        console.log("Bien")
-        navigate('/', {
-          state: { success: true }
-        });
+        sessionStorage.setItem('loginSuccess', 'true');
+        console.log(data.nombre)
+        navigate('/');
       }
     } catch (err) {
       console.error('Error al conectar:', err);
       setError('Error al conectar con el servidor');
     }
   };
-
+  useEffect(() => {
+    if(isAuthenticated){
+      navigate('/')
+    }
+  }, [isAuthenticated, navigate]);
   const irARegistro = () => {
     navigate('/registro');
   };

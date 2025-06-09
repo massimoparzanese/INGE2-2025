@@ -189,6 +189,9 @@ export class autenticacionRepository {
             sameSite: 'Lax',
             maxAge: DURATION_ACCESS_COOKIE
           });
+      // Si querés devolver algo extra para el frontend (no sensible)
+      
+          
 
           res.cookie('sb-refresh-token', session.refresh_token, {
             httpOnly: true,
@@ -198,7 +201,7 @@ export class autenticacionRepository {
           });
 
           // Si querés devolver algo extra para el frontend (no sensible)
-          return { status: 200, message: 'Login exitoso'  , rol: userData[0].rol, nombre: userData[0].nombre }
+          return { status: 200, message: 'Login exitoso'  , rol: userData[0].rol, nombre: userData[0].email }
           ;
       }   
     }
@@ -256,7 +259,7 @@ export class autenticacionRepository {
       data: { user },
       error,
     } = await supabase.auth.getUser(token);
-
+    let rol;
     if (!token || error) {
       try {
         if (!refToken) {
@@ -288,7 +291,7 @@ export class autenticacionRepository {
         }
 
         const { session, user } = data;
-
+        rol = await this.obtenerRol(user.email)
         // Establece las cookies con los nuevos tokens
         res.cookie("access_token", session.access_token, {
           httpOnly: true,
@@ -304,15 +307,15 @@ export class autenticacionRepository {
           sameSite: "None",
         });
 
-        res.send({ status: 200, message: "Refresco exitoso" });
+        res.send({ status: 200, message: "Refresco exitoso", nombre: user.email });
       } catch (err) {
         res.clearCookie("access_token");
         res.clearCookie("refresh_token");
         return {data: false};
       }
     }
-
-    return { data: true }; // Sesión verificada con éxito
+    rol = await this.obtenerRol(user.email)
+    return { data: true, nombre: user.email, rol: rol}; // Sesión verificada con éxito
   }
 
   static async resetPassword({email, res}){
@@ -344,5 +347,19 @@ export class autenticacionRepository {
   }
   }
 
+  static async obtenerRol(email){
+    const { data, error } = await supabase
+      .from('Persona')
+      .select('rol')
+      .eq('email', email) // Asegurate de tener el email correcto
+      .single(); // Solo un resultado esperado
+
+    if (error) {
+      return {rol: 'Error al obtener el rol:'};
+    } else {
+      const rol = data.rol;
+      return {rol: rol}
+    } 
+  }
 }
   

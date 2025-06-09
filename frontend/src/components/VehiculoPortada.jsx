@@ -14,8 +14,11 @@ export default function VehiculoPortada({ vehiculo, onDelete }){
                     className="w-34 h-16 object-cover rounded-md border"
                   />
                   <div>
-                    <p className="font-semibold text-lg">{vehiculo.modelo}</p>
-                    <p className="text-sm text-gray-600">Capacidad:{vehiculo.capacidad}</p>
+                    <p className="font-semibold text-lg">{vehiculo.Modelo.Marca.nombre}</p>
+                    <p className="text-sm text-gray-600">Modelo: {vehiculo.Modelo.nombre}</p>
+                    <p className="text-sm text-gray-600">Año: {vehiculo.anio}</p>
+                    <p className="text-sm text-gray-600">Precio por dia(USD): {vehiculo.capacidad}</p>
+                    <p className="text-sm text-gray-600">Capacidad:{vehiculo.precio}</p>
                     <p className="text-sm text-gray-600">Km: {vehiculo.kms}</p>
                     <p className="text-sm text-gray-600">{vehiculo.sucursal}</p>
                   </div>

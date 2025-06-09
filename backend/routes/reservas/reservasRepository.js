@@ -16,14 +16,14 @@ export class reservasRepository {
             }
 
             const disponibles = [];
-
+            console.log(data.metaData)
             // 2. Para cada vehículo, verificar si tiene reservas superpuestas
             for (const vehiculo of data.metaData) {
                 const { data: reservas, error: errorReservas } = await supabase
                 .from('Reserva')
                 .select('fechainicio, fechafin')
                 .eq('vehiculo', vehiculo.patente); // o vehiculo.id, según tu modelo
-
+                console.log(errorReservas)
                 if (errorReservas) {
                 return {
                     status: 400,

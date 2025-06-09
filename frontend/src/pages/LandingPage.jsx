@@ -8,23 +8,37 @@ import { useLocation } from "react-router-dom";
 
 export default function LandingPage() {
   const location = useLocation();
-  const [showSuccess, setShowSuccess] = useState(location.state?.success ?? false);
+  const [showSuccess, setShowSuccess] = useState(false);
   const [modalAbierto, setModalAbierto] = useState(false);
+  const [showLogoutMessage, setShowLogoutMessage] = useState(false);
   const { user, isAuthenticated } = useContext(AuthContext);
   const navigate = useNavigate();
    const handleAdminClick = () => {
     const text = isAuthenticated ? '/reserva' : '/registro';
     navigate(text); // Redirige a la página de registro
   };
-   useEffect(() => {
-    if (showSuccess) {
-      const timer = setTimeout(() => {
-        setShowSuccess(false);
-      }, 3000); // 3 segundos
 
-      return () => clearTimeout(timer); // Limpieza si el componente se desmonta
-    }
-  }, [showSuccess]);
+useEffect(() => {
+  if (sessionStorage.getItem('loginSuccess') === 'true' ) {
+    setShowSuccess(true);
+    sessionStorage.removeItem('loginSuccess');
+
+    setTimeout(() => {
+      setShowSuccess(false);
+    }, 3000);
+  }
+}, [isAuthenticated]);
+  useEffect(() => {
+  if (sessionStorage.getItem('loggedOut') === 'true') {
+    setShowLogoutMessage(true);
+    sessionStorage.removeItem('loggedOut');
+    setTimeout(() => setShowLogoutMessage(false), 3000); // Ocultar en 3 seg
+    
+  }
+}, [isAuthenticated]);
+useEffect(() => {
+  console.log(user)
+}, [user]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen w-full">
@@ -40,6 +54,15 @@ export default function LandingPage() {
                 </div>
               </div>
             )}
+            {showLogoutMessage && (
+              <div className="absolute inset-0 bg-transparent bg-opacity-50 z-40 flex items-center justify-center">
+                <div className="bg-green-100 text-green-700 p-6 rounded-md shadow-md 
+                                transition-all duration-500 pointer-events-none select-none z-50">
+                  Se cerró sesión correctamente
+                </div>
+              </div>
+            )}
+
             <img className="rounded-2xl"src={imagenConsecionaria} alt="Imagen de consecionaria" />
            {!isAuthenticated && 
            <p className="flex items-center justify-center text-white p-4">¿No tenés una cuenta?</p>
@@ -80,6 +103,7 @@ export default function LandingPage() {
       content={"Tenemos autos de todas las marcas, colores y capacidades"}
       customButton={
             <button
+              onClick={() => navigate('/admin/catalogoVehiculos')}
               className="mb-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
             >
               Ver catálogo

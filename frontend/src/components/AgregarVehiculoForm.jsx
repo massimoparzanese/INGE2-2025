@@ -9,8 +9,12 @@ const AgregarVehiculo = () => {
     modelo: "",
     anio: "",
     patente: "",
-    estado: "",
-    imagenUrl: "",  // nuevo campo
+    foto: "",  // nuevo campo
+    precio:0,
+    sucursal:'',
+    politica: 0,
+    capacidad:0,
+    kms:0
   });
 
   const { agregarVehiculo, mensaje } = useAgregarVehiculo();
@@ -24,14 +28,18 @@ const AgregarVehiculo = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const exito = await agregarVehiculo(form);
-    if (exito) {
+    if (exito.status < 400) {
       setForm({
         marca: "",  
         modelo: "",
         anio: "",
         patente: "",
-        estado: "",
-        imagenUrl: "",
+        foto: "",
+        precio: 0,
+        sucursal:'',
+        politica: 0,
+        capacidad:0,
+        kms:0,
       });
       setMostrarFormulario(false);
     }
@@ -68,7 +76,7 @@ const AgregarVehiculo = () => {
             className="w-full p-2 border rounded"
             required
           />
-          <label htmlFor="Estado">Estado del vehiculo</label>
+          <label htmlFor="Estado">Anio</label>
           <input
             type="number"
             name="anio"
@@ -90,26 +98,43 @@ const AgregarVehiculo = () => {
             className="w-full p-2 border rounded"
             required
           />
-          <label htmlFor="Estado">Estado del vehiculo</label>
-          <select
-            name="estado"
-            value={form.estado}
+          <label htmlFor="precio">Precio por día (en USD)</label>
+          <input
+            type="number"
+            name="precio"
+            value={form.precio}
             onChange={handleChange}
+            placeholder="Precio"
             className="w-full p-2 border rounded"
             required
-          >
-            <option value="">Seleccione estado</option>
-            <option value="disponible">Disponible</option>
-            <option value="alquilado">Alquilado</option>
-            <option value="mantenimiento">Mantenimiento</option>
-          </select>
+          />
           <label htmlFor="Foto">Ingrese una imagen</label>
           <input
             type="url"
-            name="imagenUrl"
+            name="foto"
             value={form.imagenUrl}
             onChange={handleChange}
             placeholder="URL de la imagen"
+            className="w-full p-2 border rounded"
+            required
+          />
+          <label htmlFor="capacidad">Capacidad</label>
+          <input
+            type="number"
+            name="capacidad"
+            value={form.capacidad}
+            onChange={handleChange}
+            placeholder="capacidad"
+            className="w-full p-2 border rounded"
+            required
+          />
+          <label htmlFor="kms">Kilometraje</label>
+          <input
+            type="number"
+            name="kms"
+            value={form.kms}
+            onChange={handleChange}
+            placeholder="kilometraje"
             className="w-full p-2 border rounded"
             required
           />
@@ -121,7 +146,8 @@ const AgregarVehiculo = () => {
                   <label htmlFor="sucursal">Selecciona una sucursal:</label>
                     <select
                       id="sucursal"
-                      value={sucursalSeleccionada}
+                      name="sucursal"
+                      value={form.sucursal}
                       className="w-full p-2 border rounded"
                       onChange={handleChange}
                     >
@@ -135,7 +161,25 @@ const AgregarVehiculo = () => {
             </>
             
           )}
-          
+          <label htmlFor="politica">Politica de Reembolso</label>
+                    <select
+                      id="politica"
+                      name="politica"
+                      value={form.politica}
+                      className="w-full p-2 border rounded"
+                      onChange={handleChange}
+                    >
+                      <option value="">-- Seleccionar --</option>
+                      <option key={0} value={0}>
+                          0
+                        </option>
+                        <option key={20} value={20}>
+                          20
+                        </option>
+                        <option key={100} value={100}>
+                          100
+                        </option>
+                    </select>
           <button
             type="submit"
             className="bg-red-600 hover:bg-black text-white font-bold py-2 px-4 rounded transition duration-300 w-full"

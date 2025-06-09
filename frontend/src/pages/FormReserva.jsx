@@ -11,10 +11,15 @@ export default function FormReserva (){
   const [accept, setAccept] = useState(false);
   const [aceptarSucursal, setAceptarSucursal] = useState(false);
   const [vehicles, setVehicles] = useState([]);
+  const [vehiculoSeleccionado, setVehiculoSeleccionado] = useState(null);
+  const [aceptarVehiculo, setAceptarVehiculo] = useState(false);
   const navigate = useNavigate();
   const { isAuthenticated } = useContext(AuthContext);
   const handleSeleccionar = (sucursal) => {
     setSucursalSeleccionada(sucursal);
+  };
+  const handleSeleccionarVehiculo = (vehicle) => {
+    setVehiculoSeleccionado(vehicle);
   };
   useEffect(() => {
     if(!accept && !sucursalSeleccionada && !fechaInicio && !fechaFin) return;
@@ -67,7 +72,7 @@ export default function FormReserva (){
 
     return(
      
-    <div className="flex justify-center items-center min-h-screen ">
+    <div className="flex justify-center items-center min-h-screen pt-20 ">
     <div className="bg-green-50 rounded-lg shadow-lg max-w-lg w-full p-6 relative">
       <h2 className="text-xl font-semibold mb-4">Reservar un Vehículo</h2>
        {!accept ? (
@@ -135,29 +140,49 @@ export default function FormReserva (){
         )}
       </>
     ) : (
-      <div className="text-center">
-        <ul className="space-y-3 max-h-64 overflow-y-auto">
+      <div className="text-center p-10 ">
+        <ul className="space-y-5 max-h-[30rem] overflow-y-auto px-2">
           {vehicles.map(vehicle => (
             <li
-              key={vehicle.modelo + vehicle.kms} // Usá otra clave si no usás la patente
-              onClick={() => handleSeleccionar(vehicle)}
-              className="p-4 rounded-lg border cursor-pointer transition-colors border-gray-200 hover:bg-gray-100 flex gap-4"
+              key={vehicle.modelo + vehicle.kms}
+              onClick={() => handleSeleccionarVehiculo(vehicle)}
+              className={`p-5 rounded-xl cursor-pointer transition-colors flex gap-6 bg-white shadow-md
+                ${
+                  vehiculoSeleccionado?.patente === vehicle.patente
+                    ? 'border-2 border-blue-500 bg-blue-50'
+                    : 'border border-gray-200 hover:bg-gray-50'
+                }`}
             >
               <img
                 src={vehicle.foto}
                 alt={`Foto del ${vehicle.Modelo.marca} ${vehicle.modelo}`}
-                className="w-32 h-20 object-cover rounded"
+                className="w-36 h-24 object-cover rounded-md shadow-sm"
               />
-              <div>
-                <p className="font-medium text-lg">{vehicle.Modelo.marca} {vehicle.modelo}</p>
-                <p className="text-sm text-gray-600">Capacidad: {vehicle.capacidad} personas</p>
-                <p className="text-sm text-gray-600">Kilómetros: {vehicle.kms.toLocaleString()} km</p>
+              <div className="text-left">
+                <p className="font-semibold text-lg text-gray-800">
+                  {vehicle.Modelo.marca} {vehicle.modelo}
+                </p>
+                <p className="text-sm text-gray-700">💲 Precio p/día: {vehicle.precio} USD</p>
+                 <p className="text-sm text-gray-700">🕒 Año {vehicle.anio} </p>
+                <p className="text-sm text-gray-700">👥 Capacidad: {vehicle.capacidad} personas</p>
+                <p className="text-sm text-gray-700">🛣 Kilómetros: {vehicle.kms.toLocaleString()} km</p>
               </div>
             </li>
           ))}
         </ul>
 
+        {vehiculoSeleccionado && (
+          <div className="pt-6">
+            <button
+              className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+              onClick={() => setAceptarVehiculo(true)}
+            >
+              Registrar reserva
+            </button>
+          </div>
+        )}
       </div>
+
     )}
     {accept && vehicles.length === 0 && (
       <p>No hay vehículos en las fechas solicitadas</p>
