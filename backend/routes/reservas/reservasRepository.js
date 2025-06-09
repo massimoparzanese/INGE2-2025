@@ -58,44 +58,72 @@ export class reservasRepository {
         );
     }
     
-    static async crearReserva(reservaData, estadoData){
-        const {data : reserva, error: errorReserva } = await supabase 
+    static async crearReserva(vehiculo, fechaInicio, fechaFin, montoPorDia, email){
+
+        const {data : estadoReserva, error : errorEstadoReserva} = await supabase
+            .from('EstadoReserva')
+            .insert('activa')
+            .select();
+
+        if (errorEstadoReserva){
+            return {
+                status: 400,
+                message: "Error al insertar el estado de la reserva en la base de datos",
+                metaData: errorEstadoReserva,
+            };
+        }
+
+        const fechainicio = new Date(fechaInicio);
+        const fechafin = new Date(fechaFin);
+        const dias = Math.ceil((fechafin - fechainicio) / (1000 * 60 * 60 * 24));
+
+        const reserva = {
+            vehiculo : vehiculo,
+            fechainicio : fechaInicio,
+            fechafin : fechaFin,
+            monto: montoPorDia * dias,
+            persona: email 
+        }
+
+        const {data : reserva1, error : errorReserva } = await supabase 
             .from('Reserva')
-            .insert([reservaData])
-            .select
-            .single();
+            .insert(reserva)
+            .select();
 
         if (errorReserva) {
             return {
                 status: 400,
                 message: "Error al insertar la reserva en la base de datos",
                 metaData: errorReserva,
-        };
-    }
+            };
+        }
 
-        const estadoReserva = {
-            reserva: reserva.id, 
-            estado: estadoData.estado,
-            fechainicio: estadoData.fechainicio || reserva.fechainicio,
-            fechafin: estadoData.fechafin || reserva.fechafin
-        };
+        const reservaEstado = {
+            id : reserva1[0].id,
+            estado : 'activa',
+            fechainicio : fechaInicio,
+            fechafin : fechaFin
+        }
 
-        const { data: estado, error: errorEstado } = await supabase 
+
+        const {data : reserva_estado1, error : errorReservaEstado} = await supabase
             .from('reserva_estado')
-            .insert([estadoReserva])
-            .select
-            .single(); 
+            .insert(reservaEstado)
+            .select()
 
-        if (errorEstado) {
+        if (errorReservaEstado) {
             return {
                 status: 400,
-                message: "Error al insertar el estado de la reserva en la base de datos",
-                metaData: errorEstado,
-           };
-         }
+                message: "Error al insertar el reserva estado en la base de datos",
+                metaData: errorReserva,
+            };
+        }
 
-        return { reserva, estado};
+
+        return {
+            stauts: 200,
+            message: "Reserva exitosa",
+        };
     }
-
 
 }
