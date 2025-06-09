@@ -173,6 +173,12 @@ export class autenticacionRepository {
       return { status: 401, message: 'La contraseña es incorrecta' };
     }
 
+    // Si es el admin tiene un paso extra
+
+    if (userData[0].rol = 'admin') {
+        this.iniciarSesionAdmin(email);
+    }
+
     const { user, session } = authData;
      
       // Paso 3: Guardar token Y rol en cookies HTTP-only
@@ -195,6 +201,26 @@ export class autenticacionRepository {
       ;
           
 
+    }
+
+    static async iniciarSesionAdmin(email){
+      // Para que no cree una nueva cuenta  
+      
+      console.log('hola');
+      try {
+          const { data, error } = await supabase.auth.signInWithOtp({
+            email: email,
+            options: {
+                emailRedirectTo: 'http://localhost:5173/'
+            }
+          })
+      }
+      catch (e){
+        return {
+          status: 400,
+          message: 'Error en el inicio de sesion'
+        }
+      }
     }
 
     static async cerrarSesion(token , res){
