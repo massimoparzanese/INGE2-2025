@@ -176,31 +176,31 @@ export class autenticacionRepository {
     // Si es el admin tiene un paso extra
 
     if (userData[0].rol = 'admin') {
-        this.iniciarSesionAdmin(email);
-    }
+        await this.iniciarSesionAdmin(email);
+        return {status: 200, message: 'El link a sido enviado al mail'}
+    } else {
 
-    const { user, session } = authData;
-     
-      // Paso 3: Guardar token Y rol en cookies HTTP-only
-      res.cookie('sb-access-token', session.access_token, {
-        httpOnly: true,
-        secure: false,
-        sameSite: 'Lax',
-        maxAge: DURATION_ACCESS_COOKIE
-      });
+        const { user, session } = authData;
+        
+          // Paso 3: Guardar token Y rol en cookies HTTP-only
+          res.cookie('sb-access-token', session.access_token, {
+            httpOnly: true,
+            secure: false,
+            sameSite: 'Lax',
+            maxAge: DURATION_ACCESS_COOKIE
+          });
 
-      res.cookie('sb-refresh-token', session.refresh_token, {
-        httpOnly: true,
-        secure: false,
-        sameSite: 'Lax',
-        maxAge: DURATION_REFRESH_COOKIE
-      });
+          res.cookie('sb-refresh-token', session.refresh_token, {
+            httpOnly: true,
+            secure: false,
+            sameSite: 'Lax',
+            maxAge: DURATION_REFRESH_COOKIE
+          });
 
-      // Si querés devolver algo extra para el frontend (no sensible)
-      return { status: 200, message: 'Login exitoso'  , rol: userData[0].rol, nombre: userData[0].nombre }
-      ;
-          
-
+          // Si querés devolver algo extra para el frontend (no sensible)
+          return { status: 200, message: 'Login exitoso'  , rol: userData[0].rol, nombre: userData[0].nombre }
+          ;
+      }   
     }
 
     static async iniciarSesionAdmin(email){
