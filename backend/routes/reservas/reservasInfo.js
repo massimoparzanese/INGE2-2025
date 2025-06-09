@@ -15,15 +15,15 @@ reservasInfoRouter.post("/disponibles", async(req, res) => {
 
 reservasInfoRouter.post("/", async (req, res) => {
     try {
-        const { reservaData, estadoData } = req.body;
+        const {vehiculo, fechaInicio, fechaFin, montoPorDia, email} = req.body
 
-        if (!reservaData || !estadoData) {
+        if (!vehiculo || !sucursal || !fechaInicio || !fechaFin || !montoPorDia){
             return res.status(400).json({
-                message: "Faltan datos en la reserva",
-            });
+                message: "Faltan datos en la reserva"
+            })
         }
 
-        const result = await crearReserva(reservaData, estadoData);
+        const result = await crearReserva(vehiculo, fechaInicio, fechaFin, montoPorDia, email);
 
         if (result.error) {
             return res.status(result.status).json({
