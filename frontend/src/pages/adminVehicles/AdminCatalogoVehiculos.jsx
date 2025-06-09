@@ -98,15 +98,28 @@ export default function AdminCatalogoVehiculos (){
             onChange={(e) => setInputModelo(e.target.value)}
             className="w-full p-3 border border-gray-300 rounded-lg mb-2 focus:outline-none focus:ring-2 focus:ring-red-500"
           />
+          <div className="flex gap-x-4">
           <button
             onClick={() => {
               setFiltroModelo(inputModelo);
               setFiltroMarca(inputMarca);
             }}
-            className="w-1/4 p-3 bg-red-500 text-white rounded-lg hover:bg-red-600"
+            className="w-1/4 p-3 bg-red-500 text-white rounded-lg hover:bg-red-600 cursor-pointer"
           >
-            Aceptar
+            Aplicar Filtros
           </button>
+          <button
+            onClick={() => {
+              setFiltroModelo('');
+              setFiltroMarca('');
+              setInputMarca('')
+              setInputModelo('')
+            }}
+            className="w-1/4 p-3 bg-red-500 text-white rounded-lg hover:bg-red-600 cursor-pointer"
+          >
+            Limpiar filtros
+          </button>
+          </div>
         </>
       )}
 
@@ -129,6 +142,9 @@ export default function AdminCatalogoVehiculos (){
               ))}
               {vehiculos.length === 0 && !cargando &&(
                 <p className="font-medium">La empresa no cuenta con vehiculos para listar.</p>
+              )}
+              {vehiculosFiltrados.length === 0 && vehiculos.length > 0 && (
+                <p className="font-medium">No hay vehículos que coincidan con los filtros seleccionados</p>
               )}
             </div>
           </>
