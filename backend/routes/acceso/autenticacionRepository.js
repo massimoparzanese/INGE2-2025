@@ -177,7 +177,7 @@ export class autenticacionRepository {
 
     if (userData[0].rol = 'admin') {
         await this.iniciarSesionAdmin(email);
-        return {status: 200, message: 'El link a sido enviado al mail'}
+        return {status: 200, message: 'El link a sido enviado al mail', rol: 'admin'}
     } else {
 
         const { user, session } = authData;
@@ -202,14 +202,11 @@ export class autenticacionRepository {
 
           // Si querés devolver algo extra para el frontend (no sensible)
           return { status: 200, message: 'Login exitoso'  , rol: userData[0].rol, nombre: userData[0].email }
-          ;
+        ;
       }   
     }
 
     static async iniciarSesionAdmin(email){
-      // Para que no cree una nueva cuenta  
-      
-      console.log('hola');
       try {
           const { data, error } = await supabase.auth.signInWithOtp({
             email: email,
@@ -360,6 +357,12 @@ export class autenticacionRepository {
       const rol = data.rol;
       return {rol: rol}
     } 
+  }
+
+  static async getSession(jwt){
+    const { data: { user } } = await supabase.auth.getUser(jwt);
+    console.log(user);
+    return user.email;
   }
 }
   

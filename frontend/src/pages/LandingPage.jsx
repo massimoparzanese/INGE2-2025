@@ -6,12 +6,13 @@ import ProductCard from "../components/ProductCard";
 import { AuthContext } from "../context/AuthContextFunct";
 import { useLocation } from "react-router-dom";
 
+
 export default function LandingPage() {
   const location = useLocation();
   const [showSuccess, setShowSuccess] = useState(false);
   const [modalAbierto, setModalAbierto] = useState(false);
   const [showLogoutMessage, setShowLogoutMessage] = useState(false);
-  const { user, isAuthenticated } = useContext(AuthContext);
+  const { user, isAuthenticated, setIsAuthenticated, setRole, setUser } = useContext(AuthContext);
   const navigate = useNavigate();
    const handleAdminClick = () => {
     const text = isAuthenticated ? '/reserva' : '/registro';
@@ -36,9 +37,46 @@ useEffect(() => {
     
   }
 }, [isAuthenticated]);
-useEffect(() => {
-  console.log(user)
-}, [user]);
+
+
+  useEffect(() => {
+    console.log('valiationnn');
+      const hash = window.location.hash.substring(1); // elimina el "#"
+      const params = new URLSearchParams(hash);
+
+      const access_token = params.get("access_token");
+      const refresh_token = params.get("refresh_token");
+     if (access_token && refresh_token){
+         const createSesion = async(access_token, refresh_token) => { 
+            try {
+              const response = await fetch('http://localhost:3001/api/verify/create', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              credentials: 'include', // Para enviar y recibir cookies
+              body: JSON.stringify({ access_token, refresh_token }),
+              });
+  
+              const data = await response.json();
+              console.log(data);
+  
+              if (data.status < 400) {
+                setRole(data.rol);
+                setUser(data.nombre)
+                setIsAuthenticated(true);
+                sessionStorage.setItem('loginSuccess', 'true');  
+                console.log('if')
+              }
+  
+            } catch (e){
+                console.log(e);
+            }
+        }
+  
+        createSesion(access_token, refresh_token);
+     }
+  }, []);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen w-full">

@@ -33,13 +33,15 @@ export default function LoginPage() {
         setError(data.message);
         return;
       }
-      if(data.status < 400){
+      if(data.status < 400 && data.rol !== 'admin'){
         setRole(data.rol);
         setUser(data.nombre)
         setIsAuthenticated(true);
         sessionStorage.setItem('loginSuccess', 'true');
         console.log(data.nombre)
         navigate('/');
+      } else {
+        setMensaje(data.message);
       }
     } catch (err) {
       console.error('Error al conectar:', err);
@@ -63,7 +65,13 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit} className="mt-5 mx-auto">
           <input required className="w-full bg-[#FEFFFB] border-none p-4 rounded-2xl mt-4 shadow-blog-main border-transparent focus:outline-none focus:border-[#12B1D1]" type="email" name="email" id="email" onChange={(e) => setUsername(e.target.value)} placeholder="E-mail" />
           <input required className="w-full bg-[#FEFFFB] border-none p-4 rounded-2xl mt-4 shadow-blog-main border-transparent focus:outline-none focus:border-[#12B1D1]" type="password" name="password" id="password" onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
-          {<p className="text-red-500 text-sm mt-4 mb-6">{error}</p>}
+          
+          {error !== '' ? (
+            <p className="text-red-500 text-sm mt-4 mb-6">{error}</p>
+            ) : (
+            <p className="text-green-500 text-sm mt-4 mb-6">{mensaje}</p>
+          )}
+          
           <Link
             to="/resetPassword"
             className="text-green-600 hover:underline cursor-pointer"
