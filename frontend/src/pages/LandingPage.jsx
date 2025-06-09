@@ -19,7 +19,7 @@ export default function LandingPage() {
   };
 
 useEffect(() => {
-  if (sessionStorage.getItem('loginSuccess') === 'true') {
+  if (sessionStorage.getItem('loginSuccess') === 'true' ) {
     setShowSuccess(true);
     sessionStorage.removeItem('loginSuccess');
 
@@ -27,14 +27,18 @@ useEffect(() => {
       setShowSuccess(false);
     }, 3000);
   }
-}, []);
+}, [isAuthenticated]);
   useEffect(() => {
-  if (location.state?.loggedOut) {
+  if (sessionStorage.getItem('loggedOut') === 'true') {
     setShowLogoutMessage(true);
-    const timer = setTimeout(() => setShowLogoutMessage(false), 3000); // Ocultar en 3 seg
-    return () => clearTimeout(timer);
+    sessionStorage.removeItem('loggedOut');
+    setTimeout(() => setShowLogoutMessage(false), 3000); // Ocultar en 3 seg
+    
   }
-}, [location.state]);
+}, [isAuthenticated]);
+useEffect(() => {
+  console.log(user)
+}, [user]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen w-full">

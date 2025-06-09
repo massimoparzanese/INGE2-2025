@@ -32,7 +32,8 @@ export default function Navbar() {
             setIsAuthenticated(false);
             setUser(null);
             setRole("");
-            navigate('/', { state: { loggedOut: true } });
+            sessionStorage.setItem('loggedOut', 'true');
+            navigate('/');
             console.log(data);
           }
         }
@@ -81,7 +82,7 @@ export default function Navbar() {
                 }`}
               />
               <UserCircle className="h-6 w-6" />
-              <span className="hidden md:inline">Mi cuenta</span>
+              <span className="hidden md:inline">{user ? user : 'Mi cuenta'}</span>
             </div>
 
             <div

@@ -38,6 +38,7 @@ export default function LoginPage() {
         setUser(data.nombre)
         setIsAuthenticated(true);
         sessionStorage.setItem('loginSuccess', 'true');
+        console.log(data.nombre)
         navigate('/');
       }
     } catch (err) {
