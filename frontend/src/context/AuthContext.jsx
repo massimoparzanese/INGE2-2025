@@ -22,7 +22,7 @@ export default function AuthContextProvider({ children }) {
         }
         const data = await response.json();
         setIsAuthenticated(true);
-        setUser(data)
+        setUser(data.nombre)
         setRole(data.role);
       } catch (e) {
          console.log('Error al comunicarse con el servidor', e);
