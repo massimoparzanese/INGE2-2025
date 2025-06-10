@@ -225,7 +225,7 @@ export default function FormReserva (){
           fechaInicio,
           fechaFin,
           monto: calcularMonto(),
-          email: user.email,
+          email: user,
         }),
       });
 
