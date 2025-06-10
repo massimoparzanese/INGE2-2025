@@ -331,16 +331,16 @@ export class autenticacionRepository {
     // Envia código al correo
     // const { error: otpError } = await supabase.auth.signInWithOtp({ email });
     const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: 'http://localhost:5173/resetPassword/newPassword',
+      redirectTo: 'http://localhost:5173/newPassword',
     })
 
     if (error) {
-      return res.status(500).json({ error: 'Error al enviar el código al mail' });
+      return {status: 500,  error: 'Error al enviar el código al mail' };
     }
     return  { status: 200, message: 'El código fue enviado al mail ingresado' };
 
   } catch (err) {
-    return res.status(500).json({ error: 'Ocurrió un error inesperado' });
+    return { status: 500, message: 'Ocurrió un error inesperado' };
   }
   }
 
@@ -363,6 +363,21 @@ export class autenticacionRepository {
     const { data: { user } } = await supabase.auth.getUser(jwt);
     console.log(user);
     return user.email;
+  }
+
+  static async updatePassword(email, newPassword){
+    try{
+      console.log(email, newPassword)
+    const { data, error } = await supabase.auth
+         .updateUser({ email: email , password: newPassword })
+         if(error){
+          throw new Error('pINGA');
+         }
+    } catch (e){
+      console.log(e);
+      return {status: 401, message: 'Ocurrio un error actualizando la password'}
+    }
+    return {status: 200, message: 'Se actualizo la contrasena correctamente'}
   }
 }
   

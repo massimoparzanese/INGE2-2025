@@ -12,6 +12,7 @@ import AdminCatalogoVehiculos from "./pages/adminVehicles/AdminCatalogoVehiculos
 import ResetPasswordPage from "./pages/ResetPasswordPage.jsx";
 import EditarVehiculoFormWrapper from "./pages/adminVehicles/EditarVehiculoFormWrapper.jsx";
 import Verification from "./components/Verification.jsx";
+import UpdatePsw from "./pages/UpdatePsw";
 
 
 export default function App() {
@@ -33,6 +34,7 @@ export default function App() {
           <Route path="/admin/catalogoVehiculos" element={<AdminCatalogoVehiculos/>}/>
           <Route path="/resetPassword" element={<ResetPasswordPage/>}/>
           <Route path="/admin/editar-vehiculo/:patente" element={<EditarVehiculoFormWrapper />} />
+          <Route path="/newPassword" element={<UpdatePsw/>}/>
         </Routes>
         <Footer/>
        </AuthContextProvider>
