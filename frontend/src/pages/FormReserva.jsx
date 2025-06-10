@@ -95,10 +95,9 @@ export default function FormReserva (){
       });
 
       const data = await response.json();
-
-      if (!data?.id) {
-        alert("Error al registrar la reserva.");
-        return;
+      if (data.status >= 400) {
+        console.log(data)
+        return
       }
 
       // 2. Crear preferencia de pago

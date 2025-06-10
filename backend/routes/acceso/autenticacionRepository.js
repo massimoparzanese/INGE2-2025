@@ -175,7 +175,7 @@ export class autenticacionRepository {
 
     // Si es el admin tiene un paso extra
 
-    if (userData[0].rol = 'admin') {
+    if (userData[0].rol === 'admin') {
         await this.iniciarSesionAdmin(email);
         return {status: 200, message: 'El link a sido enviado al mail', rol: 'admin'}
     } else {

@@ -23,16 +23,16 @@ reservasInfoRouter.post("/", async (req, res) => {
             })
         }
 
-        const result = await crearReserva(vehiculo, fechaInicio, fechaFin, monto, email);
-
-        if (result.error) {
+        const result = await reservasRepository.crearReserva(vehiculo, fechaInicio, fechaFin, monto, email);
+        console.log(result);
+        if (result.status >= 400) {
             return res.status(result.status).json({
                 message: result.message,
                 metaData: result.metaData,
             });
         }
 
-        res.status(201).json(result);
+        res.send(result);
     } catch (error) {
         res.status(500).json({
             message: "Error interno al crear una reserva",
