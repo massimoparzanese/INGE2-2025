@@ -78,6 +78,51 @@ export default function FormReserva (){
 
     }, [isAuthenticated, navigate]);
 
+    const registrarReservaEIniciarPago = async () => {
+    try {
+      // 1. Crear la reserva en el backend
+      const response = await fetch("http://localhost:3001/reservas", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: 'include',
+        body: JSON.stringify({
+          vehiculo: vehiculoSeleccionado.patente,
+          fechaInicio,
+          fechaFin,
+          monto: calcularMonto(),
+          email: user,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!data?.id) {
+        alert("Error al registrar la reserva.");
+        return;
+      }
+
+      // 2. Crear preferencia de pago
+      const pagoResponse = await fetch("http://localhost:3001/api/pagos/crear-preferencia", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idReserva: data.id }),
+      });
+
+      const pagoData = await pagoResponse.json();
+
+      if (pagoData.id) {
+        // 3. Redirigir a Mercado Pago
+        window.location.href = `https://www.mercadopago.com.ar/checkout/v1/redirect?pref_id=${pagoData.id}`;
+      } else {
+        alert("Error al generar el pago.");
+      }
+
+    } catch (error) {
+      console.error("Error en la reserva o pago:", error);
+      alert("Hubo un problema al procesar la reserva y el pago.");
+    }
+  };
+  
     return(
      
     <div className="flex justify-center items-center min-h-screen pt-20 ">
@@ -213,49 +258,6 @@ export default function FormReserva (){
   
   )
 
-  const registrarReservaEIniciarPago = async () => {
-    try {
-      // 1. Crear la reserva en el backend
-      const response = await fetch("http://localhost:3001/reservas", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: 'include',
-        body: JSON.stringify({
-          vehiculo: vehiculoSeleccionado.patente,
-          fechaInicio,
-          fechaFin,
-          monto: calcularMonto(),
-          email: user,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!data?.id) {
-        alert("Error al registrar la reserva.");
-        return;
-      }
-
-      // 2. Crear preferencia de pago
-      const pagoResponse = await fetch("http://localhost:3001/api/pagos/crear-preferencia", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ idReserva: data.id }),
-      });
-
-      const pagoData = await pagoResponse.json();
-
-      if (pagoData.id) {
-        // 3. Redirigir a Mercado Pago
-        window.location.href = `https://www.mercadopago.com.ar/checkout/v1/redirect?pref_id=${pagoData.id}`;
-      } else {
-        alert("Error al generar el pago.");
-      }
-
-    } catch (error) {
-      console.error("Error en la reserva o pago:", error);
-      alert("Hubo un problema al procesar la reserva y el pago.");
-    }
-  };
+  
 }
 
