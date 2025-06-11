@@ -1,6 +1,6 @@
 import cors from "cors";
 
-const allowedOrigins = ["http://localhost:5173"];
+const allowedOrigins = ["http://localhost:5173","https://2995-181-231-152-22.ngrok-free.app/"];
 
 const corsMiddleware = cors({
   origin: (origin, callback) => {
