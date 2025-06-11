@@ -3,6 +3,7 @@ dotenv.config();
 import { MercadoPagoConfig, Preference} from "mercadopago";
 import supabase from "../supabaseClient.js";
 import { estadoReservaRepository } from "../estadoReserva/estadoReservaRepository.js";
+import { ReservaEstadoRepository } from "../reservaEstado/reservaEstadoRepository.js";
 const mercadopago = new MercadoPagoConfig({
   accessToken: process.env.MP_ACCESS_TOKEN,
 });
@@ -68,6 +69,7 @@ export const verificarPago = async (req, res) => {
       let result;
       if (payment.status === "rejected") {
         result = await estadoReservaRepository.insertarEstado('cancelada')
+        result = await ReservaEstadoRepository.cambiarEstado(idReserva, 'cancelada') //llamo cambiar estado
       }
 
 

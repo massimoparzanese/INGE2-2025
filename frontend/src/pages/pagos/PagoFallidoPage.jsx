@@ -22,7 +22,7 @@ export default function PagoFallido(){
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold text-red-600">¡Pago fallido!</h1>
-      <p>Gracias por tu compra. En breve te llegará la confirmación.</p>
+      <p>Ocurrió un error. Vuelva a intentarlo en unos minutos.</p>
     </div>
   );
 }

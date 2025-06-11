@@ -25,7 +25,8 @@ export class vehiculosRepository {
                 nombre
             )
             )
-        `);
+        `)
+        .eq('eliminado', false);
         if (error)
             return {
                 status: 400,
@@ -54,7 +55,8 @@ export class vehiculosRepository {
             marca
             )
         `)
-        .eq('sucursal', sucursal);
+        .eq('sucursal', sucursal)
+        .eq('eliminado', false);;
         if(error)
            return {
                     status: 400,
@@ -69,14 +71,13 @@ export class vehiculosRepository {
     }
 
    static async eliminarVehiculo(patente){
-        //Verifico si tiene o no reservas activas, que lo puse como regla de negocio
         const hoy = new Date().toISOString();
 
         const { data: reservas, error: errorReservas } = await supabase
-        .from("Reserva")
-        .select("*")
-        .eq("vehiculo", patente)
-        .gte("fechafin", hoy);
+            .from("Reserva")
+            .select("*")
+            .eq("vehiculo", patente)
+            .gte("fechafin", hoy);
 
         if(errorReservas){
             return {
@@ -94,17 +95,16 @@ export class vehiculosRepository {
             };
         }
 
-        //Verifico si el vehículo está en uso usando las tablas EstadoVehiculo y vehiculo_estado
         const { data: estadoData, error: errorEstado } = await supabase
-        .from("vehiculo_estado")
-        .select(`
-            idauto,
-            EstadoVehiculo: idestado (
-                estado
-            )
-        `)
-        .eq("idauto", patente)
-        .maybeSingle();
+            .from("vehiculo_estado")
+            .select(`
+                idauto,
+                EstadoVehiculo: idestado (
+                    estado
+                )
+            `)
+            .eq("idauto", patente)
+            .maybeSingle();
 
         if (errorEstado) {
             return {
@@ -114,7 +114,6 @@ export class vehiculosRepository {
             };
         }
 
-        
         if (estadoData?.EstadoVehiculo?.estado?.toLowerCase() === "en uso") {
             return {
                 status: 400,
@@ -123,26 +122,26 @@ export class vehiculosRepository {
             };
         }
 
-        //Elimino el vehículo
+        // Eliminación lógica
         const { error: errorEliminar } = await supabase
-        .from("Vehiculo")
-        .delete()
-        .eq("patente", patente) //borre el .select()
+            .from("Vehiculo")
+            .update({ eliminado: true })
+            .eq("patente", patente);
+
         if (errorEliminar){
-            console.log(errorEliminar)
             return {
                 status: 500,
-                message: "Error al eliminar el vehiculo",
+                message: "Error al eliminar lógicamente el vehiculo",
                 metaData: errorEliminar,
             };
         }
 
         return {
             status: 200,
-            message: `Vehiculo con patente ${patente} eliminado exitosamente`,
+            message: `Vehículo con patente ${patente} eliminado lógicamente.`,
         };
-
     }
+
 
     //editar vehiculo
     static async editarVehiculo (patente, nuevosDatos){
