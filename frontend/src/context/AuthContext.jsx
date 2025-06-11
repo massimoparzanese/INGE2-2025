@@ -6,7 +6,6 @@ export default function AuthContextProvider({ children }) {
   const [isLoading, setIsLoading] = useState(true); // Nuevo estado de carga
   const [role, setRole] = useState("");
   const [user, setUser] = useState(null);
-  const [auxUser, setAuxUser] = useState(null);
   useEffect(() => {
     const TOKEN_EXPIRATION_TIME = 60 * 60 * 1000; // 50 minutos en ms
     const TIME_FOR_VERIFY = 10 * 60 * 1000;
@@ -61,7 +60,7 @@ export default function AuthContextProvider({ children }) {
 
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, isLoading, role, setRole, user, setUser, auxUser, setAuxUser }}>
+    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, isLoading, role, setRole, user, setUser }}>
       {children}
     </AuthContext.Provider>
   );

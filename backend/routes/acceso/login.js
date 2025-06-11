@@ -37,18 +37,20 @@ loginInfoRouter.post('/verificar-email', async (req, res) => {
 });
 
 loginInfoRouter.post('/actualizar-psw', async (req, res) => {
+  console.log('llego al end')
   const { access_token, new_password } = req.body;
 
-  // Crear un cliente temporal con el token del usuario
-  const supabaseUser = supabase.auth.setAuth(access_token);
+  if (!access_token || !new_password) {
+    return res.status(400).json({ error: 'Faltan datos requeridos' });
+  }
 
-  const { data, error } = await supabaseUser.updateUser({
-    password: new_password,
-  });
-
-  if (error) return res.status(400).json({ error: error.message });
-
-  return res.json({ message: 'Contraseña actualizada correctamente' });
+  try {
+    await autenticacionRepository.updatePsw(access_token, new_password);
+    res.json({ message: 'Contraseña actualizada con éxito' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error actualizando la contraseña' });
+  }
 });
 
 

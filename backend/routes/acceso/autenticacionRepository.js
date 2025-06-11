@@ -100,7 +100,7 @@ export class autenticacionRepository {
        if (password.length < 6) {
             return { 
                 status: 400,
-                error: 'La contraseña es válido' }; 
+                error: 'La contraseña es invalida' }; 
         }
 
 
