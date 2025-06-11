@@ -18,13 +18,14 @@ export default function ResetPasswordPage (){
                 body: JSON.stringify({ email: username}),
             });
             const data = await response.json();
-            console.log(data)
-            if(!response.ok && data.status > 400 ){
-                setError('Error en la verificacion del usuario')
-                setMensaje(data.error)
-            } else {
-                setMensaje(data.message)
-            }
+            console.log(JSON.stringify(data))
+            if (!response.ok || data.status >= 400) {
+                setError(data.error || 'Error en la verificación del usuario');
+                setMensaje('');
+                } else {
+                setMensaje(data.message || 'Correo enviado correctamente');
+                setError('');
+                }
     }
 
     return ( 

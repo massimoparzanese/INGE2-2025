@@ -15,6 +15,8 @@ import loginInfoRouter from "./routes/acceso/login.js"
 import logoutInfoRouter from "./routes/acceso/logout.js";
 
 import pagosRoutes from "./routes/pago/pagosRoutes.js";
+import { estadoReservaRepository } from "./routes/estadoReserva/estadoReservaRepository.js";
+import estadoReservaInfoRouter from "./routes/reservaEstado/reservaEstadoInfo.js";
 
 const app = express();
 const PORT = 3001;
@@ -30,6 +32,7 @@ app.use("/vehiculos", autosInfo);
 
 // Reservas
 app.use("/reservas", reservasInfoRouter);
+app.use("/estado", estadoReservaInfoRouter);
 
 // Usuarios
 app.use("/acceso" , loginInfoRouter);

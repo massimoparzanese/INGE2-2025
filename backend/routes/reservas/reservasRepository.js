@@ -115,4 +115,42 @@ export class reservasRepository {
         };
     }
 
+    static async obtenerReservas(email){
+        const { data, error } = await supabase
+        .from('Reserva')
+        .select(`
+            *,
+            Vehiculo (
+            politica,
+            capacidad,
+            kms,
+            foto,
+            patente,
+            sucursal,
+            precio,
+            anio,
+            Modelo (
+                nombre,
+                marca,
+                anio
+            )
+            ),
+            reserva_estado (
+                reserva,
+                estado
+            )
+        `)
+     .eq('persona', email);
+
+                console.log(error)
+            if (error) {
+            return { status: 400, message: 'error obteniendo reservas del usuario' };
+            }
+
+            return { status: 200, data };
+
+
+
+    }
+
 }

@@ -112,6 +112,14 @@ export default function Navbar() {
                       Cerrar sesión
                     </Link>
                   )}
+                  {isAuthenticated && (
+                    <Link
+                      to="/misReservas"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-xl"
+                    >
+                      Ver historial de reservas
+                    </Link>
+                  )}
                 </li>
               </ul>
             </div>

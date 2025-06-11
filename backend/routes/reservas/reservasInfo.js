@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { reservasRepository } from "./reservasRepository.js";
+import { ReservaEstadoRepository } from "../reservaEstado/reservaEstadoRepository.js";
 const reservasInfoRouter = Router();
 
 reservasInfoRouter.post("/disponibles", async(req, res) => {
@@ -39,6 +40,23 @@ reservasInfoRouter.post("/", async (req, res) => {
             metaData: error.message,
         });
     }
+});
+
+reservasInfoRouter.post("/:email", async (req, res) => {
+    try{
+        const email = req.params.email;
+
+        if (!email) {
+            return res.status(400).json({ error: 'Email requerido' });
+        }
+        const data = await reservasRepository.obtenerReservas(email);
+        console.log(data)
+        res.send(data);
+    }
+    catch (err){
+        res.status(401).json({err})
+    }
+
 });
 
 export default reservasInfoRouter;
