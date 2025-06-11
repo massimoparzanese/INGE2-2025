@@ -1,70 +1,68 @@
 import { useState, useEffect } from "react";
-import { useContext } from "react";
-import { AuthContext } from '../context/AuthContextFunct';
-import { useNavigate } from 'react-router-dom';
 
-export default function ResetPasswordPage (){
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const [mensaje, setMensaje] = useState('');
-    const {auxUser, setAuxUser} = useContext(AuthContext);
-    const navigate = useNavigate();
-     
-    const handleSubmit = async (e) => {
-            e.preventDefault();
-            setMensaje('');
-            setError('');
+export default function UpdatePassword() {
+  const [accessToken, setAccessToken] = useState(null);
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState(null);
 
-            try {
-            const response = await fetch('http://localhost:3001/acceso/actualizar-email', {
-                method: 'POST',
-                headers: {
-                'Content-Type': 'application/json',
-                },
-                credentials: 'include', // Para enviar y recibir cookies
-                body: JSON.stringify({ user: sessionStorage.getItem('email') , password}),
-            });
-            const data = await response.json();
-            if(!response.ok && data.status < 400){
-                setError(response.message);
-            }
-            else{
-                sessionStorage.removeItem('email');
-                setMensaje(data)
-                setAuxUser(null)
-                console.log(mensaje)
-                navigate('/login');
-            }
-            
-            }catch(err){
-                console.log(err);
-            }
+  // Extraer el access_token del hash de la URL
+  useEffect(() => {
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const token = hashParams.get("access_token");
+    if (token) setAccessToken(token);
+    else setMessage("No se encontró el token de acceso.");
+  }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!password || !accessToken) return;
+
+    const response = await fetch("/acceso/actualizar-psw", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ access_token: accessToken, new_password: password }),
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      setMessage("✅ Contraseña actualizada correctamente.");
+    } else {
+      setMessage("❌ Error: " + result.error);
     }
-    useEffect(() => {
-        console.log(sessionStorage.getItem('email'))
-      }, []);
-    return (
-        <section className="min-h-screen bg-cover bg-center flex flex-col items-center justify-center px-4">
-        <div className="max-w-md bg-gradient-to-t from-[#24222B] to-[#19171e] rounded-3xl p-8 pt-20 border-4 border-[#24222B] shadow-blog-main m-5 mx-auto">
-           <h1 className="text-left text-[#FEFFFB] font-poppins text-4xl">Actualizar mi contraseña</h1>
-            <form className="mt-5 mx-auto" onSubmit={handleSubmit}>
-            <label htmlFor="password"className="text-white">Ingrese nueva contraseña:</label>
-            <input required className="w-full bg-[#FEFFFB] border-none p-4 rounded-2xl mt-4 shadow-blog-main border-transparent focus:outline-none focus:border-[#12B1D1]" type="password" name="password" id="password" onChange={(e) => setPassword(e.target.value)} placeholder="contraseña" />
-            
-            {error !== '' ? (
-            <p className="text-red-500 text-sm mt-4 mb-6">{error}</p>
-            ) : (
-            <p className="text-green-500 text-sm mt-4 mb-6">{mensaje}</p>
-            )}
+  };
 
-            <button type="submit" className="w-full bg-[#CDA053] text-[#FEFFFB] cursor-pointer font-bold py-2 px-4 rounded-2xl">
-                    Actualizar mi contraseña
-            </button>
-            </form>
-            <div className="mt-16">
-                
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+      <div className="max-w-md w-full bg-white p-8 rounded-2xl shadow-lg">
+        <h2 className="text-2xl font-bold mb-4">Actualizar contraseña</h2>
+
+        {message && <div className="mb-4 text-sm text-gray-700">{message}</div>}
+
+        {accessToken && (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Nueva contraseña
+              </label>
+              <input
+                type="password"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring focus:border-blue-500"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
             </div>
-        </div>
-        </section>
-    )
+
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white py-2 px-4 rounded-xl hover:bg-blue-700"
+            >
+              Cambiar contraseña
+            </button>
+          </form>
+        )}
+      </div>
+    </div>
+  );
 }

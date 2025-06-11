@@ -365,19 +365,22 @@ export class autenticacionRepository {
     return user.email;
   }
 
-  static async updatePassword(email, newPassword){
-    try{
-      console.log(email, newPassword)
-    const { data, error } = await supabase.auth
-         .updateUser({ email: email , password: newPassword })
-         if(error){
-          throw new Error('pINGA');
-         }
-    } catch (e){
-      console.log(e);
-      return {status: 401, message: 'Ocurrio un error actualizando la password'}
+  static async updatePsw(access_token, new_password) {
+    const { data: user, error: getUserError } = await supabase.auth.getUser(access_token);
+
+    if (getUserError || !user) {
+      throw new Error('Token inválido o expirado');
     }
-    return {status: 200, message: 'Se actualizo la contrasena correctamente'}
+
+    const userId = user.user.id;
+
+    const { error } = await supabase.auth.admin.updateUserById(userId, {
+      password: new_password,
+    });
+
+    if (error) {
+      throw new Error('Error actualizando contraseña: ' + error.message);
+    }
   }
 }
   
