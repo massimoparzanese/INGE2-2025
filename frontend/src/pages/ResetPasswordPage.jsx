@@ -1,12 +1,9 @@
 import { useState } from "react";
-import { useContext } from "react";
-import { AuthContext } from '../context/AuthContextFunct';
 
 export default function ResetPasswordPage (){
     const [username, setUsername] = useState('');
     const [error, setError] = useState('');
     const [mensaje, setMensaje] = useState('');
-    const {setAuxUser} = useContext(AuthContext);
     
     const handleSubmit = async (e) => {
             e.preventDefault();
@@ -26,7 +23,6 @@ export default function ResetPasswordPage (){
                 setError('Error en la verificacion del usuario')
                 setMensaje(data.error)
             } else {
-                sessionStorage.setItem('email', username);
                 setMensaje(data.message)
             }
     }

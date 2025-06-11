@@ -17,12 +17,11 @@ export default function UpdatePassword() {
     e.preventDefault();
     if (!password || !accessToken) return;
 
-    const response = await fetch("/acceso/actualizar-psw", {
+    const response = await fetch("http://localhost:3001/acceso/actualizar-psw", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ access_token: accessToken, new_password: password }),
     });
-
     const result = await response.json();
 
     if (response.ok) {
