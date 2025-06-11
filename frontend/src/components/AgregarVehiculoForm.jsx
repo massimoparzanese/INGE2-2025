@@ -76,7 +76,7 @@ const AgregarVehiculo = () => {
             className="w-full p-2 border rounded"
             required
           />
-          <label htmlFor="Estado">Anio</label>
+          <label htmlFor="Estado">Año</label>
           <input
             type="number"
             name="anio"

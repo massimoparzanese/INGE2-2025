@@ -14,7 +14,7 @@ export class estadoVehiculoRepository {
         if (!estadoExiste) {
             const { error: errorInsertEstado } = await supabase
             .from("EstadoVehiculo")
-            .insert({ estado: estadoInicial });
+            .insert({ estado: estado });
 
             if (errorInsertEstado) {
             return { status: 500, message: "Error al insertar estado", metaData: errorInsertEstado };
