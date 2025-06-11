@@ -13,6 +13,10 @@ export default function FormReserva (){
   const [vehicles, setVehicles] = useState([]);
   const [vehiculoSeleccionado, setVehiculoSeleccionado] = useState(null);
   const [aceptarVehiculo, setAceptarVehiculo] = useState(false);
+  const [agregarConductor, setAgregarConductor] = useState(false);
+  const [dniConductor, setDniConductor] = useState("");
+  const [nombreConductor, setNombreConductor] = useState("");
+  const [fechaNacimientoConductor, setFechaNacimientoConductor] = useState(""); // solo para validación
   const navigate = useNavigate();
   const { isAuthenticated } = useContext(AuthContext);
   const { user } = useContext(AuthContext);
@@ -21,8 +25,8 @@ export default function FormReserva (){
     (new Date(fechaFin) - new Date(fechaInicio)) / (1000 * 60 * 60 * 24)
   );
   const precioPorDia = vehiculoSeleccionado?.precio || 0;
-  return dias * precioPorDia;
-};
+    return dias * precioPorDia;
+  };
   const handleSeleccionar = (sucursal) => {
     setSucursalSeleccionada(sucursal);
   };
@@ -80,49 +84,80 @@ export default function FormReserva (){
     }, [isAuthenticated, navigate]);
 
     const registrarReservaEIniciarPago = async () => {
-    try {
-      // 1. Crear la reserva en el backend
-      const response = await fetch("http://localhost:3001/reservas", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: 'include',
-        body: JSON.stringify({
+      try {
+
+        console.log("📅 Fecha de nacimiento:", fechaNacimientoConductor);
+console.log("🧾 DNI:", dniConductor);
+console.log("🧾 Nombre:", nombreConductor);
+        if (agregarConductor) {
+        if (!dniConductor || !nombreConductor || !fechaNacimientoConductor) {
+          alert("Por favor, complete todos los datos del conductor.");
+          return;
+        }
+
+        const nacimiento = new Date(fechaNacimientoConductor);
+        const hoy = new Date();
+        const edad = hoy.getFullYear() - nacimiento.getFullYear();
+        const mes = hoy.getMonth() - nacimiento.getMonth();
+        const dia = hoy.getDate() - nacimiento.getDate();
+
+        const esMenor = edad < 18 || (edad === 18 && (mes < 0 || (mes === 0 && dia < 0)));
+
+        if (esMenor) {
+          alert("El conductor debe ser mayor de 18 años.");
+          return;
+        }
+      }
+
+
+        const reservaPayload = {
           vehiculo: vehiculoSeleccionado.patente,
           fechaInicio,
           fechaFin,
           monto: calcularMonto(),
           email: user,
-        }),
-      });
+          ...(agregarConductor && {
+            dniConductor,
+            nombreConductor,
+          }),
+        };
 
-      const data = await response.json();
+        console.log("📤 Payload enviado al backend:", reservaPayload);
 
-      if (!data?.id) {
-        alert("Error al registrar la reserva.");
-        return;
+        const response = await fetch("http://localhost:3001/reservas", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(reservaPayload),
+        });
+
+        const data = await response.json();
+
+        if (!data?.id) {
+          alert("Error al registrar la reserva.");
+          return;
+        }
+
+        const pagoResponse = await fetch("http://localhost:3001/api/pagos/crear-preferencia", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ idReserva: data.id }),
+        });
+
+        const pagoData = await pagoResponse.json();
+
+        if (pagoData.id) {
+          window.location.href = `https://www.mercadopago.com.ar/checkout/v1/redirect?pref_id=${pagoData.id}`;
+        } else {
+          alert("Error al generar el pago.");
+        }
+
+      } catch (error) {
+        console.error("Error en la reserva o pago:", error);
+        alert("Hubo un problema al procesar la reserva y el pago.");
       }
+    };
 
-      // 2. Crear preferencia de pago
-      const pagoResponse = await fetch("http://localhost:3001/api/pagos/crear-preferencia", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ idReserva: data.id }),
-      });
-
-      const pagoData = await pagoResponse.json();
-
-      if (pagoData.id) {
-        // 3. Redirigir a Mercado Pago
-        window.location.href = `https://www.mercadopago.com.ar/checkout/v1/redirect?pref_id=${pagoData.id}`;
-      } else {
-        alert("Error al generar el pago.");
-      }
-
-    } catch (error) {
-      console.error("Error en la reserva o pago:", error);
-      alert("Hubo un problema al procesar la reserva y el pago.");
-    }
-  };
   
     return(
      
@@ -226,15 +261,55 @@ export default function FormReserva (){
         </ul>
 
         {vehiculoSeleccionado && (
-          <div className="pt-6">
-            <button
-              className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
-              onClick={() => setAceptarVehiculo(true)}
-            >
-              Registrar reserva
-            </button>
-          </div>
+          <>
+            <div className="pt-6">
+              <button
+                className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                onClick={() => setAceptarVehiculo(true)}
+              >
+                Registrar reserva
+              </button>
+            </div>
+
+            <div className="pt-4 text-left">
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={agregarConductor}
+                  onChange={(e) => setAgregarConductor(e.target.checked)}
+                />
+                ¿Desea agregar un conductor?
+              </label>
+            </div>
+
+            {agregarConductor && (
+              <div className="pt-4 space-y-4">
+                <input
+                  type="text"
+                  placeholder="DNI del conductor"
+                  value={dniConductor}
+                  onChange={(e) => setDniConductor(e.target.value)}
+                  className="w-full p-2 border rounded"
+                />
+                <input
+                  type="text"
+                  placeholder="Nombre completo del conductor"
+                  value={nombreConductor}
+                  onChange={(e) => setNombreConductor(e.target.value)}
+                  className="w-full p-2 border rounded"
+                />
+                <input
+                  type="date"
+                  placeholder="Fecha de nacimiento"
+                  value={fechaNacimientoConductor || ""}
+                  onChange={(e) => setFechaNacimientoConductor(e.target.value)}
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+            )}
+          </>
         )}
+
 
         {aceptarVehiculo && (
           <div className="pt-4">
