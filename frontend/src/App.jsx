@@ -15,6 +15,7 @@ import Verification from "./components/Verification.jsx";
 import UpdatePsw from "./pages/UpdatePsw";
 import PagoExitoso from "./pages/pagos/PagoExitosoPage.jsx";
 import PagoFallido from "./pages/pagos/PagoFallidoPage.jsx";
+import MisReservas from "./pages/MisReservasPage.jsx";
 
 
 export default function App() {
@@ -39,6 +40,7 @@ export default function App() {
           <Route path="/newPassword" element={<UpdatePsw/>}/>
           <Route path="/pago-exitoso" element={<PagoExitoso/>}/>
           <Route path="/pago-fallido" element={<PagoFallido/>}/>
+          <Route path="/misReservas" element={<MisReservas/>}/>
         </Routes>
         <Footer/>
        </AuthContextProvider>
