@@ -51,7 +51,8 @@ export default function FormReserva (){
           const data = await response.json();
 
           if (data) {
-            setVehicles(data.disponibles || []);
+            setVehicles(data.disponible || []);
+            console.log(JSON.stringify(data));
           }
         } catch (e) {
           console.error('Error al obtener vehiculos:', e);
@@ -95,9 +96,10 @@ export default function FormReserva (){
       });
 
       const data = await response.json();
-      if (data.status >= 400) {
-        console.log(data)
-        return
+
+      if (!data?.id) {
+        alert("Error al registrar la reserva.");
+        return;
       }
 
       // 2. Crear preferencia de pago

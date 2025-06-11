@@ -1,4 +1,4 @@
-import supabase from "../supabaseClient";
+import supabase from "../supabaseClient.js";
 
 export class estadoReservaRepository {
     static async insertarEstado(estado){
