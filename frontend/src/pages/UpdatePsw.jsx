@@ -15,6 +15,11 @@ export default function UpdatePassword() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (password.length < 6) {
+      setMessage("❌ Error: La contraseña debe tener al menos 6 caracteres")  
+      return
+    }
     if (!password || !accessToken) return;
 
     const response = await fetch("http://localhost:3001/acceso/actualizar-psw", {
