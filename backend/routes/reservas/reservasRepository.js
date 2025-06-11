@@ -51,7 +51,8 @@ export class reservasRepository {
             };
     }
     
-    static async crearReserva(vehiculo, fechaInicio, fechaFin, montoPorDia, email){
+    static async crearReserva(vehiculo, fechaInicio, fechaFin, montoPorDia, email, dniConductor = null, nombreConductor = null) {
+
 
         const result = await estadoReservaRepository.insertarEstado("activa");
         if (result.status >= 400){
@@ -67,7 +68,9 @@ export class reservasRepository {
             fechainicio : fechaInicio,
             fechafin : fechaFin,
             monto: montoPorDia ,
-            persona: email 
+            persona: email ,
+            dniConductor: dniConductor,
+            nombreConductor: nombreConductor
         }
 
         const {data : reserva1, error : errorReserva } = await supabase 

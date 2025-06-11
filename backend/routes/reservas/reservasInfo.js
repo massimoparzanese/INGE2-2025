@@ -15,7 +15,7 @@ reservasInfoRouter.post("/disponibles", async(req, res) => {
 
 reservasInfoRouter.post("/", async (req, res) => {
     try {
-        const {vehiculo, fechaInicio, fechaFin, monto, email} = req.body
+        const {vehiculo, fechaInicio, fechaFin, monto, email, dniConductor, nombreConductor} = req.body
 
         if (!vehiculo || !fechaInicio || !fechaFin || !monto){
             return res.status(400).json({
@@ -23,7 +23,7 @@ reservasInfoRouter.post("/", async (req, res) => {
             })
         }
 
-        const result = await reservasRepository.crearReserva(vehiculo, fechaInicio, fechaFin, monto, email);
+        const result = await reservasRepository.crearReserva(vehiculo, fechaInicio, fechaFin, monto, email, dniConductor, nombreConductor);
         console.log(result);
         if (result.status >= 400) {
             return res.status(result.status).json({
