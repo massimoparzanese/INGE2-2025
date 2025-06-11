@@ -62,7 +62,7 @@ export class reservasRepository {
 
         const {data : estadoReserva, error : errorEstadoReserva} = await supabase
             .from('EstadoReserva')
-            .insert('activa')
+            .insert({nombre: 'activa'})
             .select();
 
         if (errorEstadoReserva){
@@ -81,14 +81,14 @@ export class reservasRepository {
             vehiculo : vehiculo,
             fechainicio : fechaInicio,
             fechafin : fechaFin,
-            monto: montoPorDia * dias,
+            monto: montoPorDia ,
             persona: email 
         }
 
         const {data : reserva1, error : errorReserva } = await supabase 
             .from('Reserva')
             .insert(reserva)
-            .select();
+            .select('*');
 
         if (errorReserva) {
             return {
@@ -99,7 +99,7 @@ export class reservasRepository {
         }
 
         const reservaEstado = {
-            id : reserva1[0].id,
+            reserva : reserva1[0].id,
             estado : 'activa',
             fechainicio : fechaInicio,
             fechafin : fechaFin
@@ -119,10 +119,11 @@ export class reservasRepository {
             };
         }
 
-
+        console.log(reserva1)
         return {
             stauts: 200,
             message: "Reserva exitosa",
+            id: reserva1[0].id
         };
     }
 
