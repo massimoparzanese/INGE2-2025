@@ -1,3 +1,5 @@
+import supabase from "../supabaseClient.js";
+
 export class ReservaEstadoRepository {
     static async cambiarEstado(idReserva, nuevoEstado) {
         // 1. Buscar la reserva original para obtener las fechas
@@ -27,7 +29,8 @@ export class ReservaEstadoRepository {
             .from('reserva_estado')
             .insert(reservaEstado)
             .select();
-
+        
+            
         if (error) {
             return {
                 status: 400,
