@@ -22,7 +22,7 @@ export default function VehiculoPortada({ vehiculo, onDelete }){
                     <p className="text-sm text-gray-600">Km: {vehiculo.kms}</p>
                     <p className="text-sm text-gray-600">{vehiculo.sucursal}</p>
                   </div>
-                  {isAuthenticated && role === 'admin' &&(
+                  {isAuthenticated && role != 'cliente' &&(
                     <div className={`relative w-full right-0 grid col-span-4 z-10`}>
                     <div className={`absolute right-0 flex gap-2 -translate-y-2`}>
                         <Link
