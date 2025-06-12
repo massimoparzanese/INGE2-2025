@@ -112,7 +112,7 @@ export default function Navbar() {
                       Cerrar sesión
                     </Link>
                   )}
-                  {isAuthenticated && (
+                  {isAuthenticated && role !== 'admin' && (
                     <Link
                       to="/misReservas"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-xl"
@@ -186,7 +186,7 @@ export default function Navbar() {
               <ul>
                 <li>
                   {
-                    isAuthenticated && role === 'admin'(
+                    isAuthenticated && role !== 'admin'&& (
                   <Link
                     to="/agregar-vehiculo"
                     className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors duration-200"
@@ -203,7 +203,7 @@ export default function Navbar() {
                     Ver listado de vehículos
                   </Link>
                 </li>
-                {isAuthenticated && (
+                {isAuthenticated &&  role === 'cliente' && (
                   <li className="hidden md:block">
                     <Link to="/reserva" 
                     className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 rounded-b-xl transition-colors duration-200">
