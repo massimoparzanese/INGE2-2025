@@ -203,7 +203,7 @@ export default function Navbar() {
                     Ver listado de vehículos
                   </Link>
                 </li>
-                {isAuthenticated &&  role === 'cliente' && (
+                {isAuthenticated &&  role !== 'admin' && (
                   <li className="hidden md:block">
                     <Link to="/reserva" 
                     className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 rounded-b-xl transition-colors duration-200">
