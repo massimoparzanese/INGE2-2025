@@ -335,9 +335,9 @@ export class autenticacionRepository {
     })
 
     if (error) {
-      return {status: 500,  error: 'Error al enviar el código al mail' };
+      return {status: 500,  error: 'Error al enviar el link al mail' };
     }
-    return  { status: 200, message: 'El código fue enviado al mail ingresado' };
+    return  { status: 200, message: 'El link fue enviado al mail ingresado' };
 
   } catch (err) {
     return { status: 500, message: 'Ocurrió un error inesperado' };
