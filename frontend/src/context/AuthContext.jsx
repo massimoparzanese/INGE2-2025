@@ -21,9 +21,10 @@ export default function AuthContextProvider({ children }) {
           throw new Error('Error al verificar o refrescar sesión');
         }
         const data = await response.json();
+        console.log(data)
         setIsAuthenticated(true);
         setUser(data.nombre)
-        setRole(data.role);
+        setRole(data.rol.rol);
       } catch (e) {
          console.log('Error al comunicarse con el servidor', e);
       }

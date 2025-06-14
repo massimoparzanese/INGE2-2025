@@ -12,7 +12,7 @@ export default function LandingPage() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [modalAbierto, setModalAbierto] = useState(false);
   const [showLogoutMessage, setShowLogoutMessage] = useState(false);
-  const { user, isAuthenticated, setIsAuthenticated, setRole, setUser } = useContext(AuthContext);
+  const { user, isAuthenticated, setIsAuthenticated, setRole, setUser, role } = useContext(AuthContext);
   const navigate = useNavigate();
    const handleAdminClick = () => {
     const text = isAuthenticated ? '/reserva' : '/registro';
@@ -106,7 +106,7 @@ useEffect(() => {
            <p className="flex items-center justify-center text-white p-4">¿No tenés una cuenta?</p>
            }
           <div className="flex items-center justify-center mt-4 mb-4">
-           
+           {role !== 'admin' && role && (
             <button
               className="nav-link inline-block px-4 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out
                         bg-green-600 text-white hover:bg-green-500 hover:scale-105 shadow-md hover:shadow-lg cursor-pointer"
@@ -114,8 +114,7 @@ useEffect(() => {
             >
               {isAuthenticated ? 'Ver sucursales disponibles' : 'Registrarme'}
             </button>
-
-
+          )}
           </div>
       </section>
     <h3 className="text-4xl font-bold text-white mb-4 pt-20">Todo sobre nosotros</h3>

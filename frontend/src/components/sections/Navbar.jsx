@@ -101,7 +101,7 @@ export default function Navbar() {
                     </Link>
                   ) : (
                     <Link
-                      to="#"
+                      to="/"
                       onClick={(e) => {
                         e.preventDefault();
                         handleLogout();
@@ -112,7 +112,7 @@ export default function Navbar() {
                       Cerrar sesión
                     </Link>
                   )}
-                  {isAuthenticated && role == 'cliente' && (
+                  {isAuthenticated && role === 'cliente'&&(
                     <Link
                       to="/misReservas"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-xl"
@@ -125,7 +125,7 @@ export default function Navbar() {
             </div>
           </li>
            {/* Sucursales */}
-          {isAuthenticated && (
+          {isAuthenticated && role !== 'admin' && (
             <li className="relative cursor-pointer z-50">
             <div
               onClick={() => setSucursalesOpen(!sucursalesOpen)}
@@ -154,6 +154,7 @@ export default function Navbar() {
                       Ver sucursales disponibles
                     </Link>
                 </li>
+                
                 
                 
               </ul>
@@ -186,7 +187,7 @@ export default function Navbar() {
               <ul>
                 <li>
                   {
-                    isAuthenticated && role != 'cliente' && (
+                    isAuthenticated && role === 'admin' && (
                   <Link
                     to="/agregar-vehiculo"
                     className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors duration-200"
@@ -203,7 +204,7 @@ export default function Navbar() {
                     Ver listado de vehículos
                   </Link>
                 </li>
-                {isAuthenticated &&  role == 'cliente' && (
+                {isAuthenticated &&  role === 'cliente' && (
                   <li className="hidden md:block">
                     <Link to="/reserva" 
                     className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 rounded-b-xl transition-colors duration-200">
