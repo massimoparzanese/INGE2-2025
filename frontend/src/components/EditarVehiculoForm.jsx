@@ -7,6 +7,7 @@ export default function EditarVehiculoForm({ patenteSeleccionada, onVolver }){
         capacidad: "",
         kms: "",
         sucursal: "",
+        precio: "",
     });
 
     useEffect(() => {
@@ -112,6 +113,20 @@ export default function EditarVehiculoForm({ patenteSeleccionada, onVolver }){
           className="border p-2 w-full rounded"
         />
       </div>
+
+      <div className="mb-4">
+        <label className="block mb-1">Precio por día</label>
+        <input
+          type="number"
+          name="precio"
+          value={vehiculo.precio}
+          onChange={handleChange}
+          className="border p-2 w-full rounded"
+          step="0.01"
+          min="0"
+        />
+      </div>
+
 
       <div className="flex justify-between">
         <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">

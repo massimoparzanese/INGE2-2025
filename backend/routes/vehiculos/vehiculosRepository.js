@@ -152,7 +152,8 @@ export class vehiculosRepository {
             foto: nuevosDatos.foto,
             capacidad: nuevosDatos.capacidad,
             kms: nuevosDatos.kms,
-            sucursal: nuevosDatos.sucursal
+            sucursal: nuevosDatos.sucursal,
+            precio: nuevosDatos.precio
         })
         .eq('patente', patente);
 
