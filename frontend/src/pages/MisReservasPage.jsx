@@ -146,7 +146,7 @@ export default function MisReservas() {
 
                       {reserva.dniConductor ? (
                         <p className="text-sm text-gray-700">
-                          Conductor: <span className="font-medium">{reserva.conductor.nombre}</span> (DNI: {reserva.conductor.dni})
+                          Conductor: <span className="font-medium">{reserva.nombreConductor}</span> (DNI: {reserva.dniConductor})
                         </p>
                       ) : (
                         <p className="text-sm text-red-600 font-semibold">Sin conductor asignado</p>
@@ -165,14 +165,7 @@ export default function MisReservas() {
                           Cancelar
                         </button>
                       )}
-                      {!reserva.dniConductor && estadoActual !== 'cancelada' && (
-                        <button
-                          onClick={() => setModalAbierto(true)}
-                          className="mb-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
-                        >
-                          Agregar Conductor
-                        </button>
-                      )}
+                      
                     </div>
                   </div>
                 )})

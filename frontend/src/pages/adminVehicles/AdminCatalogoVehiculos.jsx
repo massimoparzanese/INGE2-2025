@@ -2,6 +2,7 @@ import {useState, useEffect, useContext} from "react";
 import VehiculoPortada from "../../components/VehiculoPortada";
 import { Plus } from "lucide-react";
 import { AuthContext } from "../../context/AuthContextFunct";
+import { Link } from 'react-router-dom';
 export default function AdminCatalogoVehiculos (){
   const { isAuthenticated, role } = useContext(AuthContext);
     const [vehiculos, setVehiculos] = useState([]);
@@ -77,9 +78,10 @@ export default function AdminCatalogoVehiculos (){
         <div className="relative w-full max-w-7xl mx-auto bg-white p-5 rounded-xl shadow-md">
           {
             isAuthenticated && role === 'admin' &&(
-           <button className="absolute top-4 right-4 text-white hover:text-red-700 bg-green-500 rounded-4xl transition-colors">
+            <Link
+                      to="/agregar-vehiculo" className="absolute top-4 right-4 text-white hover:text-red-700 bg-green-500 rounded-4xl transition-colors">
             <Plus className="w-8 h-8 " />
-          </button>
+          </Link>
           )} 
         <h2 className="text-2xl font-bold mb-4 text-red-700">Vehículos de la Empresa</h2>
         {vehiculos.length !== 0 && !cargando && (
