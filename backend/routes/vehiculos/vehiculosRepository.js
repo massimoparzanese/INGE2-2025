@@ -243,4 +243,46 @@ export class vehiculosRepository {
 
     }
 
+    static async entregarAuto(patente, email) {
+    // 1. Buscar reserva activa con esa patente
+    const { data: reserva, error } = await supabase
+      .from('Reserva')
+      .select('*')
+      .eq('vehiculo', patente)
+      .eq('estado', 'activa') // o 'pendiente', según cómo lo manejen
+      .maybeSingle();
+
+    if (!reserva) {
+      return {
+        status: 404,
+        error: '❌ No existe una reserva activa para ese vehículo.'
+      };
+    }
+
+    if (reserva.email !== email) {
+      return {
+        status: 403,
+        error: '❌ Ese email no tiene asociada la reserva de esta patente.'
+      };
+    }
+
+    // 2. Actualizar reserva como entregada
+    const { error: updateError } = await supabase
+      .from('Reserva')
+      .update({ estado: 'entregada', fecha_entrega: new Date().toISOString() })
+      .eq('id', reserva.id);
+
+    if (updateError) {
+      return {
+        status: 500,
+        error: '❌ Error al registrar la entrega del vehículo.'
+      };
+    }
+
+    return {
+      status: 200,
+      mensaje: '✅ Vehículo entregado correctamente.'
+    };
+  }
+
 }
