@@ -382,5 +382,17 @@ export class autenticacionRepository {
       throw new Error('Error actualizando contraseña: ' + error.message);
     }
   }
+  static async registrosEnFechas(fechaInicio, fechaFin){
+    const { data, error } = await supabase
+    .from('Persona')
+    .select()
+    .gte('created_at', fechaInicio)
+    .lte('created_at', fechaFin);
+    if(error){
+      return {status: 400, message: "Error al obtener datos"}
+    }
+    return {status: 200, users: data}
+
+  }
 }
   

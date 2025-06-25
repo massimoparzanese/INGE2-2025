@@ -12,6 +12,7 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.1.7",
     "date-fns": "^4.1.0",
+    "lightweight-charts": "^5.0.7",
     "lucide-react": "^0.511.0",
     "react": "^19.1.0",
     "react-datepicker": "^8.3.0",
