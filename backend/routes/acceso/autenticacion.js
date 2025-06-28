@@ -17,4 +17,17 @@ autenticacionInfoRouter.post('/registro', async (req, res) => {
   }
 });
 
+autenticacionInfoRouter.post('/registro-presencial', async (req, res) => {
+  try{
+    const { dni, nombre, apellido, email, fechanacimiento, rol} = req.body;
+    const data = await autenticacionRepository.registroPresencial(
+      dni, nombre, apellido, email, fechanacimiento, rol);
+
+    res.send(data);
+  }
+  catch (e){
+    res.send(e);
+  }
+});
+
 export default autenticacionInfoRouter;

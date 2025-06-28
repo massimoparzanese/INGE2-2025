@@ -2,7 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContextFunct';
 
-export default function RegistroUsuario(){
+export default function RegistroUsuario({role}){
 
   const navigate = useNavigate(); // Hook para navegar entre rutas
   const { isAuthenticated} = useContext(AuthContext);
@@ -30,9 +30,9 @@ export default function RegistroUsuario(){
     e.preventDefault();
     setMensaje('');
     setError('');
-
+    const url = role === 'empleado' ? 'auth/presencial' : 'auth/registro';
     try {
-      const response = await fetch('http://localhost:3001/auth/registro', {
+      const response = await fetch(`http://localhost:3001/${url}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -117,6 +117,8 @@ export default function RegistroUsuario(){
           className="w-full p-2 border rounded-md"
           required
         />
+        { role !== 'empleado' && (
+          <>
         <label htmlFor="password">Contraseña</label>
         <input
           type="password" name="password" 
@@ -126,11 +128,13 @@ export default function RegistroUsuario(){
           placeholder='Contrasenia'
           required
         />
+        </>
+        )}
         <button
           type="submit"
           className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition"
         >
-          Registrarme
+          {role === 'empleado' ? 'Registrar cliente' : 'Registrarme'}
         </button>
       </form>
     </div>

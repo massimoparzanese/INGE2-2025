@@ -1,5 +1,9 @@
 import supabase from "../supabaseClient.js";
-
+import cryptoRandomString from "crypto-random-string";
+import nodemailer from "nodemailer";
+import dotenv from "dotenv";
+import { validarDNI, validarNombre, validarApellido, validarEmail, validarPassword,validarEdad } from './userValidations.js';
+dotenv.config();
 // La duración de las cookies en JavaScript se establece en milisegundos (ms).
 // Calculamos el equivalente a 1 hora
 // - 1 hora tiene 60 minutos
@@ -394,5 +398,99 @@ export class autenticacionRepository {
     return {status: 200, users: data}
 
   }
+
+  static async registroPresencial(dni, nombre, apellido, email, fechanacimiento, rol){
+     // Validaciones simples
+  let error;
+
+  if ((error = validarDNI(dni))) {
+    return { status: 400, error };
+  }
+
+  const { data: data1, error: error1 } = await supabase
+    .from('Persona')
+    .select('dni')
+    .eq('dni', dni);
+  if (error1) throw new Error('Error al acceder a la base de datos');
+  if (data1.length > 0) return { status: 400, error: 'El DNI ya está registrado' };
+
+  if ((error = validarNombre(nombre))) return { status: 400, error };
+  if ((error = validarApellido(apellido))) return { status: 400, error };
+  if ((error = validarEmail(email))) return { status: 400, error };
+
+  const { data: data2, error: error2 } = await supabase
+    .from('Persona')
+    .select('email')
+    .eq('email', email);
+  if (error2) throw new Error('Error al acceder a la base de datos');
+  if (data2.length > 0) return { status: 400, error: 'El email ya se encuentra registrado' };
+
+  if ((error = validarPassword(password))) return { status: 400, error };
+  if ((error = validarEdad(fechanacimiento))) return { status: 400, error };
+
+  const result = await this.enviarEmail(nombre, apellido);
+  if(result.status < 400){
+    const data = await this.insertarPersona(dni, nombre, apellido, email, fechanacimiento, rol, result.password);
+    return data;
+  }
+  else {
+    return result;
+  }
+  }
+  static async enviarEmail(nombre, apellido){
+    const password = cryptoRandomString({length: 6, type: 'base64'});
+    console.log(password);
+    // configura como quiero enviar el mail, con que plataforma y que cuenta
+    const transporter = nodemailer.createTransport({
+    service: 'gmail',
+      auth: {
+        user: process.env.EMAIL, 
+        pass: process.env.NODEMAILLER_PASS     
+      }
+    });
+    // Qué va a recibir el usuario
+    const mailOptions = {
+      from: `"Mi App" ${process.env.EMAIL}`,
+      to: email,
+      subject: 'Cuenta de Maria Alquileres',
+      text: `Te damos la bienvenida a María alquileres ${nombre} ${apellido}, tu contraseña es:
+    ${password}`,
+    };
+     try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Correo enviado:', info.response);
+    return { status: 200, message: info.response, password };
+   } catch (error) {
+    console.error('Error al enviar el email:', error);
+    return { status: 400, message: 'Error al enviar el email' };
+  }
+  }
+  static async insertarPersona(dni, nombre, apellido, email, fechanacimiento, rol, password){
+    const { data, error } = await supabase
+           .from('Persona')
+           .insert([{ dni, nombre, apellido, email, fechanacimiento, rol }])
+            .select('id');
+            console.log(error);
+        if (errorcito || !data) {
+            return { 
+                status: 500,
+                error : error.details.slice(4)
+            };
+        }
+        const { data: persona, error: err } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+        })
+        if(err){
+            console.log(err)
+            return { 
+                status: 500,
+                error: 'Error al registrar el usuario.' 
+            };
+        }
+        return {
+        status:200,
+        mensaje: 'Registro exitoso'
+    };
+  }
 }
-  

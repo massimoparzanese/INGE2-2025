@@ -43,6 +43,7 @@ export default function App() {
           <Route path="/pago-fallido" element={<PagoFallido/>}/>
           <Route path="/misReservas" element={<MisReservas/>}/>
           <Route path="/estadisticas/clientes" element={<ClienteEstadisticasPage/>}/>
+          <Route path="/registro-presencial" element={<RegisterForm role={'empleado'}/>}/>
         </Routes>
         <Footer/>
        </AuthContextProvider>
