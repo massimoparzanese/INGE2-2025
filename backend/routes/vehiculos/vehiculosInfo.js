@@ -112,4 +112,23 @@ autosInfoRouter.post("/agregar", async (req, res) => {
     }
 });
 
+autosInfoRouter.get("/por-empleado/:idempleado", async (req, res) => {
+    const { idempleado } = req.params;
+
+    try {
+        const result = await vehiculosRepository.getAutosPorEmpleado(idempleado);
+
+        return res.status(result.status).json({
+            message: result.message,
+            metaData: result.metaData || null,
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error al obtener vehículos por empleado",
+            metaData: error,
+        });
+    }
+});
+
+
 export default autosInfoRouter;
