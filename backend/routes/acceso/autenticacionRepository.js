@@ -424,33 +424,33 @@ export class autenticacionRepository {
     .eq('email', email);
   if (error2) throw new Error('Error al acceder a la base de datos');
   if (data2.length > 0) return { status: 400, error: 'El email ya se encuentra registrado' };
-
-  if ((error = validarPassword(password))) return { status: 400, error };
   if ((error = validarEdad(fechanacimiento))) return { status: 400, error };
-
-  const result = await this.enviarEmail(nombre, apellido);
+  console.log("Antes de enviar e email a " + email)
+  const result = await this.enviarEmail(nombre, apellido, email);
   if(result.status < 400){
-    const data = await this.insertarPersona(dni, nombre, apellido, email, fechanacimiento, rol, result.password);
-    return data;
+    //const data = await this.insertarPersona(dni, nombre, apellido, email, fechanacimiento, rol, result.password);
+    //return data;
+    return {status: 200, message:'usuario insertado con éxito'}
   }
   else {
     return result;
   }
   }
-  static async enviarEmail(nombre, apellido){
+  static async enviarEmail(nombre, apellido, email){
     const password = cryptoRandomString({length: 6, type: 'base64'});
     console.log(password);
+    
     // configura como quiero enviar el mail, con que plataforma y que cuenta
     const transporter = nodemailer.createTransport({
     service: 'gmail',
       auth: {
         user: process.env.EMAIL, 
-        pass: process.env.NODEMAILLER_PASS     
+        pass: process.env.NODEMAILER_PASS    
       }
     });
     // Qué va a recibir el usuario
     const mailOptions = {
-      from: `"Mi App" ${process.env.EMAIL}`,
+      from: `"Maria Alquileres App" <${process.env.EMAIL}>`,
       to: email,
       subject: 'Cuenta de Maria Alquileres',
       text: `Te damos la bienvenida a María alquileres ${nombre} ${apellido}, tu contraseña es:
@@ -461,7 +461,7 @@ export class autenticacionRepository {
     console.log('Correo enviado:', info.response);
     return { status: 200, message: info.response, password };
    } catch (error) {
-    console.error('Error al enviar el email:', error);
+    console.log('Error al enviar el email:', error);
     return { status: 400, message: 'Error al enviar el email' };
   }
   }
