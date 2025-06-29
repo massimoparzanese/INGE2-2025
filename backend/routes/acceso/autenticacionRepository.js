@@ -1,9 +1,7 @@
 import supabase from "../supabaseClient.js";
-import cryptoRandomString from "crypto-random-string";
-import nodemailer from "nodemailer";
-import dotenv from "dotenv";
 import { validarDNI, validarNombre, validarApellido, validarEmail, validarPassword,validarEdad } from './userValidations.js';
-dotenv.config();
+import { enviarEmail } from "../../services/mailService.js";
+import cryptoRandomString from 'crypto-random-string';
 // La duración de las cookies en JavaScript se establece en milisegundos (ms).
 // Calculamos el equivalente a 1 hora
 // - 1 hora tiene 60 minutos
@@ -425,45 +423,18 @@ export class autenticacionRepository {
   if (error2) throw new Error('Error al acceder a la base de datos');
   if (data2.length > 0) return { status: 400, error: 'El email ya se encuentra registrado' };
   if ((error = validarEdad(fechanacimiento))) return { status: 400, error };
-  console.log("Antes de enviar e email a " + email)
-  const result = await this.enviarEmail(nombre, apellido, email);
-  if(result.status < 400){
-    //const data = await this.insertarPersona(dni, nombre, apellido, email, fechanacimiento, rol, result.password);
-    //return data;
-    return {status: 200, message:'usuario insertado con éxito'}
+  const password = cryptoRandomString({length: 6, type: 'base64'});
+  const data = await this.insertarPersona(dni, nombre, apellido, email, fechanacimiento, rol, password);
+  if(data.status < 400){
+    const content = `Te damos la bienvenida a María alquileres ${nombre} ${apellido}, tu contraseña es:
+    ${password}`
+    const envioCorreo = enviarEmail(email, content, 'Cuenta de María Alquileres');
+    const result = await envioCorreo;
+    if(result.status >= 400)
+      return result;
   }
-  else {
-    return result;
-  }
-  }
-  static async enviarEmail(nombre, apellido, email){
-    const password = cryptoRandomString({length: 6, type: 'base64'});
-    console.log(password);
-    
-    // configura como quiero enviar el mail, con que plataforma y que cuenta
-    const transporter = nodemailer.createTransport({
-    service: 'gmail',
-      auth: {
-        user: process.env.EMAIL, 
-        pass: process.env.NODEMAILER_PASS    
-      }
-    });
-    // Qué va a recibir el usuario
-    const mailOptions = {
-      from: `"Maria Alquileres App" <${process.env.EMAIL}>`,
-      to: email,
-      subject: 'Cuenta de Maria Alquileres',
-      text: `Te damos la bienvenida a María alquileres ${nombre} ${apellido}, tu contraseña es:
-    ${password}`,
-    };
-     try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log('Correo enviado:', info.response);
-    return { status: 200, message: info.response, password };
-   } catch (error) {
-    console.log('Error al enviar el email:', error);
-    return { status: 400, message: 'Error al enviar el email' };
-  }
+  return data;
+
   }
   static async insertarPersona(dni, nombre, apellido, email, fechanacimiento, rol, password){
     const { data, error } = await supabase
@@ -471,7 +442,7 @@ export class autenticacionRepository {
            .insert([{ dni, nombre, apellido, email, fechanacimiento, rol }])
             .select('id');
             console.log(error);
-        if (errorcito || !data) {
+        if (error || !data) {
             return { 
                 status: 500,
                 error : error.details.slice(4)

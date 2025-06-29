@@ -1,5 +1,7 @@
-// userValidations.js
-
+/*
+Este archivo existe para no repetir código a la hora de validar un usuario
+Cada una de estas funciones valida los campos de los 2 formularios de registro
+*/
 export function validarDNI(dni) {
   if (!/^\d+$/.test(dni)) {
     return 'El DNI debe contener solo números';
