@@ -10,6 +10,7 @@ export default function Navbar() {
   const [cuentaOpen, setCuentaOpen] = useState(false);
   const [vehiculosOpen, setVehiculosOpen] = useState(false);
   const [sucursalesOpen, setSucursalesOpen] = useState(false);
+  const [clientesOpen, setClientesOpen] = useState(false);
 
   const { user, isAuthenticated, setIsAuthenticated, setRole, setUser, role } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -47,6 +48,7 @@ export default function Navbar() {
       setCuentaOpen(false);
       setVehiculosOpen(false);
       setSucursalesOpen(false);
+      setClientesOpen(false);
     }, 8000);
     return () => clearTimeout(timer);
   }
@@ -216,7 +218,21 @@ export default function Navbar() {
               </ul>
             </div>
           </li>
+          <li className="hidden md:block">
+              <a
+                href="/registro-presencial"
+                className={`nav-link inline-block px-4 py-2 rounded-md font-semibold transition duration-300 ease-in-out
+                  ${
+                    activeRoute === "/reserva"
+                      ? "bg-red-600 text-white shadow-lg scale-105 brightness-140"
+                      : "bg-red-500 text-white hover:bg-black hover:brightness-140"
+                  }`}
+              >
+                Registrar cliente
+              </a>
 
+            </li>
+              
 
         </ul>
       </div>

@@ -30,7 +30,7 @@ export default function RegistroUsuario({role}){
     e.preventDefault();
     setMensaje('');
     setError('');
-    const url = role === 'empleado' ? 'auth/presencial' : 'auth/registro';
+    const url = role === 'empleado' ? 'auth/registro-presencial' : 'auth/registro';
     try {
       const response = await fetch(`http://localhost:3001/${url}`, {
         method: 'POST',
@@ -132,7 +132,7 @@ export default function RegistroUsuario({role}){
         )}
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition"
+          className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition cursor-pointer"
         >
           {role === 'empleado' ? 'Registrar cliente' : 'Registrarme'}
         </button>
