@@ -53,6 +53,7 @@ export default function App() {
               </Verification>
             }
           />
+          <Route path="/registro-presencial" element={<RegisterForm role={'empleado'}/>}/>
         </Routes>
         <Footer/>
        </AuthContextProvider>
