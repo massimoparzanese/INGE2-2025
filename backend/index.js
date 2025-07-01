@@ -13,7 +13,7 @@ import logedUserCookiesRouter from "./routes/acceso/cookies/userCookies.js";
 import cookieParser from "cookie-parser";
 import loginInfoRouter from "./routes/acceso/login.js" 
 import logoutInfoRouter from "./routes/acceso/logout.js";
-
+import usersInfoRouter from "./routes/acceso/admin/users.js";
 import pagosRoutes from "./routes/pago/pagosRoutes.js";
 import { estadoReservaRepository } from "./routes/estadoReserva/estadoReservaRepository.js";
 import estadoReservaInfoRouter from "./routes/reservaEstado/reservaEstadoInfo.js";
@@ -38,7 +38,7 @@ app.use("/estado", estadoReservaInfoRouter);
 app.use("/acceso" , loginInfoRouter);
 app.use("/auth", autenticacionInfoRouter);
 app.use("/session", logoutInfoRouter);
-
+app.use("/admin" , usersInfoRouter);
 // COOKIES
 app.use("/api/verify", logedUserCookiesRouter);
 app.get("/", (req, res) => {

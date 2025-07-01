@@ -1,5 +1,7 @@
 import supabase from "../supabaseClient.js";
-
+import { validarDNI, validarNombre, validarApellido, validarEmail, validarPassword,validarEdad } from './userValidations.js';
+import { enviarEmail } from "../../services/mailService.js";
+import cryptoRandomString from 'crypto-random-string';
 // La duración de las cookies en JavaScript se establece en milisegundos (ms).
 // Calculamos el equivalente a 1 hora
 // - 1 hora tiene 60 minutos
@@ -382,5 +384,84 @@ export class autenticacionRepository {
       throw new Error('Error actualizando contraseña: ' + error.message);
     }
   }
+  static async registrosEnFechas(fechaInicio, fechaFin){
+    const { data, error } = await supabase
+    .from('Persona')
+    .select()
+    .gte('created_at', fechaInicio)
+    .lte('created_at', fechaFin);
+    if(error){
+      return {status: 400, message: "Error al obtener datos"}
+    }
+    return {status: 200, users: data}
+
+  }
+
+  static async registroPresencial(dni, nombre, apellido, email, fechanacimiento, rol){
+     // Validaciones simples
+  let error;
+
+  if ((error = validarDNI(dni))) {
+    return { status: 400, error };
+  }
+
+  const { data: data1, error: error1 } = await supabase
+    .from('Persona')
+    .select('dni')
+    .eq('dni', dni);
+  if (error1) throw new Error('Error al acceder a la base de datos');
+  if (data1.length > 0) return { status: 400, error: 'El DNI ya está registrado' };
+
+  if ((error = validarNombre(nombre))) return { status: 400, error };
+  if ((error = validarApellido(apellido))) return { status: 400, error };
+  if ((error = validarEmail(email))) return { status: 400, error };
+
+  const { data: data2, error: error2 } = await supabase
+    .from('Persona')
+    .select('email')
+    .eq('email', email);
+  if (error2) throw new Error('Error al acceder a la base de datos');
+  if (data2.length > 0) return { status: 400, error: 'El email ya se encuentra registrado' };
+  if ((error = validarEdad(fechanacimiento))) return { status: 400, error };
+  const password = cryptoRandomString({length: 6, type: 'base64'});
+  const data = await this.insertarPersona(dni, nombre, apellido, email, fechanacimiento, rol, password);
+  if(data.status < 400){
+    const content = `Te damos la bienvenida a María alquileres ${nombre} ${apellido}, tu contraseña es:
+    ${password}`
+    const envioCorreo = enviarEmail(email, content, 'Cuenta de María Alquileres');
+    const result = await envioCorreo;
+    if(result.status >= 400)
+      return result;
+  }
+  return data;
+
+  }
+  static async insertarPersona(dni, nombre, apellido, email, fechanacimiento, rol, password){
+    const { data, error } = await supabase
+           .from('Persona')
+           .insert([{ dni, nombre, apellido, email, fechanacimiento, rol }])
+            .select('id');
+            console.log(error);
+        if (error || !data) {
+            return { 
+                status: 500,
+                error : error.details.slice(4)
+            };
+        }
+        const { data: persona, error: err } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+        })
+        if(err){
+            console.log(err)
+            return { 
+                status: 500,
+                error: 'Error al registrar el usuario.' 
+            };
+        }
+        return {
+        status:200,
+        mensaje: 'Registro exitoso'
+    };
+  }
 }
-  

@@ -16,6 +16,9 @@ import UpdatePsw from "./pages/UpdatePsw";
 import PagoExitoso from "./pages/pagos/PagoExitosoPage.jsx";
 import PagoFallido from "./pages/pagos/PagoFallidoPage.jsx";
 import MisReservas from "./pages/MisReservasPage.jsx";
+import ClienteEstadisticasPage from "./pages/estadisticas/ClientesEstadisticasPage.jsx";
+import VehiculosSucursalPage from "./pages/empleados/VehiculosSucursalPage.jsx";
+
 
 
 export default function App() {
@@ -41,6 +44,16 @@ export default function App() {
           <Route path="/pago-exitoso" element={<PagoExitoso/>}/>
           <Route path="/pago-fallido" element={<PagoFallido/>}/>
           <Route path="/misReservas" element={<MisReservas/>}/>
+          <Route path="/estadisticas/clientes" element={<ClienteEstadisticasPage/>}/>
+          <Route
+            path="/empleado/vehiculos"
+            element={
+              <Verification>
+                <VehiculosSucursalPage />
+              </Verification>
+            }
+          />
+          <Route path="/registro-presencial" element={<RegisterForm role={'empleado'}/>}/>
         </Routes>
         <Footer/>
        </AuthContextProvider>
