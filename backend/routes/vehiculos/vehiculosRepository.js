@@ -249,7 +249,7 @@ export class vehiculosRepository {
       .from('Reserva')
       .select('*')
       .eq('vehiculo', patente)
-      .eq('estado', 'activa') // o 'pendiente', según cómo lo manejen
+      .eq('estado', 'activa') 
       .maybeSingle();
 
     if (!reserva) {
