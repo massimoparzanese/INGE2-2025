@@ -1,33 +1,35 @@
-import ListaVehiculosSucursal from "../../components/ListaVehiculosSucursal";
+import ListaVehiculosSucursal from "../../components/ListarVehiculosSucursal";
 import { useAuth } from "../../context/AuthContext";
 import { useEffect, useState } from "react";
-import supabase from "../../supabase";
+import axios from "axios";
 
 const VehiculosSucursalPage = () => {
-  const { user } = useAuth(); // ← tu contexto de usuario logueado
+  const { user } = useAuth();
   const [idEmpleado, setIdEmpleado] = useState(null);
   const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
-    const buscarEmpleado = async () => {
+    const obtenerDatosEmpleado = async () => {
       if (!user) return;
 
-      const { data, error } = await supabase
-        .from("Persona")
-        .select("idpersona, rol")
-        .eq("id", user.id) // "id" debe ser el campo que relaciona con Auth
-        .maybeSingle();
+      try {
+        const res = await axios.get(`http://localhost:3000/usuario/${user.id}`);
+        const { idpersona, rol } = res.data;
 
-      if (error || !data || data.rol !== "empleado") {
+        if (rol !== "empleado") {
+          setIdEmpleado(null);
+        } else {
+          setIdEmpleado(idpersona);
+        }
+      } catch (error) {
+        console.error("Error al obtener datos del empleado:", error);
+        setIdEmpleado(null);
+      } finally {
         setCargando(false);
-        return;
       }
-
-      setIdEmpleado(data.idpersona);
-      setCargando(false);
     };
 
-    buscarEmpleado();
+    obtenerDatosEmpleado();
   }, [user]);
 
   if (cargando) return <p>Cargando información del empleado...</p>;

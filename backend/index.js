@@ -18,6 +18,10 @@ import pagosRoutes from "./routes/pago/pagosRoutes.js";
 import { estadoReservaRepository } from "./routes/estadoReserva/estadoReservaRepository.js";
 import estadoReservaInfoRouter from "./routes/reservaEstado/reservaEstadoInfo.js";
 
+import usuarioRouter from "./routes/acceso/usuario.js";
+
+
+
 const app = express();
 const PORT = 3001;
 
@@ -44,6 +48,7 @@ app.use("/api/verify", logedUserCookiesRouter);
 app.get("/", (req, res) => {
   res.send("🚗 Bienvenido a María Alquileres API");
 });
+app.use("/usuario", usuarioRouter);
 
 //Pagos
 app.use("/api/pagos", pagosRoutes);

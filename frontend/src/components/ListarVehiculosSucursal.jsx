@@ -12,8 +12,8 @@ const ListaVehiculosSucursal = ({ idempleado }) => {
         const res = await axios.get(`http://localhost:3000/vehiculos/por-empleado/${idempleado}`);
         const { message, metaData } = res.data;
 
-        if (metaData.length === 0) {
-          setMensaje(message);
+        if (!metaData || metaData.length === 0) {
+          setMensaje(message || "No se encontraron vehículos.");
         } else {
           setVehiculos(metaData);
         }
