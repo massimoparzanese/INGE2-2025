@@ -112,7 +112,7 @@ autosInfoRouter.post("/agregar", async (req, res) => {
     }
 });
 
-entregarAutoRouter.post("/entregar", async (req, res) => {
+autosInfoRouter.post("/entregar", async (req, res) => {
   const { patente, email } = req.body;
 
   const resultado = await vehiculosRepository.entregarAuto(patente, email);
