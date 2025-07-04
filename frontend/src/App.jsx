@@ -18,6 +18,7 @@ import PagoFallido from "./pages/pagos/PagoFallidoPage.jsx";
 import MisReservas from "./pages/MisReservasPage.jsx";
 import ClienteEstadisticasPage from "./pages/estadisticas/ClientesEstadisticasPage.jsx";
 import VehiculosSucursalPage from "./pages/empleados/VehiculosSucursalPage.jsx";
+import AlquilerPresencialPage from "./pages/empleados/AlquilerPresencial.jsx";
 
 
 
@@ -53,6 +54,7 @@ export default function App() {
               </Verification>
             }
           />
+          <Route path="/empleado/registrarAlquiler" element={<AlquilerPresencialPage/>}/>
           <Route path="/registro-presencial" element={<RegisterForm role={'empleado'}/>}/>
         </Routes>
         <Footer/>
