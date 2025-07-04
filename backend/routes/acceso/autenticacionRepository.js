@@ -461,7 +461,8 @@ export class autenticacionRepository {
         }
         return {
         status:200,
-        mensaje: 'Registro exitoso'
+        mensaje: 'Registro exitoso',
+        id: data[0].id
     };
   }
   static async obtenerId(email){

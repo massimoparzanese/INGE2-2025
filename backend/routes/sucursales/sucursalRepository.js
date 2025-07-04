@@ -4,7 +4,7 @@ export class sucursalesRepository {
 
     static async getAllSucursalesInfo(){
 
-            let { data: sucursales, error } = await supabase.from("Sucursal").select("nombre, direccion");
+            let { data: sucursales, error } = await supabase.from("Sucursal").select("nombre, direccion,id");
             if (error)
                 return {
                     status: 400,
