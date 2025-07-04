@@ -269,12 +269,13 @@ export class vehiculosRepository {
     .eq('reserva', idReserva)
     .eq('estado', 'activa') // usamos directamente el texto
     .is('fechafin', null)
+    .lte('fechainicio', new Date().toISOString())
     .maybeSingle();
 
   if (!estadoActivo) {
     return {
       status: 400,
-      error: '❌ El vehículo ya fue entregado o no tiene una reserva activa.'
+      error: '❌ El vehículo ya fue entregado.'
     };
   }
 
