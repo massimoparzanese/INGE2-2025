@@ -18,6 +18,7 @@ import PagoFallido from "./pages/pagos/PagoFallidoPage.jsx";
 import MisReservas from "./pages/MisReservasPage.jsx";
 import ClienteEstadisticasPage from "./pages/estadisticas/ClientesEstadisticasPage.jsx";
 import VehiculosSucursalPage from "./pages/empleados/VehiculosSucursalPage.jsx";
+import Entregar from "./pages/EntregarAuto.jsx"
 
 
 
@@ -54,6 +55,7 @@ export default function App() {
             }
           />
           <Route path="/registro-presencial" element={<RegisterForm role={'empleado'}/>}/>
+          <Route path="/entregar-auto" element={<Entregar/>}/>
         </Routes>
         <Footer/>
        </AuthContextProvider>

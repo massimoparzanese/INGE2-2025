@@ -31,7 +31,8 @@ const EntregarAuto = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 bg-white p-6 rounded-xl shadow-md">
+  <div className="min-h-screen flex items-center justify-center bg-red-500">
+    <div className="bg-white p-6 rounded-xl shadow-md w-full max-w-md">
       <h2 className="text-xl font-bold mb-4 text-center">Entregar Auto</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
@@ -62,7 +63,8 @@ const EntregarAuto = () => {
         {error && <p className="text-red-600 text-center">{error}</p>}
       </form>
     </div>
-  );
+  </div>
+);
 };
 
 export default EntregarAuto;

@@ -243,46 +243,72 @@ export class vehiculosRepository {
 
     }
 
-    static async entregarAuto(patente, email) {
-    // 1. Buscar reserva activa con esa patente
-    const { data: reserva, error } = await supabase
-      .from('Reserva')
-      .select('*')
-      .eq('vehiculo', patente)
-      .eq('estado', 'activa') 
-      .maybeSingle();
+    static async entregarAuto(patente, email) {{
+  // 1. Verificar que exista una reserva con esa patente
+  const { data: reserva, error: errorReserva } = await supabase
+    .from('Reserva')
+    .select('id, persona')
+    .eq('vehiculo', patente)
+    .maybeSingle();
 
-    if (!reserva) {
-      return {
-        status: 404,
-        error: '❌ No existe una reserva activa para ese vehículo.'
-      };
-    }
+  if (!reserva) {
+    return { status: 404, error: '❌ No existe una reserva para ese vehículo.' };
+  }
 
-    if (reserva.email !== email) {
-      return {
-        status: 403,
-        error: '❌ Ese email no tiene asociada la reserva de esta patente.'
-      };
-    }
+  // 2. Verificar que el email coincida con la persona de la reserva
+  if (reserva.persona !== email) {
+    return { status: 403, error: '❌ Esa reserva no corresponde al email ingresado.' };
+  }
 
-    // 2. Actualizar reserva como entregada
-    const { error: updateError } = await supabase
-      .from('Reserva')
-      .update({ estado: 'entregada', fecha_entrega: new Date().toISOString() })
-      .eq('id', reserva.id);
+  const idReserva = reserva.id;
 
-    if (updateError) {
-      return {
-        status: 500,
-        error: '❌ Error al registrar la entrega del vehículo.'
-      };
-    }
+  // 3. Verificar que exista un estado activo sin fechafin
+  const { data: estadoActivo } = await supabase
+    .from('reserva_estado')
+    .select('*')
+    .eq('reserva', idReserva)
+    .eq('estado', 'activa') // usamos directamente el texto
+    .is('fechafin', null)
+    .maybeSingle();
 
+  if (!estadoActivo) {
     return {
-      status: 200,
-      mensaje: '✅ Vehículo entregado correctamente.'
+      status: 400,
+      error: '❌ El vehículo ya fue entregado o no tiene una reserva activa.'
     };
+  }
+
+  // 4. Cerrar el estado "activa" agregando la fecha de fin
+  const { error: errorUpdate } = await supabase
+  .from('reserva_estado')
+  .update({ fechafin: new Date().toISOString() })
+  .eq('reserva', idReserva)
+  .eq('estado', 'activa')
+  .is('fechafin', null);
+
+  if (errorUpdate) {
+    return { status: 500, error: '❌ Error al cerrar el estado activo.' };
+  }
+
+  // 5. Insertar nuevo estado "entregada"
+  const { error: errorInsert } = await supabase
+    .from('reserva_estado')
+    .insert([{
+      reserva: idReserva,
+      estado: 'entregada',
+      fechainicio: new Date().toISOString()
+    }]);
+
+  if (errorInsert) {
+    return { status: 500, error: '❌ Error al registrar la entrega.' };
+  }
+
+  return {
+    status: 200,
+    mensaje: '✅ Vehículo entregado correctamente.'
+  };
+}
+
   }
     static async getAutosPorEmpleado(idEmpleado) {
         // 1. Buscar la sucursal del empleado

@@ -233,6 +233,12 @@ export default function Navbar() {
 
             </li>
               
+              <Link
+                to="/entregar-auto"
+                className="px-4 py-2 text-white hover:bg-blue-700 rounded transition"
+              >
+                Entregar Auto
+              </Link>
 
         </ul>
       </div>
