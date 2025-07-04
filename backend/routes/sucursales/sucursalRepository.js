@@ -17,4 +17,22 @@ export class sucursalesRepository {
                 metaData: sucursales,
             };
     }
+    static async getSucursalById(id){
+        const {data, error} = await supabase
+        .from('Sucursal')
+        .select('nombre')
+        .eq('id', id)
+
+        if(error){
+             return {
+                    status: 400,
+                    message: "No se pudo obtener la sucursal",
+                    metaData: error,
+                }
+        }
+        return {
+            status:200,
+            sucursal: data[0].nombre
+        }
+    }
 }
