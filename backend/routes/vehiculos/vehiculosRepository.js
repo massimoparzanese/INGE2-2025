@@ -338,7 +338,7 @@ static async devolverAuto(patente) {
   if (!estadoEntregado) {
     return {
       status: 400,
-      error: "❌ El vehículo no ha sido entregado o ya fue devuelto."
+      error: "❌ No existe una devolucion pendiente para ese vehiculo"
     };
   }
 
@@ -351,7 +351,6 @@ static async devolverAuto(patente) {
   .is("fechafin", null);
 
   if (errorUpdate) {
-    console.error("❌ Error al hacer UPDATE de reserva_estado:", errorUpdate);
     return {
       status: 500,
       error: "❌ Error al cerrar el estado entregado."
