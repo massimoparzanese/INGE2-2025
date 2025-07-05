@@ -481,4 +481,21 @@ export class autenticacionRepository {
       id: data[0].id
     }
   }
+  static async obtenerPorRol(rol){
+    const {data, error} = await supabase
+    .from('Persona')
+    .select('nombre', 'apellido', 'fechanacimiento', 'dni', 'email')
+    .eq('rol', rol)
+
+    if(error){
+      return {
+        status:400,
+        message: 'error al obtener los empleados'
+      }
+    }
+    return {
+      status:200,
+      id: data
+    }
+  }
 }
