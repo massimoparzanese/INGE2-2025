@@ -21,6 +21,7 @@ import VehiculosSucursalPage from "./pages/empleados/VehiculosSucursalPage.jsx";
 import Entregar from "./pages/EntregarAuto.jsx"
 import AlquilerPresencialPage from "./pages/empleados/AlquilerPresencial.jsx";
 import DevolverAutoPage from './pages/empleados/DevolverAuto.jsx';
+import ConsultarGanancias from './pages/estadisticas/ConsultarGanancias.jsx';
 
 
 
@@ -60,6 +61,7 @@ export default function App() {
           <Route path="/registro-presencial" element={<RegisterForm role={'empleado'}/>}/>
           <Route path="/entregar-auto" element={<Entregar/>}/>
           <Route path="/devolver-auto" element={<DevolverAutoPage />} />
+          <Route path="/consultar-ganancias" element={<ConsultarGanancias />} />
         </Routes>
         <Footer/>
        </AuthContextProvider>

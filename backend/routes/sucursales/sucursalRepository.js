@@ -35,4 +35,59 @@ export class sucursalesRepository {
             sucursal: data[0].nombre
         }
     }
+    static async consultarGanancias(fechaInicio, fechaFin) {
+    // Validaciones de fechas
+    const hoy = new Date().toISOString().split("T")[0];
+
+    if (fechaInicio > hoy) {
+      return { status: 400, error: "❌ La fecha de inicio no puede ser mayor a la fecha actual." };
+    }
+
+    if (fechaFin < fechaInicio) {
+      return { status: 400, error: "❌ La fecha de fin no puede ser menor a la de inicio." };
+    }
+
+    // Consulta manual (sin función RPC)
+    const { data, error } = await supabase
+      .from("Reserva")
+      .select(`
+        monto,
+        vehiculo (
+          sucursal (
+            id,
+            nombre
+          )
+        )
+      `)
+      .gte("fechainicio", fechaInicio)
+      .lte("fechafin", fechaFin);
+
+    if (error) {
+      console.error("Error al obtener reservas:", error);
+      return { status: 500, error: "❌ Error al consultar las ganancias." };
+    }
+
+    // Agrupar por sucursal
+    const gananciasPorSucursal = {};
+
+    for (const reserva of data) {
+      const nombreSucursal = reserva.vehiculo?.sucursal?.nombre;
+      if (!nombreSucursal) continue;
+
+      if (!gananciasPorSucursal[nombreSucursal]) {
+        gananciasPorSucursal[nombreSucursal] = 0;
+      }
+      gananciasPorSucursal[nombreSucursal] += reserva.monto || 0;
+    }
+
+    const resultado = Object.entries(gananciasPorSucursal).map(([sucursal, total]) => ({
+      sucursal,
+      total
+    }));
+
+    return {
+      status: 200,
+      data: resultado
+    };
+  }
 }

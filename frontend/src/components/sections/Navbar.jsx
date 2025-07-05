@@ -259,7 +259,14 @@ export default function Navbar() {
                 Devolver auto
               </Link>
             </li>
-
+            <li>  
+              <Link
+                to="/consultar-ganancias"
+                className="text-white hover:text-blue-300 font-semibold px-4 py-2"
+              >
+              Consultar ganancias
+              </Link>
+            </li>
         </ul>
       </div>
     </nav>
