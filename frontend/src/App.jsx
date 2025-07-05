@@ -20,6 +20,7 @@ import ClienteEstadisticasPage from "./pages/estadisticas/ClientesEstadisticasPa
 import VehiculosSucursalPage from "./pages/empleados/VehiculosSucursalPage.jsx";
 import Entregar from "./pages/EntregarAuto.jsx"
 import AlquilerPresencialPage from "./pages/empleados/AlquilerPresencial.jsx";
+import DevolverAutoPage from './pages/empleados/DevolverAuto.jsx';
 
 
 
@@ -58,6 +59,7 @@ export default function App() {
           <Route path="/empleado/registrarAlquiler" element={<AlquilerPresencialPage/>}/>
           <Route path="/registro-presencial" element={<RegisterForm role={'empleado'}/>}/>
           <Route path="/entregar-auto" element={<Entregar/>}/>
+          <Route path="/devolver-auto" element={<DevolverAutoPage />} />
         </Routes>
         <Footer/>
        </AuthContextProvider>

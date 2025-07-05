@@ -253,6 +253,12 @@ export default function Navbar() {
               >
                 Entregar Auto
               </Link>
+            
+            <li>
+              <Link to="/devolver-auto" className="hover:underline">
+                Devolver auto
+              </Link>
+            </li>
 
         </ul>
       </div>
