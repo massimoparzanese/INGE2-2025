@@ -120,6 +120,23 @@ autosInfoRouter.post("/entregar", async (req, res) => {
   return res.status(resultado.status).json(resultado);
 });
 
+router.post("/devolver-auto", async (req, res) => {
+  const { patente } = req.body;
+
+  try {
+    const resultado = await vehiculosRepository.devolverAuto(patente);
+
+    if (resultado.status === 200) {
+      return res.status(200).json({ mensaje: resultado.mensaje });
+    } else {
+      return res.status(resultado.status).json({ error: resultado.error });
+    }
+  } catch (err) {
+    console.error("❌ Error inesperado:", err);
+    return res.status(500).json({ error: "❌ Error inesperado en el servidor." });
+  }
+});
+
 autosInfoRouter.get("/por-empleado/:idempleado", async (req, res) => {
     const { idempleado } = req.params;
 

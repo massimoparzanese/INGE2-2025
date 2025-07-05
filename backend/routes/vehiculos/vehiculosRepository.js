@@ -311,6 +311,56 @@ export class vehiculosRepository {
 }
 
   }
+
+static async devolverAuto(patente) {
+  // 1. Buscar reserva asociada a la patente
+  const { data: reserva, error: errorReserva } = await supabase
+    .from("Reserva")
+    .select("id")
+    .eq("vehiculo", patente)
+    .maybeSingle();
+
+  if (!reserva) {
+    return { status: 404, error: "❌ No existe una reserva para ese vehículo." };
+  }
+
+  const idReserva = reserva.id;
+
+  // 2. Verificar si hay un estado "entregada" sin fechafin
+  const { data: estadoEntregado } = await supabase
+    .from("reserva_estado")
+    .select("*")
+    .eq("reserva", idReserva)
+    .eq("estado", "entregada")
+    .is("fechafin", null)
+    .maybeSingle();
+
+  if (!estadoEntregado) {
+    return {
+      status: 400,
+      error: "❌ El vehículo no ha sido entregado o ya fue devuelto."
+    };
+  }
+
+  // 3. Cerrar estado "entregada"
+  const { error: errorUpdate } = await supabase
+    .from("reserva_estado")
+    .update({ fechafin: new Date().toISOString() })
+    .eq("id", estadoEntregado.id);
+
+  if (errorUpdate) {
+    return {
+      status: 500,
+      error: "❌ Error al cerrar el estado entregado."
+    };
+  }
+
+  return {
+    status: 200,
+    mensaje: "✅ Vehículo devuelto correctamente."
+  };
+}
+
     static async getAutosPorEmpleado(idEmpleado) {
         // 1. Buscar la sucursal del empleado
         const { data: sucursalData, error: errorSucursal } = await supabase
