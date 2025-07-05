@@ -34,7 +34,7 @@ const DevolverAutoPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-red-500 flex items-center justify-center">
+    <div className="min-h-screen bg-red-500  flex items-center justify-center">
       <div className="bg-white p-6 rounded-xl shadow-md w-full max-w-md">
         <h2 className="text-2xl font-bold mb-4 text-center">Devolver Auto</h2>
 

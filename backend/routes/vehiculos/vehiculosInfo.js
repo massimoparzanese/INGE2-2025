@@ -120,7 +120,7 @@ autosInfoRouter.post("/entregar", async (req, res) => {
   return res.status(resultado.status).json(resultado);
 });
 
-router.post("/devolver-auto", async (req, res) => {
+autosInfoRouter.post("/devolver-auto", async (req, res) => {
   const { patente } = req.body;
 
   try {

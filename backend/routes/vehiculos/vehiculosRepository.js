@@ -344,11 +344,14 @@ static async devolverAuto(patente) {
 
   // 3. Cerrar estado "entregada"
   const { error: errorUpdate } = await supabase
-    .from("reserva_estado")
-    .update({ fechafin: new Date().toISOString() })
-    .eq("id", estadoEntregado.id);
+  .from("reserva_estado")
+  .update({ fechafin: new Date().toISOString() })
+  .eq("reserva", idReserva)
+  .eq("estado", "entregada")
+  .is("fechafin", null);
 
   if (errorUpdate) {
+    console.error("❌ Error al hacer UPDATE de reserva_estado:", errorUpdate);
     return {
       status: 500,
       error: "❌ Error al cerrar el estado entregado."
