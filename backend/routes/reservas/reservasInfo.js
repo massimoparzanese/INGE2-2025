@@ -1,12 +1,27 @@
 import { Router } from "express";
 import { reservasRepository } from "./reservasRepository.js";
 import { ReservaEstadoRepository } from "../reservaEstado/reservaEstadoRepository.js";
+import { PerteneceRepository } from "../pertenece/perteneceRepository.js";
+import { autenticacionRepository } from "../acceso/autenticacionRepository.js";
 const reservasInfoRouter = Router();
 
 reservasInfoRouter.post("/disponibles", async(req, res) => {
     try{
         const {sucursal, fechaInicio, fechaFin} = req.body;
         const data = await reservasRepository.patenteEnReservas(fechaInicio,fechaFin,sucursal);
+        res.send(data);
+    }
+    catch(e){
+        res.send(e);
+    }
+});
+
+reservasInfoRouter.post("/disponibles-presencial", async(req, res) => {
+    try{
+        const {email,fechaFin} = req.body;
+        const response = await autenticacionRepository.obtenerId(email);
+        const result = await PerteneceRepository.obtenerSucursalEmpleado(response.id);
+        const data = await reservasRepository.patenteEnReservas(Date.now(),fechaFin, result.sucursal);
         res.send(data);
     }
     catch(e){

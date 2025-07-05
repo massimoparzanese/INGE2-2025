@@ -232,6 +232,20 @@ export default function Navbar() {
               </a>
 
             </li>
+          <li className="hidden md:block">
+              <a
+                href="/empleado/registrarAlquiler"
+                className={`nav-link inline-block px-4 py-2 rounded-md font-semibold transition duration-300 ease-in-out
+                  ${
+                    activeRoute === "/reserva"
+                      ? "bg-red-600 text-white shadow-lg scale-105 brightness-140"
+                      : "bg-red-500 text-white hover:bg-black hover:brightness-140"
+                  }`}
+              >
+                Ver vehículos disponibles
+              </a>
+
+            </li>
               
               <Link
                 to="/entregar-auto"

@@ -29,4 +29,4 @@ export class estadoVehiculoRepository {
             message: "Estado existente en el sistema"
         }
     }
-}
+} 

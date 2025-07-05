@@ -461,7 +461,24 @@ export class autenticacionRepository {
         }
         return {
         status:200,
-        mensaje: 'Registro exitoso'
+        mensaje: 'Registro exitoso',
+        id: data[0].id
     };
+  }
+  static async obtenerId(email){
+    const {data, error} = await supabase
+    .from('Persona')
+    .select('id')
+    .eq('email',email)
+    if(error){
+      return {
+        status:400,
+        message: 'error al obtener id'
+      }
+    }
+    return {
+      status:200,
+      id: data[0].id
+    }
   }
 }

@@ -19,6 +19,7 @@ export class reservasRepository {
 
             const disponibles = [];
             // 2. Para cada vehículo, verificar si tiene reservas superpuestas
+            /*
             for (const vehiculo of data.metaData) {
                 const { data: reservas, error: errorReservas } = await supabase
                 .from('Reserva')
@@ -43,6 +44,70 @@ export class reservasRepository {
                 }
 
             }
+            */
+            for (const vehiculo of data.metaData) {
+                // Paso 1: obtener todas las reservas de este vehículo
+                const { data: reservas, error: errorReservas } = await supabase
+                    .from('Reserva')
+                    .select('id, vehiculo, fechainicio, fechafin')
+                    .eq('vehiculo', vehiculo.patente);
+
+                if (errorReservas) {
+                    return {
+                    status: 400,
+                    message: "No se pudieron obtener las reservas del vehículo",
+                    metaData: errorReservas,
+                    };
+                }
+
+                if (!reservas.length) {
+                    disponibles.push(vehiculo);
+                    continue;
+                }
+
+                // Paso 2: obtener todos los estados asociados a esas reservas
+                const reservaIds = reservas.map(r => r.id);
+
+                const { data: estados, error: errorEstados } = await supabase
+                    .from('reserva_estado')
+                    .select('reserva, estado, fechainicio') // se necesita fecha para saber cuál es el último estado
+                    .in('reserva', reservaIds);
+
+                if (errorEstados) {
+                    return {
+                    status: 400,
+                    message: "No se pudieron obtener los estados de las reservas",
+                    metaData: errorEstados,
+                    };
+                }
+
+                // Paso 3: quedarnos con el último estado de cada reserva
+                const estadoActualPorReserva = new Map();
+
+                for (const e of estados) {
+                    const actual = estadoActualPorReserva.get(e.reserva);
+                    if (!actual || new Date(e.fecha) > new Date(actual.fecha)) {
+                    estadoActualPorReserva.set(e.reserva, e);
+                    }
+                }
+
+                // Paso 4: filtrar solo las reservas cuyo estado actual sea 'activa'
+                const reservasActivas = reservas.filter(r => {
+                    const estadoFinal = estadoActualPorReserva.get(r.id);
+                    return estadoFinal?.estado === 'activa';
+                });
+
+                // Paso 5: buscar superposición de fechas
+                const hayConflicto = reservasActivas.some(r =>
+                    ReservaUtils.overlaps(fechaInicio, fechaFin, r.fechainicio, r.fechafin)
+                );
+
+                if (hayConflicto) {
+                    console.log(`Vehículo ${vehiculo.patente} NO disponible: conflicto de fechas`);
+                } else {
+                    disponibles.push(vehiculo);
+                }
+                }
 
 
             return {
