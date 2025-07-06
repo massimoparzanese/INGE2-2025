@@ -1,30 +1,41 @@
 import { useState } from "react"
 import Calendario from "../../components/Calendario.jsx"
 import { useAuth } from "../../context/AuthContext";
+import FormularioPresencial from "../../components/FormPresencial.jsx";
 export default function AlquilerPresencial(){
     const { user } = useAuth();
-    const [fechaFin,setFechaFin] = useState(null);
     const [vehicles, setVehicles] = useState([]);
-    const [vehiculoSeleccionado, setVehiculoSeleccionado] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [busquedaRealizada, setBusquedaRealizada] = useState(false);
     const [formData, setFormData] = useState({
     dni: '',
     nombre: '',
-    fechaNacimiento: '',
-    adicionales: []
+    fechaNacimiento: null,
+    fechaFin:null,
+    adicionales: [],
+    vehiculo: null,
     });
 
-
-    const handleSeleccionarVehiculo = (vehicle) => {
-    setVehiculoSeleccionado(vehicle);
+    const handleSeleccionarVehiculo = (vehiculo) => {
+    setFormData((prev) => ({
+        ...prev,
+        vehiculo,
+    }));
     };
+    const handleSeleccionarFecha = (fecha) => {
+    setFormData((prev) => ({
+        ...prev,
+        fechaFin: fecha,
+    }));
+    };
+
    const handleAccept = async () => {
+    // Busca los vehículos al backend que estén disponibles en las fechas
     if (user) {
         try {
             setIsLoading(true);
             setBusquedaRealizada(true);
-            const response = await fetch(`http://localhost:3001/reservas/disponibles-presencial`, {
+            const response = await fetch(`http://localhost:3001/reservas/disponibles/presencial`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -32,7 +43,7 @@ export default function AlquilerPresencial(){
                 },
                 body: JSON.stringify({
                     email: user,
-                    fechaFin: fechaFin
+                    fechaFin: formData.fechaFin
                 }),
             });
 
@@ -48,23 +59,6 @@ export default function AlquilerPresencial(){
         }
     }
 };
-    const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-        ...prev,
-        [name]: value,
-    }));
-    };
-    const toggleAdicional = (opcion) => {
-    setFormData((prev) => ({
-        ...prev,
-        adicionales: prev.adicionales.includes(opcion)
-        ? prev.adicionales.filter((item) => item !== opcion)
-        : [...prev.adicionales, opcion],
-    }));
-    };
-
-
 
     return (
         <section className="flex justify-center items-center min-h-screen pt-20 ">
@@ -81,8 +75,8 @@ export default function AlquilerPresencial(){
                     <p className="text-xs font-semibold mb-2">
                     ¿En qué fechas desea ver vehículos disponibles?
                     </p>
-                    <Calendario setFec={setFechaFin} minimo={Date.now()} />
-                    {fechaFin && (
+                    <Calendario setFec={handleSeleccionarFecha} minimo={Date.now()} />
+                    {formData.fechaFin && (
                     <div className="pt-4">
                         <button
                         onClick={() => {
@@ -112,7 +106,7 @@ export default function AlquilerPresencial(){
                         onClick={() => handleSeleccionarVehiculo(vehicle)}
                         className={`group relative cursor-pointer rounded-2xl border-4 border-[#7c1212] overflow-hidden shadow-lg transition-transform duration-300
                         ${
-                            vehiculoSeleccionado?.patente === vehicle.patente
+                            formData.vehiculo?.patente === vehicle.patente
                             ? 'ring-2 ring-yellow-400'
                             : 'hover:scale-105'
                         }`}
@@ -141,63 +135,20 @@ export default function AlquilerPresencial(){
                 </ul>
                 </>
                 )}
-                {vehiculoSeleccionado && (
-                    <div className="mt-6 p-4 bg-[#2c3e50] rounded-lg shadow-inner space-y-4">
-                        <h3 className="text-lg font-semibold text-white">Complete los datos para continuar:</h3>
-
-                        <div className="flex flex-col gap-2">
-                        <label className="text-sm text-white">
-                            DNI
-                            <input
-                            type="text"
-                            name="dni"
-                            value={formData.dni}
-                            onChange={handleInputChange}
-                            className="w-full mt-1 p-2 rounded bg-gray-100 text-black"
-                            />
-                        </label>
-
-                        <label className="text-sm text-white">
-                            Nombre completo
-                            <input
-                            type="text"
-                            name="nombre"
-                            value={formData.nombre}
-                            onChange={handleInputChange}
-                            className="w-full mt-1 p-2 rounded bg-gray-100 text-black"
-                            />
-                        </label>
-
-                        <label className="text-sm text-white">
-                            Fecha de nacimiento
-                            <input
-                            type="date"
-                            name="fechaNacimiento"
-                            value={formData.fechaNacimiento}
-                            onChange={handleInputChange}
-                            className="w-full mt-1 p-2 rounded bg-gray-100 text-black"
-                            />
-                        </label>
-                        </div>
-
-                        <div className="mt-4">
-                        <p className="text-sm font-semibold text-white mb-2">Adicionales:</p>
-                        <div className="flex flex-col gap-1 text-white text-sm">
-                            {['Silla de bebe', 'Tanque lleno', 'Seguro ($100 USD)'].map((opcion) => (
-                            <label key={opcion}>
-                                <input
-                                type="checkbox"
-                                checked={formData.adicionales.includes(opcion)}
-                                onChange={() => toggleAdicional(opcion)}
-                                className="mr-2"
-                                />
-                                {opcion}
-                            </label>
-                            ))}
-                        </div>
-                        </div>
-                    </div>
-                    )}
+                {formData.vehiculo && (
+                <FormularioPresencial formData={formData} setFormData={setFormData} />
+                )}
+                {formData.dni !== '' && formData.nombre !== '' &&
+                formData.fechaNacimiento !== null && (
+                <div className="pt-4">
+                    <button
+                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                    //onClick={}
+                    >
+                    Confirmar y Pagar
+                    </button>
+                </div>
+                )}
 
             </aside>
             </section>

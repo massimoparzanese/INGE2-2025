@@ -16,13 +16,13 @@ reservasInfoRouter.post("/disponibles", async(req, res) => {
     }
 });
 
-reservasInfoRouter.post("/disponibles-presencial", async(req, res) => {
+reservasInfoRouter.post("/disponibles/presencial", async(req, res) => {
     try{
         const {email,fechaFin} = req.body;
         const response = await autenticacionRepository.obtenerId(email);
         const result = await PerteneceRepository.obtenerSucursalEmpleado(response.id);
         const data = await reservasRepository.patenteEnReservas(Date.now(),fechaFin, result.sucursal);
-        console.log("data es" + JSON.stringify(data))
+        console.log("Llegó la petición")
         res.send(data);
     }
     catch(e){
