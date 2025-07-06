@@ -1,14 +1,18 @@
-import React from "react";
+import React, { useEffect } from "react";
 
-const ListaVehiculosSucursal = ({ vehiculos }) => {
+export default function ListaVehiculosSucursal ({ vehiculos }) {
+  useEffect (() => {
+    console.log("autillos")
+    console.log(vehiculos)
+  },[vehiculos])
   if (!vehiculos || vehiculos.length === 0) {
-    return <p>No se encontraron vehículos.</p>;
+    return <p className="flex justify-center items-center min-h-screen bg-red-800 p-4 pt-20 pb-10">No se encontraron vehículos.</p>;
   }
-
+  
   return (
-    <div>
-      <h2>Vehículos pendientes para entregar</h2>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
+    <div className="flex justify-center items-center min-h-screen bg-red-800 p-4 pt-20 pb-10">
+      <h2 className="text-white">Vehículos pendientes para entregar</h2>
+      <div className="relative w-full max-w-7xl mx-auto bg-white p-5 rounded-xl shadow-md">
         {vehiculos.map((v) => (
           <div
             key={v.patente}
@@ -47,4 +51,3 @@ const ListaVehiculosSucursal = ({ vehiculos }) => {
   );
 };
 
-export default ListaVehiculosSucursal;

@@ -168,7 +168,7 @@ autosInfoRouter.post("/por-email-empleado", async (req, res) => {
     }
 
     const result = await vehiculosRepository.getAutosPorEmpleado(empleado.id);
-
+    console.log(result)
     return res.status(result.status).json({
       message: result.message,
       metaData: result.metaData || null,

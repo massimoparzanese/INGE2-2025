@@ -3,7 +3,7 @@ import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
 import ListaVehiculosSucursal from "../../components/ListarVehiculosSucursal";
 
-const VehiculosSucursalPage = () => {
+export default function VehiculosSucursalPage (){
   const { user, role } = useAuth();
   const [vehiculos, setVehiculos] = useState([]);
   const [cargando, setCargando] = useState(true);
@@ -36,10 +36,27 @@ const VehiculosSucursalPage = () => {
     obtenerVehiculosSucursal();
   }, [user]);
 
-  if (cargando) return <p>Cargando vehículos de la sucursal...</p>;
-  if (role?.rol?.trim() !== "empleado") return <p>Solo los empleados pueden ver esta información.</p>;
+  //if (cargando) return <p>Cargando vehículos de la sucursal...</p>;
+  //if (role?.rol?.trim() !== "empleado") return <p>Solo los empleados pueden ver esta información.</p>;
 
-  return <ListaVehiculosSucursal vehiculos={vehiculos} />;
+  return (
+    <>
+    {role === 'empleado' ? (
+    cargando ? (
+      <div className="p-6">
+        <h2 className="text-xl font-semibold mb-4 pt-12 items-center justify-center flex flex-col text-white"></h2>
+        <p className='text-white'>Cargando vehículos de la sucursal...</p>
+      </div>
+    ) : (
+      <ListaVehiculosSucursal vehiculos={vehiculos} />
+    )
+    ) : (
+      <div className="p-6">
+        <p className="text-white-500">Solo los empleados pueden ver esta información</p>
+      </div>
+    )}
+
+  </>
+  )
 };
 
-export default VehiculosSucursalPage;
