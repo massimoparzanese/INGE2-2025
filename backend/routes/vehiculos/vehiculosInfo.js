@@ -160,6 +160,7 @@ autosInfoRouter.get("/por-empleado/:idempleado", async (req, res) => {
 autosInfoRouter.post("/por-email-empleado", async (req, res) => {
   try {
     const { email } = req.body;
+    console.log("📩 Email recibido en /por-email-empleado:", email);  // BORRAR
 
     const empleado = await autenticacionRepository.obtenerId(email);
     if (!empleado || !empleado.id) {
@@ -173,6 +174,7 @@ autosInfoRouter.post("/por-email-empleado", async (req, res) => {
       metaData: result.metaData || null,
     });
   } catch (error) {
+    console.error("❌ Error en /por-email-empleado:", error);  // BORRAR
     return res.status(500).json({
       message: "Error al obtener vehículos por empleado",
       metaData: error,

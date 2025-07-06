@@ -77,7 +77,7 @@ export class vehiculosRepository {
   }
 
   static async getAutosPorEmpleado(idEmpleado) {
-    // 1. Buscar la sucursal del empleado
+    // 1. Buscar el ID de la sucursal del empleado
     const { data: sucursalData, error: errorSucursal } = await supabase
       .from('Pertenece')
       .select('idsucursal')
@@ -92,7 +92,24 @@ export class vehiculosRepository {
       };
     }
 
-    // 2. Buscar vehículos de esa sucursal
+    // 2. Buscar el nombre de la sucursal
+    const { data: sucursalNombreData, error: errorNombre } = await supabase
+      .from('Sucursal')
+      .select('nombre')
+      .eq('id', sucursalData.idsucursal)
+      .maybeSingle();
+
+    if (errorNombre || !sucursalNombreData) {
+      return {
+        status: 404,
+        message: "No se pudo obtener el nombre de la sucursal",
+        metaData: errorNombre || {},
+      };
+    }
+
+    const nombreSucursal = sucursalNombreData.nombre;
+
+    // 3. Buscar vehículos de esa sucursal (usando el nombre)
     const { data, error } = await supabase
       .from('Vehiculo')
       .select(`
@@ -111,7 +128,7 @@ export class vehiculosRepository {
           )
         )
       `)
-      .eq('sucursal', sucursalData.idsucursal)
+      .eq('sucursal', nombreSucursal)
       .eq('eliminado', false);
 
     if (error) {
@@ -122,20 +139,15 @@ export class vehiculosRepository {
       };
     }
 
-    if (data.length === 0) {
-      return {
-        status: 200,
-        message: "La sucursal no cuenta con vehículos para listar",
-        metaData: [],
-      };
-    }
-
     return {
       status: 200,
-      message: "Vehículos obtenidos correctamente",
+      message: data.length > 0 
+        ? "Vehículos obtenidos correctamente"
+        : "La sucursal no cuenta con vehículos para listar",
       metaData: data,
     };
   }
+
 
   // Otros métodos (agregar, editar, eliminar, entregar, devolver) aquí...
 

@@ -19,12 +19,15 @@ const VehiculosSucursalPage = () => {
       try {
         const response = await axios.post(
           "http://localhost:3001/vehiculos/por-email-empleado",
-          { email: user.nombre },
+          { email: user },
           { withCredentials: true }
         );
 
-        console.log("Vehículos obtenidos:", response.data);
+        console.log("📦 Respuesta completa:", response.data); //BORRAR
+        console.log("📁 metaData:", response.data.metaData); //BORRAR
         setVehiculos(response.data.metaData || []);
+        console.log("🧪 Primer vehículo recibido:", response.data.metaData[0]); //BORRAR
+        console.log("🧪 Lista completa:", response.data.metaData); //BORRAR
       } catch (error) {
         console.error("Error al obtener vehículos:", error);
       } finally {
@@ -37,6 +40,8 @@ const VehiculosSucursalPage = () => {
 
   if (cargando) return <p>Cargando vehículos de la sucursal...</p>;
   if (role?.rol?.trim() !== "empleado") return <p>Solo los empleados pueden ver esta información.</p>;
+
+  console.log(vehiculos[0]); //BORRAR
 
   return <ListaVehiculosSucursal vehiculos={vehiculos} />;
 };
