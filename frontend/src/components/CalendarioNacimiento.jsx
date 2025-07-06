@@ -22,6 +22,7 @@ export default function CalendarioFechaNacimiento({
       maxDate={maxDate}
       minDate={minDate}
       yearDropdownItemNumber={yearRange}
+      popperPlacement="top-start"
     />
   );
 }
