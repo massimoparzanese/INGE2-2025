@@ -174,7 +174,7 @@ export class reservasRepository {
 
         console.log(reserva1)
         return {
-            stauts: 200,
+            status: 200,
             message: "Reserva exitosa",
             id: reserva1[0].id
         };
@@ -213,9 +213,85 @@ export class reservasRepository {
             }
 
             return { status: 200, data };
-
-
-
     }
+
+    static async vehiculosPendientesEntrega(sucursal) {
+  // 1. Traer todos los vehículos de la sucursal
+  const data = await vehiculosRepository.getSpecifyAutosInfo(sucursal);
+
+  if (data.status >= 400) {
+    return {
+      status: 400,
+      message: "No se pudieron obtener los vehículos de la sucursal",
+      metaData: data,
+    };
+  }
+
+  const pendientes = [];
+
+  for (const vehiculo of data.metaData) {
+    // Obtener todas las reservas del vehículo
+    const { data: reservas, error: errorReservas } = await supabase
+      .from("Reserva")
+      .select("id, vehiculo, fechainicio, fechafin")
+      .eq("vehiculo", vehiculo.patente);
+
+    if (errorReservas) {
+      return {
+        status: 400,
+        message: "No se pudieron obtener las reservas del vehículo",
+        metaData: errorReservas,
+      };
+    }
+
+    if (!reservas.length) continue;
+
+    // Obtener estados de esas reservas
+    const reservaIds = reservas.map((r) => r.id);
+
+    const { data: estados, error: errorEstados } = await supabase
+      .from("reserva_estado")
+      .select("reserva, estado, fechainicio")
+      .in("reserva", reservaIds);
+
+    if (errorEstados) {
+      return {
+        status: 400,
+        message: "No se pudieron obtener los estados de las reservas",
+        metaData: errorEstados,
+      };
+    }
+
+    // Mapear el último estado por reserva
+    const estadoActualPorReserva = new Map();
+
+    for (const e of estados) {
+      const actual = estadoActualPorReserva.get(e.reserva);
+      if (!actual || new Date(e.fechainicio) > new Date(actual.fechainicio)) {
+        estadoActualPorReserva.set(e.reserva, e);
+      }
+    }
+
+    // Filtrar reservas activas que aún no han sido entregadas
+    const hoy = new Date();
+    const reservasPendientes = reservas.filter((r) => {
+      const estadoFinal = estadoActualPorReserva.get(r.id);
+      return (
+        estadoFinal?.estado === "activa" &&
+        new Date(r.fechainicio) <= hoy
+      );
+    });
+
+    if (reservasPendientes.length > 0) {
+      pendientes.push(vehiculo);
+    }
+  }
+
+  return {
+    status: 200,
+    pendientes,
+  };
+}
+
 
 }

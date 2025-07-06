@@ -13,6 +13,8 @@ export default function Navbar() {
   const [clientesOpen, setClientesOpen] = useState(false);
 
   const { user, isAuthenticated, setIsAuthenticated, setRole, setUser, role } = useContext(AuthContext);
+  console.log("ROL:", role); //borrar
+
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -198,6 +200,16 @@ export default function Navbar() {
                   </Link>
                 )} 
                 </li>
+                {isAuthenticated && role === 'empleado' && (
+                  <li>
+                    <Link
+                      to="/empleado/vehiculos"
+                      className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors duration-200"
+                    >
+                      Vehículos de mi sucursal
+                    </Link>
+                  </li>
+                )}
                 <li>
                   <Link
                     to="/admin/catalogoVehiculos"

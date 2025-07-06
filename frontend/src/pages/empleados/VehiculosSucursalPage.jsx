@@ -1,42 +1,44 @@
-import ListaVehiculosSucursal from "../../components/ListarVehiculosSucursal";
-import { useAuth } from "../../context/AuthContext";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useAuth } from "../../context/AuthContext";
+import ListaVehiculosSucursal from "../../components/ListarVehiculosSucursal";
 
 const VehiculosSucursalPage = () => {
-  const { user } = useAuth();
-  const [idEmpleado, setIdEmpleado] = useState(null);
+  const { user, role } = useAuth();
+  const [vehiculos, setVehiculos] = useState([]);
   const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
-    const obtenerDatosEmpleado = async () => {
-      if (!user) return;
+    const obtenerVehiculosSucursal = async () => {
+      if (!user) {
+        console.log("No hay usuario logueado o falta email.");
+        setCargando(false);
+        return;
+      }
 
       try {
-        const res = await axios.get(`http://localhost:3000/usuario/${user.id}`);
-        const { idpersona, rol } = res.data;
+        const response = await axios.post(
+          "http://localhost:3001/vehiculos/por-email-empleado",
+          { email: user.nombre },
+          { withCredentials: true }
+        );
 
-        if (rol !== "empleado") {
-          setIdEmpleado(null);
-        } else {
-          setIdEmpleado(idpersona);
-        }
+        console.log("Vehículos obtenidos:", response.data);
+        setVehiculos(response.data.metaData || []);
       } catch (error) {
-        console.error("Error al obtener datos del empleado:", error);
-        setIdEmpleado(null);
+        console.error("Error al obtener vehículos:", error);
       } finally {
         setCargando(false);
       }
     };
 
-    obtenerDatosEmpleado();
+    obtenerVehiculosSucursal();
   }, [user]);
 
-  if (cargando) return <p>Cargando información del empleado...</p>;
+  if (cargando) return <p>Cargando vehículos de la sucursal...</p>;
+  if (role?.rol?.trim() !== "empleado") return <p>Solo los empleados pueden ver esta información.</p>;
 
-  if (!idEmpleado) return <p>Solo los empleados pueden ver los vehículos de su sucursal.</p>;
-
-  return <ListaVehiculosSucursal idempleado={idEmpleado} />;
+  return <ListaVehiculosSucursal vehiculos={vehiculos} />;
 };
 
 export default VehiculosSucursalPage;

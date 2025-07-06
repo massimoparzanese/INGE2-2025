@@ -1,6 +1,8 @@
 import { Router } from "express";
 import { vehiculosRepository } from "../vehiculos/vehiculosRepository.js";
 import supabase from "../supabaseClient.js";
+import { autenticacionRepository } from "../acceso/autenticacionRepository.js";
+
 
 const autosInfoRouter = Router();
 
@@ -153,6 +155,29 @@ autosInfoRouter.get("/por-empleado/:idempleado", async (req, res) => {
             metaData: error,
         });
     }
+});
+
+autosInfoRouter.post("/por-email-empleado", async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const empleado = await autenticacionRepository.obtenerId(email);
+    if (!empleado || !empleado.id) {
+      return res.status(404).json({ message: "Empleado no encontrado" });
+    }
+
+    const result = await vehiculosRepository.getAutosPorEmpleado(empleado.id);
+
+    return res.status(result.status).json({
+      message: result.message,
+      metaData: result.metaData || null,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error al obtener vehículos por empleado",
+      metaData: error,
+    });
+  }
 });
 
 
