@@ -48,17 +48,5 @@ autenticacionInfoRouter.post('/registro-presencial', async (req, res) => {
   }
 });
 
-autenticacionInfoRouter.post('/obtener-por-rol', async (req, res) => {
-  try{
-    const { rol } = req.body;
-    const data = await autenticacionRepository.obtenerPorRol(rol);
-
-    res.send(data);
-  }
-  catch (e){
-    res.send(e);
-  }
-})
-
 
 export default autenticacionInfoRouter;

@@ -4,7 +4,7 @@ import { Plus } from "lucide-react";
 import { AuthContext } from "../../context/AuthContextFunct";
 import { Link } from 'react-router-dom';
 export default function AdminCatalogoVehiculos (){
-  const { isAuthenticated, role } = useContext(AuthContext);
+    const { isAuthenticated, role } = useContext(AuthContext);
     const [vehiculos, setVehiculos] = useState([]);
     const [cargando, setCargando] = useState(true);
     const [inputModelo, setInputModelo] = useState("");

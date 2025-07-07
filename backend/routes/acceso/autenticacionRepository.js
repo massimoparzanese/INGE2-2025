@@ -481,11 +481,24 @@ export class autenticacionRepository {
       id: data[0].id
     }
   }
-  static async obtenerPorRol(rol){
+  static async obtenerEmpleados(){
     const {data, error} = await supabase
     .from('Persona')
-    .select('nombre', 'apellido', 'fechanacimiento', 'dni', 'email')
-    .eq('rol', rol)
+    .select(`
+      nombre,
+      apellido, 
+      fechanacimiento, 
+      dni, 
+      email,
+      Pertenece 
+        (
+          Sucursal 
+            (nombre)
+          )
+          `) 
+      .textSearch('rol', 'empleado')
+
+    console.log(data)
 
     if(error){
       return {
@@ -495,7 +508,7 @@ export class autenticacionRepository {
     }
     return {
       status:200,
-      id: data
+      personas: data
     }
   }
 }
