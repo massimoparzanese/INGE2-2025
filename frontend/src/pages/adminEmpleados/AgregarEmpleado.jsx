@@ -8,9 +8,10 @@ export default function AgregarEmpleado() {
     nombre: "",
     apellido: "",
     dni: "",
-    nacimiento: "",
+    fechanacimiento: "",
     email: "",
     sucursal: "",
+    rol: "empleado"
   });
 
   const [mensaje, setMensaje] = useState(null);
@@ -20,7 +21,7 @@ export default function AgregarEmpleado() {
   const agregarEmpleado = async (empleado) => {
     setEnviando(true);
     try {
-      const response = await fetch("http://localhost:3001/empleados/agregar", {
+      const response = await fetch("http://localhost:3001/auth/registro-empleado", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -30,10 +31,11 @@ export default function AgregarEmpleado() {
 
       const result = await response.json();
       console.log(result);
-      setMensaje(result.message);
-      return response.status;
+      setMensaje(result.message || result.error);
+      
     } catch (error) {
       setMensaje("Error inesperado, intente más tarde");
+      console.log(error)
       return false;
     } finally {
       setEnviando(false);
@@ -53,9 +55,10 @@ export default function AgregarEmpleado() {
         nombre: "",
         apellido: "",
         dni: "",
-        nacimiento: "",
+        fechanacimiento: "",
         email: "",
         sucursal: "",
+        rol: "empleado"
       });
       setMostrarFormulario(false);
     }
@@ -101,11 +104,11 @@ export default function AgregarEmpleado() {
             className="w-full p-2 border rounded"
             required
           />
-          <label htmlFor="nacimiento">Fecha de nacimiento</label>
+          <label htmlFor="fechanacimiento">Fecha de nacimiento</label>
           <input
             type="date"
-            name="nacimiento"
-            value={form.nacimiento}
+            name="fechanacimiento"
+            value={form.fechanacimiento}
             onChange={handleChange}
             className="w-full p-2 border rounded"
             required

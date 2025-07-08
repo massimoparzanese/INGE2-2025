@@ -51,7 +51,7 @@ export default function App() {
           <Route path="/misReservas" element={<MisReservas/>}/>
           <Route path="/estadisticas/clientes" element={<ClienteEstadisticasPage/>}/>
           <Route path="/listado-empleados" element={<AdminListadoEmpleados/>}/>
-          <Route path="/agregar-empleados" element={<AgregarEmpleado/>}/>
+          <Route path="/agregar-empleado" element={<AgregarEmpleado/>}/>
           <Route
             path="/empleado/vehiculos"
             element={
