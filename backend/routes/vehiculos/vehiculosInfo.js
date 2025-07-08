@@ -182,5 +182,18 @@ autosInfoRouter.post("/por-email-empleado", async (req, res) => {
   }
 });
 
+autosInfoRouter.post("/pendientes", async (req, res) => {
+  const { email } = req.body;
+
+  const resultado = await vehiculosRepository.getVehiculosPendientesPorEmail(email);
+
+  return res.status(resultado.status).json({
+    message: resultado.message,
+    metaData: resultado.metaData || [],
+  });
+});
+
+
+
 
 export default autosInfoRouter;

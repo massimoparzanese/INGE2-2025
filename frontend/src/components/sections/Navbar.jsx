@@ -201,14 +201,24 @@ export default function Navbar() {
                 )} 
                 </li>
                 {isAuthenticated && role === 'empleado' && (
-                  <li>
-                    <Link
-                      to="/empleado/vehiculos"
-                      className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors duration-200"
-                    >
-                      Vehículos de mi sucursal
-                    </Link>
-                  </li>
+                  <>
+                    <li>
+                      <Link
+                        to="/empleado/vehiculos"
+                        className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors duration-200"
+                      >
+                        Vehículos de mi sucursal
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        to="/empleado/vehiculos-pendientes"
+                        className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors duration-200"
+                      >
+                        Autos pendientes para entregar
+                      </Link>
+                    </li>
+                  </>
                 )}
                 <li>
                   <Link

@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
 import ListaVehiculosSucursal from "../../components/ListarVehiculosSucursal";
 
@@ -17,15 +16,21 @@ export default function VehiculosSucursalPage (){
       }
 
       try {
-        const response = await axios.post(
-          "http://localhost:3001/vehiculos/por-email-empleado",
-          { email: user },  // Aquí usamos el email directamente
-          { withCredentials: true }
-        );
+        const response = await fetch("http://localhost:3001/vehiculos/por-email-empleado", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          credentials: "include",
+          body: JSON.stringify({ email: user })
+        });
 
-        console.log("📦 Respuesta completa:", response.data);
-        console.log("📁 metaData:", response.data.metaData);
-        setVehiculos(response.data.metaData || []);
+        if (!response.ok) throw new Error("Error al obtener los vehículos.");
+
+        const data = await response.json();
+        console.log("📦 Respuesta completa:", data);
+        console.log("📁 metaData:", data.metaData);
+        setVehiculos(data.metaData || []);
       } catch (error) {
         console.error("Error al obtener vehículos:", error);
       } finally {
@@ -36,8 +41,8 @@ export default function VehiculosSucursalPage (){
     obtenerVehiculosSucursal();
   }, [user]);
 
-  //if (cargando) return <p>Cargando vehículos de la sucursal...</p>;
-  //if (role?.rol?.trim() !== "empleado") return <p>Solo los empleados pueden ver esta información.</p>;
+  //if (cargando) return <p>Cargando vehículos de la sucursal...</p>; Esta línea queda eliminada porque generaba error
+  //if (role?.rol?.trim() !== "empleado") return <p>Solo los empleados pueden ver esta información.</p>; Esta línea también generaba error
 
   return (
     <>
