@@ -16,19 +16,20 @@ export default function VehiculosPendientesPage() {
       }
 
       try {
-        const response = await fetch("http://localhost:3001/api/vehiculos/pendientes", {
+        console.log("mail que se envia: " + user);
+        const response = await fetch("http://localhost:3001/vehiculos/pendientes", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
             credentials: "include",
-            body: JSON.stringify({ email: user.email })
+            body: JSON.stringify({ email: user })
             });
 
             if (!response.ok) throw new Error("Error al obtener los vehículos.");
 
             const data = await response.json();
-            setVehiculos(data);
+            setVehiculos(data.metaData || []);
       } catch (error) {
         console.error("Error al obtener vehículos pendientes:", error);
       } finally {

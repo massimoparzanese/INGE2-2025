@@ -447,14 +447,17 @@ export class vehiculosRepository {
 
   static async getVehiculosPendientesPorEmail(email) {
     try {
+      console.log("📩 Email recibido en getVehiculosPendientesPorEmail:", email);
       // 1. Obtener ID del empleado a partir del email
       const { data: empleado, error: errorEmpleado } = await supabase
-        .from("Empleado")
-        .select("idempleado")
+        .from("Persona")
+        .select("id, Rol(nombre)")
         .eq("email", email)
+        .eq("Rol.nombre", "empleado")
         .maybeSingle();
 
       if (errorEmpleado || !empleado) {
+        console.log("❌ Persona no encontrada o error:", errorEmpleado);
         return {
           status: 404,
           message: "Empleado no encontrado",
@@ -466,10 +469,11 @@ export class vehiculosRepository {
       const { data: sucursalData, error: errorSucursal } = await supabase
         .from("Pertenece")
         .select("idsucursal")
-        .eq("idempleado", empleado.idempleado)
+        .eq("idempleado", empleado.id)
         .maybeSingle();
 
       if (errorSucursal || !sucursalData) {
+         console.log("❌ Sucursal no encontrada:", errorSucursal);
         return {
           status: 404,
           message: "No se pudo encontrar la sucursal del empleado",
@@ -477,9 +481,11 @@ export class vehiculosRepository {
         };
       }
 
+       console.log("✅ Sucursal encontrada:", sucursalData);
       const idSucursal = sucursalData.idsucursal;
 
       // 3. Buscar vehículos de esa sucursal con reservas activas
+      const hoyISO = new Date().toISOString();
       const { data: vehiculos, error: errorVehiculos } = await supabase
         .from("Vehiculo")
         .select(`
@@ -502,11 +508,12 @@ export class vehiculosRepository {
                 .from("reserva_estado")
                 .select("reserva")
                 .eq("estado", "activa")
-                .is("fechafin", null)
+                .gte("fechafin", hoyISO)
             )
         );
 
       if (errorVehiculos) {
+         console.error("❌ Error inesperado:", error);
         return {
           status: 500,
           message: "Error al obtener vehículos pendientes",
