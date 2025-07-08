@@ -21,6 +21,8 @@ import VehiculosSucursalPage from "./pages/empleados/VehiculosSucursalPage.jsx";
 import Entregar from "./pages/EntregarAuto.jsx"
 import AlquilerPresencialPage from "./pages/empleados/AlquilerPresencial.jsx";
 import DevolverAutoPage from './pages/empleados/DevolverAuto.jsx';
+import AdminListadoEmpleados from "./pages/adminEmpleados/AdminListadoEmpleados.jsx";
+import AgregarEmpleado from "./pages/adminEmpleados/agregarEmpleado.jsx";
 
 
 
@@ -48,6 +50,8 @@ export default function App() {
           <Route path="/pago-fallido" element={<PagoFallido/>}/>
           <Route path="/misReservas" element={<MisReservas/>}/>
           <Route path="/estadisticas/clientes" element={<ClienteEstadisticasPage/>}/>
+          <Route path="/listado-empleados" element={<AdminListadoEmpleados/>}/>
+          <Route path="/agregar-empleado" element={<AgregarEmpleado/>}/>
           <Route
             path="/empleado/vehiculos"
             element={

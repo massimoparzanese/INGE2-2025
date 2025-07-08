@@ -481,4 +481,34 @@ export class autenticacionRepository {
       id: data[0].id
     }
   }
+  static async obtenerEmpleados(){
+    const {data, error} = await supabase
+    .from('Persona')
+    .select(`
+      nombre,
+      apellido, 
+      fechanacimiento, 
+      dni, 
+      email,
+      Pertenece 
+        (
+          Sucursal 
+            (nombre)
+          )
+          `) 
+      .textSearch('rol', 'empleado')
+
+    console.log(data)
+
+    if(error){
+      return {
+        status:400,
+        message: 'error al obtener los empleados'
+      }
+    }
+    return {
+      status:200,
+      personas: data
+    }
+  }
 }

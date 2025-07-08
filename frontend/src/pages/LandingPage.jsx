@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import ProductCard from "../components/ProductCard";
 import { AuthContext } from "../context/AuthContextFunct";
 import { useLocation } from "react-router-dom";
+import { Link } from "react-router-dom"; 
 
 
 export default function LandingPage() {
@@ -81,6 +82,13 @@ useEffect(() => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen w-full">
       <h1 className="text-4xl font-bold text-white mb-4 pt-20">Alquileres María</h1>
+      <div className="w-full flex justify-end px-4 mb-4">
+        <Link to="/listado-empleados">
+          <button className="bg-red-600 px-3 py-2 rounded hover:bg-red-500 text-white">
+            Ver empleados
+          </button>
+        </Link>
+      </div>
       <p className="text-lg text-white mb-8">Bienvenido/a {user}</p>
       
       <section className="relative">
