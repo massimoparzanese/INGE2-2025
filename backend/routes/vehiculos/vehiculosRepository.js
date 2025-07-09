@@ -482,13 +482,29 @@ export class vehiculosRepository {
 
       console.log("✅ Sucursal encontrada:", sucursalData);
       const idSucursal = sucursalData.idsucursal;
-      const hoyISO = new Date().toISOString();
+
+      // Obtener el nombre real de la sucursal según su ID
+      const { data: sucursalNombreData, error: errorNombre } = await supabase
+        .from('Sucursal')
+        .select('nombre')
+        .eq('id', idSucursal)
+        .maybeSingle();
+
+      if (errorNombre || !sucursalNombreData) {
+        return {
+          status: 404,
+          message: "No se pudo obtener el nombre de la sucursal",
+          metaData: errorNombre || null,
+        };
+      }
+
+      const nombreSucursal = sucursalNombreData.nombre;
 
       const { data: reservasActivas, error: errorReservas } = await supabase
         .from("reserva_estado")
         .select("reserva")
         .eq("estado", "activa")
-        .gte("fechafin", hoyISO);
+        .is("fechafin", null);
 
       if (errorReservas) {
         console.error("❌ Error al obtener reservas activas:", errorReservas);
@@ -500,6 +516,9 @@ export class vehiculosRepository {
       }
 
       const idsReservasActivas = reservasActivas.map(r => r.reserva);
+
+      console.log("🟡 Reservas activas encontradas:", reservasActivas); //borrar
+
       if (idsReservasActivas.length === 0) {
         return {
           status: 200,
@@ -522,6 +541,8 @@ export class vehiculosRepository {
         };
       }
 
+      console.log("🚘 Vehículos asociados a las reservas activas:", reservasVehiculos);
+
       const patentesActivas = reservasVehiculos.map(r => r.vehiculo);
 
       const { data: vehiculos, error: errorVehiculos } = await supabase
@@ -542,7 +563,7 @@ export class vehiculosRepository {
             )
           )
         `)
-        .eq("sucursal", idSucursal)
+        .eq("sucursal", nombreSucursal)
         .in("patente", patentesActivas);
 
       if (errorVehiculos) {

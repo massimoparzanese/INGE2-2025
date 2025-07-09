@@ -45,7 +45,7 @@ export default function VehiculosPendientesPage() {
   return (
     <div>
       <h1>Autos pendientes para entregar</h1>
-      <ListaVehiculosSucursal vehiculos={vehiculos} mensajeVacio="No hay autos pendientes de entrega." />
+      <ListaVehiculosSucursal vehiculos={vehiculos} titulo = "Vehículos de la sucursal pendientes de entrega" mensajeVacio="No hay autos pendientes de entrega." />
     </div>
   );
 }
