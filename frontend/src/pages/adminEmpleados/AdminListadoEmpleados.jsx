@@ -1,31 +1,13 @@
-import { useState , useEffect} from "react";
+
 import { Link} from 'react-router-dom';
 import { PencilIcon, Trash2Icon, Plus} from 'lucide-react';
+import useObtenerEmpleados from '../../hooks/useObtenerEmpleados.js';
 
 export default function AdminListadoEmpleados(){
-    const [empleados, setEmpleados] = useState([]);
-    const [cargando, setCargando] = useState(true);
+    
 
-    useEffect(() => {
-            
-            const fetchEmpleados = async () => {
-                try {
-                const response = await fetch('http://localhost:3001/empleados/obtener/empleados', {
-                    method: 'GET',
-                    credentials: 'include',
-                });
-                if (!response.ok) throw new Error('Error en la respuesta de la API');
-                const data = await response.json();
-                console.log("Empleados recibidos desde backend:", JSON.stringify(data, null, 2));
-                setEmpleados(data.personas || []);
-            } catch (e) {
-              console.error('Error al obtener empleados:', e);
-            } finally {
-              setCargando(false);
-            }
-            }
-            fetchEmpleados();
-          },[])
+    const { empleados, cargando } = useObtenerEmpleados();
+
 
     return (
         <>
