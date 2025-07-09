@@ -448,7 +448,7 @@ export class vehiculosRepository {
   static async getVehiculosPendientesPorEmail(email) {
     try {
       console.log("📩 Email recibido en getVehiculosPendientesPorEmail:", email);
-      // 1. Obtener ID del empleado a partir del email
+
       const { data: empleado, error: errorEmpleado } = await supabase
         .from("Persona")
         .select("id, Rol(nombre)")
@@ -465,7 +465,6 @@ export class vehiculosRepository {
         };
       }
 
-      // 2. Obtener ID de la sucursal del empleado
       const { data: sucursalData, error: errorSucursal } = await supabase
         .from("Pertenece")
         .select("idsucursal")
@@ -473,7 +472,7 @@ export class vehiculosRepository {
         .maybeSingle();
 
       if (errorSucursal || !sucursalData) {
-         console.log("❌ Sucursal no encontrada:", errorSucursal);
+        console.log("❌ Sucursal no encontrada:", errorSucursal);
         return {
           status: 404,
           message: "No se pudo encontrar la sucursal del empleado",
@@ -481,39 +480,73 @@ export class vehiculosRepository {
         };
       }
 
-       console.log("✅ Sucursal encontrada:", sucursalData);
+      console.log("✅ Sucursal encontrada:", sucursalData);
       const idSucursal = sucursalData.idsucursal;
-
-      // 3. Buscar vehículos de esa sucursal con reservas activas
       const hoyISO = new Date().toISOString();
+
+      const { data: reservasActivas, error: errorReservas } = await supabase
+        .from("reserva_estado")
+        .select("reserva")
+        .eq("estado", "activa")
+        .gte("fechafin", hoyISO);
+
+      if (errorReservas) {
+        console.error("❌ Error al obtener reservas activas:", errorReservas);
+        return {
+          status: 500,
+          message: "Error al obtener reservas activas",
+          metaData: errorReservas,
+        };
+      }
+
+      const idsReservasActivas = reservasActivas.map(r => r.reserva);
+      if (idsReservasActivas.length === 0) {
+        return {
+          status: 200,
+          message: "No hay reservas activas",
+          metaData: [],
+        };
+      }
+
+      const { data: reservasVehiculos, error: errorVehiculosReserva } = await supabase
+        .from("Reserva")
+        .select("vehiculo")
+        .in("id", idsReservasActivas);
+
+      if (errorVehiculosReserva) {
+        console.error("❌ Error al obtener vehículos de reservas:", errorVehiculosReserva);
+        return {
+          status: 500,
+          message: "Error al obtener vehículos de reservas",
+          metaData: errorVehiculosReserva,
+        };
+      }
+
+      const patentesActivas = reservasVehiculos.map(r => r.vehiculo);
+
       const { data: vehiculos, error: errorVehiculos } = await supabase
         .from("Vehiculo")
         .select(`
-          patente,
-          marca,
-          modelo,
-          foto,
-          anio,
+          politica,
           capacidad,
-          politica_reembolso
+          kms,
+          foto,
+          patente,
+          sucursal,
+          precio,
+          anio,
+          Modelo (
+            nombre,
+            Marca (
+              nombre
+            )
+          )
         `)
         .eq("sucursal", idSucursal)
-        .in("patente", 
-          // subquery con reservas activas
-          supabase
-            .from("Reserva")
-            .select("vehiculo")
-            .in("id", 
-              supabase
-                .from("reserva_estado")
-                .select("reserva")
-                .eq("estado", "activa")
-                .gte("fechafin", hoyISO)
-            )
-        );
+        .in("patente", patentesActivas);
 
       if (errorVehiculos) {
-         console.error("❌ Error inesperado:", error);
+        console.error("❌ Error al obtener vehículos:", errorVehiculos);
         return {
           status: 500,
           message: "Error al obtener vehículos pendientes",
@@ -521,6 +554,7 @@ export class vehiculosRepository {
         };
       }
 
+      console.log("✅ Vehículos pendientes encontrados:", vehiculos);
       return {
         status: 200,
         message: "Vehículos pendientes encontrados",
@@ -535,5 +569,4 @@ export class vehiculosRepository {
       };
     }
   }
-
 }
