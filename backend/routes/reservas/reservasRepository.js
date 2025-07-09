@@ -92,15 +92,22 @@ export class reservasRepository {
                 }
 
                 // Paso 4: filtrar solo las reservas cuyo estado actual sea 'activa'
+                /*
                 const reservasActivas = reservas.filter(r => {
                     const estadoFinal = estadoActualPorReserva.get(r.id);
                     return estadoFinal?.estado === 'activa';
                 });
+                */
+               const reservasValidas = reservas.filter(r => {
+                const estadoFinal = estadoActualPorReserva.get(r.id);
+                return estadoFinal?.estado !== 'cancelada';
+                });
 
                 // Paso 5: buscar superposición de fechas
-                const hayConflicto = reservasActivas.some(r =>
-                    ReservaUtils.overlaps(fechaInicio, fechaFin, r.fechainicio, r.fechafin)
+                const hayConflicto = reservasValidas.some(r =>
+                ReservaUtils.overlaps(fechaInicio, fechaFin, r.fechainicio, r.fechafin)
                 );
+
 
                 if (hayConflicto) {
                     console.log(`Vehículo ${vehiculo.patente} NO disponible: conflicto de fechas`);
@@ -155,7 +162,7 @@ export class reservasRepository {
             reserva : reserva1[0].id,
             estado : 'activa',
             fechainicio : fechaInicio,
-            fechafin : fechaFin
+            fechafin : null
         }
 
 
