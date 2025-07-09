@@ -7,6 +7,7 @@ export default function AlquilerPresencial(){
     const [vehicles, setVehicles] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [busquedaRealizada, setBusquedaRealizada] = useState(false);
+    const [agregarConductor, setAgregarConductor] = useState(false);
     const [formData, setFormData] = useState({
     dni: '',
     nombre: '',
@@ -14,6 +15,9 @@ export default function AlquilerPresencial(){
     fechaFin:null,
     adicionales: [],
     vehiculo: null,
+    dniConductor: '',
+    nombreConductor: '',
+    fechaNacimientoConductor: null,
     });
 
     const handleSeleccionarVehiculo = (vehiculo) => {
@@ -136,14 +140,15 @@ export default function AlquilerPresencial(){
                 </>
                 )}
                 {formData.vehiculo && (
-                <FormularioPresencial formData={formData} setFormData={setFormData} />
+                <FormularioPresencial formData={formData} setFormData={setFormData} agregarConductor={agregarConductor} setAgregarConductor={setAgregarConductor} />
                 )}
                 {formData.dni !== '' && formData.nombre !== '' &&
                 formData.fechaNacimiento !== null && (
                 <div className="pt-4">
                     <button
                     className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-                    //onClick={}
+                    onClick={() => console.log(JSON.stringify(formData))}
+
                     >
                     Confirmar y Pagar
                     </button>
