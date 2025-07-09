@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Calendario from "../../components/Calendario.jsx"
 import { useAuth } from "../../context/AuthContext";
 import FormularioPresencial from "../../components/FormPresencial.jsx";
@@ -10,8 +10,6 @@ export default function AlquilerPresencial(){
     const [agregarConductor, setAgregarConductor] = useState(false);
     const [formData, setFormData] = useState({
     dni: '',
-    nombre: '',
-    fechaNacimiento: null,
     fechaFin:null,
     adicionales: [],
     vehiculo: null,
@@ -19,7 +17,13 @@ export default function AlquilerPresencial(){
     nombreConductor: '',
     fechaNacimientoConductor: null,
     });
-
+    const calcularMonto = () => {
+    const dias = Math.ceil(
+        (new Date(formData.fechaFin) - new Date(formData.fechaInicio)) / (1000 * 60 * 60 * 24)
+    );
+    const precioPorDia = formData.vehiculo?.precio || 0;
+        return dias * precioPorDia;
+    };
     const handleSeleccionarVehiculo = (vehiculo) => {
     setFormData((prev) => ({
         ...prev,
@@ -63,6 +67,106 @@ export default function AlquilerPresencial(){
         }
     }
 };
+    function validarConductor(formData, agregarConductor) {
+        if (!agregarConductor) return true; // Si no hay conductor, no hace falta validar
+
+        if (!formData.dniConductor || !formData.nombreConductor || !formData.fechaNacimientoConductor) {
+            alert("Por favor, complete todos los datos del conductor.");
+            return false;
+        }
+
+        const nacimiento = new Date(formData.fechaNacimientoConductor);
+        const hoy = new Date();
+        const edad = hoy.getFullYear() - nacimiento.getFullYear();
+        const mes = hoy.getMonth() - nacimiento.getMonth();
+        const dia = hoy.getDate() - nacimiento.getDate();
+
+        const esMenor = edad < 18 || (edad === 18 && (mes < 0 || (mes === 0 && dia < 0)));
+
+        if (esMenor) {
+            alert("El conductor debe ser mayor de 18 años.");
+            return false;
+        }
+
+        return true;
+    }
+ const registrarReservaEIniciarPago = async () => {
+      try {
+
+        console.log("📅 Fecha de nacimiento:", formData.fechaNacimientoConductor);
+        console.log("🧾 DNI:", formData.dniConductor);
+        console.log("🧾 Nombre:", formData.nombreConductor);
+        if (!validarConductor(formData, agregarConductor)) {
+        return; 
+        }
+
+        const existeUsuarioResponse = await fetch(`http://localhost:3001/acceso/${formData.dni}`, {
+          method: "GET",  
+          credentials: "include",
+        });
+        const existeUsuario = await existeUsuarioResponse.json();  
+        if (!existeUsuario.email || existeUsuario.status >= 400) {
+          alert(existeUsuario.message || "Usuario no encontrado o error en la autenticación."); 
+          return;
+        }        
+        const reservaPayload = {
+          vehiculo: formData.vehiculo.patente,
+          fechaInicio: Date.now(),
+          fechaFin: formData.fechaFin,
+          monto: calcularMonto() + formData.adicionales.reduce((total, item) => total + item.precio, 0),
+          email: existeUsuario.email,
+          ...(agregarConductor && {
+            dniConductor: formData.dniConductor,
+            nombreConductor: formData.nombreConductor,
+            })
+
+        };
+
+        console.log("📤 Payload enviado al backend:", reservaPayload);
+
+        const response = await fetch("http://localhost:3001/reservas", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(reservaPayload),
+        });
+
+        const data = await response.json();
+
+        if (!data?.id) {
+          alert("Error al registrar la reserva.");
+          return;
+        }
+
+        const pagoResponse = await fetch("http://localhost:3001/api/pagos/crear-preferencia", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ idReserva: data.id }),
+        });
+
+        const pagoData = await pagoResponse.json();
+
+        if (pagoData.id) {
+          window.location.href = `https://www.mercadopago.com.ar/checkout/v1/redirect?pref_id=${pagoData.id}`;
+        } else {
+          alert("Error al generar el pago.");
+        }
+
+      } catch (error) {
+        console.error("Error en la reserva o pago:", error);
+        alert("Hubo un problema al procesar la reserva y el pago.");
+      }
+    };
+    useEffect(() => {
+    if (!agregarConductor) {
+        setFormData((prev) => ({
+        ...prev,
+        dniConductor: '',
+        nombreConductor: '',
+        fechaNacimientoConductor: null,
+        }));
+    }
+    }, [agregarConductor]);
 
     return (
         <section className="flex justify-center items-center min-h-screen pt-20 ">
@@ -147,7 +251,7 @@ export default function AlquilerPresencial(){
                 <div className="pt-4">
                     <button
                     className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-                    onClick={() => console.log(JSON.stringify(formData))}
+                    onClick={() => registrarReservaEIniciarPago()}
 
                     >
                     Confirmar y Pagar

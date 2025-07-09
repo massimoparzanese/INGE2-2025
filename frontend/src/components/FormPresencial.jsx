@@ -49,32 +49,6 @@ export default function FormularioPresencial({ formData, setFormData , agregarCo
             className="w-full mt-1 p-2 rounded bg-gray-100 text-black"
           />
         </label>
-
-        <label className="text-sm text-white">
-          Nombre completo
-          <input
-            type="text"
-            name="nombre"
-            value={formData.nombre}
-            onChange={handleInputChange}
-            className="w-full mt-1 p-2 rounded bg-gray-100 text-black"
-          />
-        </label>
-
-        <label className="text-sm text-white block">
-          Fecha de nacimiento <br />
-          <CalendarioFechaNacimiento
-            value={formData.fechaNacimiento}
-            onChange={(date) =>
-                setFormData((prev) => ({
-                ...prev,
-                fechaNacimiento: date
-                }))
-            }
-            placeholder="26/6/2011"
-            />
-
-        </label>
       </div>
 
       <div className="mt-4">
