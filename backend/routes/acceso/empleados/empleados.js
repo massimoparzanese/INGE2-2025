@@ -17,4 +17,15 @@ empleadosInfoRouter.get('/obtener/empleados', async (req, res) => {
   }
 })
 
+empleadosInfoRouter.get('/:dni', async (req,res) => {
+  try{
+  const { dni } = req.params;
+  const data = await autenticacionRepository.obtenerPorDni(dni)
+  res.send(data)
+  }
+  catch (err){
+    res.send({status: err.status, message: err})
+  }
+})
+
 export default empleadosInfoRouter;
