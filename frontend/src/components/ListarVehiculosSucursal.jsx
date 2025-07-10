@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 
-export default function ListaVehiculosSucursal({ vehiculos }) {
+export default function ListaVehiculosSucursal({ vehiculos, titulo = "Vehículos de la Sucursal"}) {
   useEffect(() => {
     console.log("🧾 Lista de vehículos de sucursal:");
     console.log(vehiculos);
@@ -17,7 +17,7 @@ export default function ListaVehiculosSucursal({ vehiculos }) {
   return (
     <div className="flex justify-center items-start min-h-screen bg-red-800 p-4 pt-20 pb-10">
       <div className="w-full max-w-6xl bg-white rounded-xl shadow-md p-6">
-        <h2 className="text-2xl font-bold text-red-700 mb-6">Vehículos de la Sucursal</h2>
+        <h2 className="text-2xl font-bold text-red-700 mb-6">{titulo}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {vehiculos.map((v) => (
             <div

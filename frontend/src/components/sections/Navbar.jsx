@@ -192,23 +192,37 @@ export default function Navbar() {
                 <li>
                   {
                     isAuthenticated && role === 'admin' && (
-                  <Link
-                    to="/agregar-vehiculo"
-                    className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors duration-200"
-                  >
-                    Agregar Vehículo
-                  </Link>
+                  <>
+                  <li>
+                    <Link
+                      to="/agregar-vehiculo"
+                      className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors duration-200"
+                    >
+                      Agregar Vehículo
+                    </Link>
+                  </li>
+                  </>
                 )} 
                 </li>
                 {isAuthenticated && role === 'empleado' && (
-                  <li>
-                    <Link
-                      to="/empleado/vehiculos"
-                      className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors duration-200"
-                    >
-                      Vehículos de mi sucursal
-                    </Link>
-                  </li>
+                  <>
+                    <li>
+                      <Link
+                        to="/empleado/vehiculos"
+                        className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors duration-200"
+                      >
+                        Vehículos de mi sucursal
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        to="/empleado/vehiculos-pendientes"
+                        className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors duration-200"
+                      >
+                        Vehículos pendientes de entrega
+                      </Link>
+                    </li>
+                  </>
                 )}
                 <li>
                   <Link
@@ -225,6 +239,7 @@ export default function Navbar() {
                       Alquilar un vehículo
                     </Link>
                 </li>
+                
                 )}
                 
               </ul>
@@ -258,6 +273,14 @@ export default function Navbar() {
               </a>
 
             </li>
+
+            { isAuthenticated && role === 'admin' && (
+                <Link to="/listado-empleados">
+                <button className="bg-red-600 px-3 py-2 rounded hover:bg-red-500 text-white">
+                  Ver empleados
+                </button>
+            </Link>
+              )}
               
               <Link
                 to="/entregar-auto"

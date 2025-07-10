@@ -1,3 +1,5 @@
+//CHEQUEAR SI SE USA, SINO BORRAR
+
 import { PencilIcon, Trash2Icon } from 'lucide-react';
 import { useContext } from 'react';
 import { Link } from 'react-router-dom';

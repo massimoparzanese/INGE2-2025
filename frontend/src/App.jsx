@@ -23,6 +23,7 @@ import AlquilerPresencialPage from "./pages/empleados/AlquilerPresencial.jsx";
 import DevolverAutoPage from './pages/empleados/DevolverAuto.jsx';
 import AdminListadoEmpleados from "./pages/adminEmpleados/AdminListadoEmpleados.jsx";
 import AgregarEmpleado from "./pages/adminEmpleados/agregarEmpleado.jsx";
+import VehiculosPendientesPage from "./pages/empleados/VehiculosPendientesPage.jsx";
 import EditarEmpleado from "./pages/adminEmpleados/EditarEmpleado.jsx";
 
 
@@ -62,10 +63,19 @@ export default function App() {
               </Verification>
             }
           />
+          <Route
+            path="/empleado/vehiculos-pendientes"
+            element={
+              <Verification>
+                <VehiculosPendientesPage />
+              </Verification>
+            }
+          />
           <Route path="/empleado/registrarAlquiler" element={<AlquilerPresencialPage/>}/>
           <Route path="/registro-presencial" element={<RegisterForm role={'empleado'}/>}/>
           <Route path="/entregar-auto" element={<Entregar/>}/>
           <Route path="/devolver-auto" element={<DevolverAutoPage />} />
+          
         </Routes>
         <Footer/>
        </AuthContextProvider>
