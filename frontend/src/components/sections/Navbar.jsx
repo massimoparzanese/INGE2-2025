@@ -215,7 +215,7 @@ export default function Navbar() {
                         to="/empleado/vehiculos-pendientes"
                         className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors duration-200"
                       >
-                        Autos pendientes para entregar
+                        Vehículos pendientes para entregar
                       </Link>
                     </li>
                   </>
