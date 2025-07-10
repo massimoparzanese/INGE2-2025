@@ -18,11 +18,15 @@ export default function AlquilerPresencial(){
     fechaNacimientoConductor: null,
     });
     const calcularMonto = () => {
+    console.log('Vehiculo en formData:', formData.vehiculo.precio);
+
+
+
+    const precio = formData.vehiculo ? formData.vehiculo.precio : null;
     const dias = Math.ceil(
-        (new Date(formData.fechaFin) - new Date(formData.fechaInicio)) / (1000 * 60 * 60 * 24)
+        (new Date(formData.fechaFin) - new Date(Date.now())) / (1000 * 60 * 60 * 24)
     );
-    const precioPorDia = formData.vehiculo?.precio || 0;
-        return dias * precioPorDia;
+        return dias * precio;
     };
     const handleSeleccionarVehiculo = (vehiculo) => {
     setFormData((prev) => ({
@@ -100,7 +104,7 @@ export default function AlquilerPresencial(){
         return; 
         }
 
-        const existeUsuarioResponse = await fetch(`http://localhost:3001/acceso/${formData.dni}`, {
+        const existeUsuarioResponse = await fetch(`http://localhost:3001/empleados/${formData.dni}`, {
           method: "GET",  
           credentials: "include",
         });
@@ -109,10 +113,12 @@ export default function AlquilerPresencial(){
           alert(existeUsuario.message || "Usuario no encontrado o error en la autenticación."); 
           return;
         }        
+        console.log('calcularMonto:', calcularMonto())
+        console.log(existeUsuario.email)
         const reservaPayload = {
           vehiculo: formData.vehiculo.patente,
-          fechaInicio: Date.now(),
-          fechaFin: formData.fechaFin,
+          fechaInicio: new Date(Date.now()).toISOString(),
+          fechaFin: new Date(formData.fechaFin).toISOString(),
           monto: calcularMonto() + formData.adicionales.reduce((total, item) => total + item.precio, 0),
           email: existeUsuario.email,
           ...(agregarConductor && {
@@ -132,7 +138,7 @@ export default function AlquilerPresencial(){
         });
 
         const data = await response.json();
-
+        console.log(data)
         if (!data?.id) {
           alert("Error al registrar la reserva.");
           return;
