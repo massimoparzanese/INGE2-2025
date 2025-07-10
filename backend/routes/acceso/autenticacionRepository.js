@@ -498,7 +498,6 @@ export class autenticacionRepository {
           `) 
       .textSearch('rol', 'empleado')
 
-    console.log(data)
 
     if(error){
       return {
