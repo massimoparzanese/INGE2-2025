@@ -2,12 +2,16 @@ import supabase from "../../supabaseClient.js";
 
 export class empleadosRepository{
 
-    static async editarEmpleado(dni, email, idSucursal){
-        const { data: dataPersona, errorPersona} = await supabase
+    static async editarEmpleado(dni, nombre, apellido, email, idSucursal){
+        const { data: dataPersona, error: errorPersona } = await supabase
             .from("Persona")
-            .update({email: email})
+            .update({
+                nombre,
+                apellido,
+                email
+            })
             .eq("dni", dni)
-            .select("id")
+            .select("id");
 
         if(errorPersona) {
             return {
@@ -17,6 +21,8 @@ export class empleadosRepository{
             };
         }
 
+
+        console.log(dataPersona[0].id)
         const { data: dataPertenece, error: errorPertenece} = await supabase
             .from("Pertenece")
             .update({idsucursal: idSucursal})

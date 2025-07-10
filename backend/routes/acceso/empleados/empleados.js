@@ -20,10 +20,10 @@ empleadosInfoRouter.get('/obtener/empleados', async (req, res) => {
 
 empleadosInfoRouter.put("/:dni", async (req, res) => {
   const { dni } = req.params;
-  const { email, sucursal} = req.body;
+  const { nombre, apellido, email, sucursal} = req.body;
 
   try {
-    const result = await empleadosRepository.editarEmpleado(dni, email, sucursal);
+    const result = await empleadosRepository.editarEmpleado(dni, nombre, apellido, email, sucursal);
 
     return res.status(result.status).json({
       message: result.message,
