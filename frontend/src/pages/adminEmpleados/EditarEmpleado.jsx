@@ -107,7 +107,7 @@ export default function EditarEmpleado() {
           value={form.dni}
           onChange={handleChange}
           placeholder="DNI"
-          className="w-full p-2 border rounded"
+          className="w-full p-2 border rounded bg-gray-100 cursor-not-allowed"
           required
           disabled
         />
@@ -118,8 +118,9 @@ export default function EditarEmpleado() {
           name="fechanacimiento"
           value={form.fechanacimiento}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
+          className="w-full p-2 border rounded bg-gray-100 cursor-not-allowed"
           required
+          disabled
         />
 
         <label htmlFor="email">Email</label>
