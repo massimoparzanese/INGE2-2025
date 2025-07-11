@@ -24,6 +24,7 @@ import DevolverAutoPage from './pages/empleados/DevolverAuto.jsx';
 import AdminListadoEmpleados from "./pages/adminEmpleados/AdminListadoEmpleados.jsx";
 import AgregarEmpleado from "./pages/adminEmpleados/AgregarEmpleado.jsx";
 import VehiculosPendientesPage from "./pages/empleados/VehiculosPendientesPage.jsx";
+import EditarEmpleado from "./pages/adminEmpleados/EditarEmpleado.jsx";
 
 
 export default function App() {
@@ -52,6 +53,8 @@ export default function App() {
           <Route path="/estadisticas/clientes" element={<ClienteEstadisticasPage/>}/>
           <Route path="/listado-empleados" element={<AdminListadoEmpleados/>}/>
           <Route path="/agregar-empleado" element={<AgregarEmpleado/>}/>
+          <Route path="/admin/editar-empleado/:dni" element={<EditarEmpleado />} />
+          <Route path="/admin/listado-empleados" element={<AdminListadoEmpleados />} />
           <Route
             path="/empleado/vehiculos"
             element={
