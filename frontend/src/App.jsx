@@ -22,7 +22,7 @@ import Entregar from "./pages/EntregarAuto.jsx"
 import AlquilerPresencialPage from "./pages/empleados/AlquilerPresencial.jsx";
 import DevolverAutoPage from './pages/empleados/DevolverAuto.jsx';
 import AdminListadoEmpleados from "./pages/adminEmpleados/AdminListadoEmpleados.jsx";
-import AgregarEmpleado from "./pages/adminEmpleados/agregarEmpleado.jsx";
+import AgregarEmpleado from "./pages/adminEmpleados/AgregarEmpleado.jsx";
 import VehiculosPendientesPage from "./pages/empleados/VehiculosPendientesPage.jsx";
 
 
