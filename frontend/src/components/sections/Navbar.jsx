@@ -6,11 +6,8 @@ import { ChevronRight, UserCircle } from "lucide-react";
 import { AuthContext } from '../../context/AuthContextFunct'
 export default function Navbar() {
   const [showNavbar] = useState(true);
-  const [activeRoute] = useState(true);
-  const [cuentaOpen, setCuentaOpen] = useState(false);
-  const [vehiculosOpen, setVehiculosOpen] = useState(false);
-  const [sucursalesOpen, setSucursalesOpen] = useState(false);
-  const [clientesOpen, setClientesOpen] = useState(false);
+  const [menuAbierto, setMenuAbierto] = useState(null); // puede ser 'cuenta', 'vehiculos', 'sucursales', etc.
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const { user, isAuthenticated, setIsAuthenticated, setRole, setUser, role } = useContext(AuthContext);
   console.log("ROL:", role); //borrar
@@ -45,16 +42,15 @@ export default function Navbar() {
         }
   }
   useEffect(() => {
-  if (cuentaOpen || vehiculosOpen || sucursalesOpen) {
-    const timer = setTimeout(() => {
-      setCuentaOpen(false);
-      setVehiculosOpen(false);
-      setSucursalesOpen(false);
-      setClientesOpen(false);
-    }, 8000);
-    return () => clearTimeout(timer);
-  }
-}, [cuentaOpen, vehiculosOpen, sucursalesOpen]);
+    if (menuAbierto !== null) {
+      const timer = setTimeout(() => setMenuAbierto(null), 8000);
+      return () => clearTimeout(timer);
+    }
+  }, [menuAbierto]);
+  const toggleMenu = (menu) => {
+  setMenuAbierto(prev => (prev === menu ? null : menu));
+};
+
 
   return (
     <nav
@@ -71,18 +67,37 @@ export default function Navbar() {
           className="h-12 w-auto"
           onClick={() => navigate("/")} // Redirige a la página principal al hacer clic
         />
-        
+        {/* Botón hamburguesa (solo visible en móvil) */}
+        <button
+          className="md:hidden ml-auto text-[#CDA053] focus:outline-none"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        >
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            {isMobileMenuOpen ? (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            ) : (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            )}
+          </svg>
+        </button>
+
         {/* Contenido a la derecha */}
-        <ul className="flex items-center gap-5 afacad-bold text-base text-[#CDA053]">
+        <ul className="hidden md:flex items-center gap-5 afacad-bold text-base text-[#CDA053]">
             {/* Cuenta */}
             <li className="relative cursor-pointer z-50">
             <div
-              onClick={() => setCuentaOpen(!cuentaOpen)}
+              onClick={() => toggleMenu('cuenta')}
               className="flex items-center space-x-1 text-white hover:text-yellow-500 transition-colors duration-200"
             >
               <ChevronRight
                 className={`ml-1 h-4 w-4 text-white transition-transform duration-300 ${
-                  cuentaOpen ? 'rotate-90 text-yellow-600' : ''
+                  menuAbierto === 'cuenta' ? 'rotate-90 text-yellow-600' : ''
                 }`}
               />
               <UserCircle className="h-6 w-6" />
@@ -91,7 +106,7 @@ export default function Navbar() {
 
             <div
               className={`absolute right-0 mt-2 w-44 max-w-[90vw] bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden transition-all duration-300 ease-in-out ${
-                cuentaOpen ? 'opacity-100 scale-100 max-h-96' : 'opacity-0 scale-95 max-h-0 pointer-events-none'
+                menuAbierto === 'cuenta' ? 'opacity-100 scale-100 max-h-96' : 'opacity-0 scale-95 max-h-0 pointer-events-none'
               }`}
             >
               <ul>
@@ -109,7 +124,7 @@ export default function Navbar() {
                       onClick={(e) => {
                         e.preventDefault();
                         handleLogout();
-                        setCuentaOpen(false);
+                        setMenuAbierto(null);
                       }}
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-b-xl"
                     >
@@ -132,12 +147,12 @@ export default function Navbar() {
           {isAuthenticated && role !== 'admin' && (
             <li className="relative cursor-pointer z-50">
             <div
-              onClick={() => setSucursalesOpen(!sucursalesOpen)}
+              onClick={() => toggleMenu('sucursales')}
               className="flex items-center"
             >
               <ChevronRight
                 className={`ml-1 h-4 w-4 text-white transition-transform duration-300 ${
-                  sucursalesOpen ? 'rotate-90 text-yellow-600' : ''
+                  menuAbierto === 'sucursales' ? 'rotate-90 text-yellow-600' : ''
                 }`}
               />
               <span className="text-white font-medium transition-colors duration-200 hover:text-yellow-600">
@@ -147,7 +162,7 @@ export default function Navbar() {
             
             <div
               className={`absolute right-0 mt-2 w-60 max-w-[92vw] bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden transition-all duration-300 ease-in-out ${
-                sucursalesOpen ? 'opacity-100 scale-100 max-h-[400px]' : 'opacity-0 scale-95 max-h-0 pointer-events-none'
+                menuAbierto === 'sucursales' ? 'opacity-100 scale-100 max-h-[400px]' : 'opacity-0 scale-95 max-h-0 pointer-events-none'
               }`}
             >
               <ul>
@@ -170,12 +185,12 @@ export default function Navbar() {
             {/* Vehículos */}
             <li className="relative cursor-pointer z-50">
             <div
-              onClick={() => setVehiculosOpen(!vehiculosOpen)}
+              onClick={() => toggleMenu('vehiculos')}
               className="flex items-center"
             >
               <ChevronRight
                 className={`ml-1 h-4 w-4 text-white transition-transform duration-300 ${
-                  vehiculosOpen ? 'rotate-90 text-yellow-600' : ''
+                  menuAbierto === 'vehiculos' ? 'rotate-90 text-yellow-600' : ''
                 }`}
               />
               <span className="text-white font-medium transition-colors duration-200 hover:text-yellow-600">
@@ -185,7 +200,7 @@ export default function Navbar() {
 
             <div
               className={`absolute right-0 mt-2 w-60 max-w-[92vw] bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden transition-all duration-300 ease-in-out ${
-                vehiculosOpen ? 'opacity-100 scale-100 max-h-[400px]' : 'opacity-0 scale-95 max-h-0 pointer-events-none'
+                menuAbierto === 'vehiculos' ? 'opacity-100 scale-100 max-h-[400px]' : 'opacity-0 scale-95 max-h-0 pointer-events-none'
               }`}
             >
               <ul>
@@ -245,35 +260,66 @@ export default function Navbar() {
               </ul>
             </div>
           </li>
-          <li className="hidden md:block">
-              <a
-                href="/registro-presencial"
-                className={`nav-link inline-block px-4 py-2 rounded-md font-semibold transition duration-300 ease-in-out
-                  ${
-                    activeRoute === "/reserva"
-                      ? "bg-red-600 text-white shadow-lg scale-105 brightness-140"
-                      : "bg-red-500 text-white hover:bg-black hover:brightness-140"
-                  }`}
+          {isAuthenticated && role === 'empleado' &&(
+            <li className="relative cursor-pointer z-50">
+              <div
+                onClick={() => toggleMenu('funciones')}
+                className="flex items-center"
               >
-                Registrar cliente
-              </a>
-
-            </li>
-          <li className="hidden md:block">
-              <a
-                href="/empleado/registrarAlquiler"
-                className={`nav-link inline-block px-4 py-2 rounded-md font-semibold transition duration-300 ease-in-out
-                  ${
-                    activeRoute === "/reserva"
-                      ? "bg-red-600 text-white shadow-lg scale-105 brightness-140"
-                      : "bg-red-500 text-white hover:bg-black hover:brightness-140"
+                <ChevronRight
+                  className={`ml-1 h-4 w-4 text-white transition-transform duration-300 ${
+                    menuAbierto === 'funciones' ? 'rotate-90 text-yellow-600' : ''
                   }`}
-              >
-                Ver vehículos disponibles
-              </a>
+                />
+                <span className="text-white font-medium transition-colors duration-200 hover:text-yellow-600">
+                  Funciones
+                </span>
+              </div>
 
+              {/* Contenido desplegable */}
+              <div
+                className={`absolute right-0 mt-2 w-72 max-w-[92vw] bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden transition-all duration-300 ease-in-out ${
+                  menuAbierto === 'funciones' ? 'opacity-100 scale-100 max-h-[400px]' : 'opacity-0 scale-95 max-h-0 pointer-events-none'
+                }`}
+              >
+                <ul>
+                  <li>
+                    <Link
+                      to="/registro-presencial"
+                      className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors duration-200"
+                    >
+                      Registrar cliente
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/empleado/registrarAlquiler"
+                      className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors duration-200"
+                    >
+                      Ver vehículos disponibles
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/entregar-auto"
+                      className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors duration-200"
+                    >
+                      Entregar auto
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/devolver-auto"
+                      className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors duration-200"
+                    >
+                      Devolver auto
+                    </Link>
+                  </li>
+                </ul>
+              </div>
             </li>
 
+          )}
             { isAuthenticated && role === 'admin' && (
                 <Link to="/listado-empleados">
                 <button className="bg-red-600 px-3 py-2 rounded hover:bg-red-500 text-white">
@@ -281,21 +327,126 @@ export default function Navbar() {
                 </button>
             </Link>
               )}
-              
-              <Link
-                to="/entregar-auto"
-                className="px-4 py-2 text-white hover:bg-blue-700 rounded transition"
-              >
-                Entregar Auto
-              </Link>
-            
-            <li>
-              <Link to="/devolver-auto" className="hover:underline">
-                Devolver auto
-              </Link>
-            </li>
 
         </ul>
+        {/* Menú mobile colapsable */}
+            <div
+              className={`md:hidden w-full bg-[#24222B]/90 transition-all duration-300 ease-in-out ${
+                isMobileMenuOpen ? 'max-h-[600px] opacity-100 py-4 px-6' : 'max-h-0 opacity-0 overflow-hidden'
+              }`}
+            >
+              <ul className="flex flex-col gap-4 text-white text-sm">
+                {/* Vehículos */}
+                <li>
+                  <Link to="/admin/catalogoVehiculos" onClick={() => setIsMobileMenuOpen(false)}>
+                    Ver listado de vehículos
+                  </Link>
+                </li>
+                {isAuthenticated && role === 'admin' && (
+                  <li>
+                    <Link to="/agregar-vehiculo" onClick={() => setIsMobileMenuOpen(false)}>
+                      Agregar vehículo
+                    </Link>
+                  </li>
+                )}
+                {isAuthenticated && role === 'empleado' && (
+                  <>
+                    <li>
+                      <Link to="/empleado/vehiculos" onClick={() => setIsMobileMenuOpen(false)}>
+                        Vehículos de mi sucursal
+                      </Link>
+                    </li>
+                    <li>
+                      <Link to="/empleado/vehiculos-pendientes" onClick={() => setIsMobileMenuOpen(false)}>
+                        Vehículos pendientes de entrega
+                      </Link>
+                    </li>
+                  </>
+                )}
+                {isAuthenticated && role === 'cliente' && (
+                  <li>
+                    <Link to="/reserva" onClick={() => setIsMobileMenuOpen(false)}>
+                      Alquilar un vehículo
+                    </Link>
+                  </li>
+                )}
+
+                {/* Sucursales */}
+                {isAuthenticated && role !== 'admin' && (
+                  <li>
+                    <Link to="/reserva" onClick={() => setIsMobileMenuOpen(false)}>
+                      Ver sucursales disponibles
+                    </Link>
+                  </li>
+                )}
+
+                {/* Funciones */}
+                {isAuthenticated && role === 'empleado' && (
+                  <>
+                    <li>
+                      <Link to="/registro-presencial" onClick={() => setIsMobileMenuOpen(false)}>
+                        Registrar cliente
+                      </Link>
+                    </li>
+                    <li>
+                      <Link to="/empleado/registrarAlquiler" onClick={() => setIsMobileMenuOpen(false)}>
+                        Ver vehículos disponibles
+                      </Link>
+                    </li>
+                    <li>
+                      <Link to="/entregar-auto" onClick={() => setIsMobileMenuOpen(false)}>
+                        Entregar auto
+                      </Link>
+                    </li>
+                    <li>
+                      <Link to="/devolver-auto" onClick={() => setIsMobileMenuOpen(false)}>
+                        Devolver auto
+                      </Link>
+                    </li>
+                  </>
+                )}
+
+                {/* Cuenta / Sesión */}
+                {!isAuthenticated ? (
+                  <li>
+                    <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                      Iniciar sesión
+                    </Link>
+                  </li>
+                ) : (
+                  <>
+                    {role === 'cliente' && (
+                      <li>
+                        <Link to="/misReservas" onClick={() => setIsMobileMenuOpen(false)}>
+                          Ver historial de reservas
+                        </Link>
+                      </li>
+                    )}
+                    <li>
+                      <button
+                        onClick={() => {
+                          handleLogout();
+                          setIsMobileMenuOpen(false);
+                        }}
+                        className="text-red-400 hover:text-white"
+                      >
+                        Cerrar sesión
+                      </button>
+                    </li>
+                  </>
+                )}
+
+                {/* Admin */}
+                {isAuthenticated && role === 'admin' && (
+                  <li>
+                    <Link to="/listado-empleados" onClick={() => setIsMobileMenuOpen(false)}>
+                      Ver empleados
+                    </Link>
+                  </li>
+                )}
+              </ul>
+            </div>
+
       </div>
     </nav>
   );
