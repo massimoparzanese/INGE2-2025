@@ -43,7 +43,6 @@ export default function RegistroUsuario({role}){
       const result = await response.json();
       if (response.ok && result.status < 400) {
         setMensaje(`✅ Registro exitoso.`);
-        navigate('/login')
         
       } else {
         setError(`❌ ${result.error}`);
@@ -54,10 +53,10 @@ export default function RegistroUsuario({role}){
     }
   };
   useEffect(() => {
-    if(isAuthenticated){
+    if(isAuthenticated && role !== 'empleado'){
       navigate('/')
     }
-    }, [isAuthenticated, navigate]);
+    }, [isAuthenticated, navigate, role]);
 
   return (
     <section className="pt-10 pb-10">
