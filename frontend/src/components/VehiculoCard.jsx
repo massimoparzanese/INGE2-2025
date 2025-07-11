@@ -1,5 +1,5 @@
 //CHEQUEAR SI SE USA, SINO BORRAR
-/*
+
 import { PencilIcon, Trash2Icon } from 'lucide-react';
 import { useContext } from 'react';
 import { Link } from 'react-router-dom';
@@ -26,7 +26,7 @@ export default function VehiculoCard({ vehiculo, onDelete }) {
       </div>
 
       {/* Acción de administración solo para admins */}
- /*     {isAuthenticated && role === 'admin' && (
+      {isAuthenticated && role === 'admin' && (
         <div className="relative w-full right-0 grid col-span-4 z-10">
           <div className="absolute right-0 flex gap-2 -translate-y-2">
             <Link
@@ -47,4 +47,3 @@ export default function VehiculoCard({ vehiculo, onDelete }) {
     </div>
   );
 }
-*/
