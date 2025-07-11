@@ -10,7 +10,6 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const { user, isAuthenticated, setIsAuthenticated, setRole, setUser, role } = useContext(AuthContext);
-  console.log("ROL:", role); //borrar
 
   const navigate = useNavigate();
 
@@ -247,14 +246,16 @@ export default function Navbar() {
                     </li>
                   </>
                 )}
-                <li>
-                  <Link
-                    to="/admin/catalogoVehiculos"
-                    className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors duration-200"
-                  >
-                    Ver listado de vehículos
-                  </Link>
-                </li>
+                {role != 'empleado' &&(
+                  <li>
+                    <Link
+                      to="/admin/catalogoVehiculos"
+                      className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors duration-200"
+                    >
+                      Ver listado de vehículos
+                    </Link>
+                  </li>
+                )}
                 {isAuthenticated &&  role === 'cliente' && (
                   <li className="hidden md:block">
                     <Link to="/reserva" 
