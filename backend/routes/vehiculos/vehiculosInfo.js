@@ -193,6 +193,17 @@ autosInfoRouter.post("/pendientes", async (req, res) => {
   });
 });
 
+autosInfoRouter.post("/para-devolver", async (req, res) => {
+  const { email } = req.body;
+
+  const resultado = await vehiculosRepository.getVehiculosParaDevolverPorEmail(email);
+
+  return res.status(resultado.status).json({
+    message: resultado.message,
+    metaData: resultado.metaData || [],
+  });
+});
+
 
 
 

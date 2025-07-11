@@ -590,4 +590,153 @@ export class vehiculosRepository {
       };
     }
   }
+
+
+  //Listar vehículos para devolver
+  static async getVehiculosParaDevolverPorEmail(email) {
+    try {
+
+      //acá se puede declarar fecha si es que vamos a poner alguna limitación (no creo)
+
+      const { data: empleado, error: errorEmpleado } = await supabase
+        .from("Persona")
+        .select("id, Rol(nombre)")
+        .eq("email", email)
+        .eq("Rol.nombre", "empleado")
+        .maybeSingle();
+
+      if (errorEmpleado || !empleado) {
+        console.log("❌ Persona no encontrada o error:", errorEmpleado);
+        return {
+          status: 404,
+          message: "Empleado no encontrado",
+          metaData: errorEmpleado || null,
+        };
+      }
+
+      const { data: sucursalData, error: errorSucursal } = await supabase
+        .from("Pertenece")
+        .select("idsucursal")
+        .eq("idempleado", empleado.id)
+        .maybeSingle();
+
+      if (errorSucursal || !sucursalData) {
+        console.log("❌ Sucursal no encontrada:", errorSucursal);
+        return {
+          status: 404,
+          message: "No se pudo encontrar la sucursal del empleado",
+          metaData: errorSucursal || null,
+        };
+      }
+
+      console.log("✅ Sucursal encontrada:", sucursalData);
+      const idSucursal = sucursalData.idsucursal;
+
+      // Obtener el nombre real de la sucursal según su ID
+      const { data: sucursalNombreData, error: errorNombre } = await supabase
+        .from('Sucursal')
+        .select('nombre')
+        .eq('id', idSucursal)
+        .maybeSingle();
+
+      if (errorNombre || !sucursalNombreData) {
+        return {
+          status: 404,
+          message: "No se pudo obtener el nombre de la sucursal",
+          metaData: errorNombre || null,
+        };
+      }
+
+      const nombreSucursal = sucursalNombreData.nombre;
+
+      const { data: reservasEntregadas, error: errorReservas } = await supabase
+        .from("reserva_estado")
+        .select("reserva")
+        .eq("estado", "entregada")
+        .is("fechafin", null); //cambiar
+
+      if (errorReservas) {
+        console.error("❌ Error al obtener reservas entregadas:", errorReservas);
+        return {
+          status: 500,
+          message: "Error al obtener reservas entregadas",
+          metaData: errorReservas,
+        };
+      }
+
+      const idsReservasEntregadas = reservasEntregadas.map(r => r.reserva);
+
+      console.log("🟡 Reservas entregadas encontradas:", reservasEntregadas); //borrar
+
+      if (idsReservasEntregadas.length === 0) {
+        return {
+          status: 200,
+          message: "No hay reservas entregadas",
+          metaData: [],
+        };
+      }
+
+      const { data: reservasVehiculos, error: errorVehiculosReserva } = await supabase
+        .from("Reserva")
+        .select("vehiculo")
+        .in("id", idsReservasEntregadas);
+
+      if (errorVehiculosReserva) {
+        console.error("❌ Error al obtener vehículos de reservas:", errorVehiculosReserva);
+        return {
+          status: 500,
+          message: "Error al obtener vehículos de reservas",
+          metaData: errorVehiculosReserva,
+        };
+      }
+
+      console.log("🚘 Vehículos asociados a las reservas entregadas:", reservasVehiculos);
+
+      const patentesEntregadas = reservasVehiculos.map(r => r.vehiculo);
+
+      const { data: vehiculos, error: errorVehiculos } = await supabase
+        .from("Vehiculo")
+        .select(`
+          politica,
+          capacidad,
+          kms,
+          foto,
+          patente,
+          sucursal,
+          precio,
+          anio,
+          Modelo (
+            nombre,
+            Marca (
+              nombre
+            )
+          )
+        `)
+        .eq("sucursal", nombreSucursal)
+        .in("patente", patentesEntregadas);
+
+      if (errorVehiculos) {
+        console.error("❌ Error al obtener vehículos:", errorVehiculos);
+        return {
+          status: 500,
+          message: "Error al obtener vehículos pendientes",
+          metaData: errorVehiculos,
+        };
+      }
+
+      console.log("✅ Vehículos para devolver encontrados:", vehiculos);
+      return {
+        status: 200,
+        message: "Vehículos para devolver encontrados",
+        metaData: vehiculos,
+      };
+    } catch (error) {
+      console.error("❌ Error inesperado:", error);
+      return {
+        status: 500,
+        message: "Error inesperado del servidor",
+        metaData: error,
+      };
+    }
+  }
 }

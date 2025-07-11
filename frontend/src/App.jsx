@@ -25,6 +25,7 @@ import AdminListadoEmpleados from "./pages/adminEmpleados/AdminListadoEmpleados.
 import AgregarEmpleado from "./pages/adminEmpleados/AgregarEmpleado.jsx";
 import VehiculosPendientesPage from "./pages/empleados/VehiculosPendientesPage.jsx";
 import EditarEmpleado from "./pages/adminEmpleados/EditarEmpleado.jsx";
+import VehiculosParaDevolverPage from "./pages/empleados/VehiculosParaDevolverPage.jsx";
 
 
 export default function App() {
@@ -71,6 +72,7 @@ export default function App() {
               </Verification>
             }
           />
+          <Route path="/empleado/vehiculos-devolver" element={  <Verification>  <VehiculosParaDevolverPage />  </Verification>  } />
           <Route path="/empleado/registrarAlquiler" element={<AlquilerPresencialPage/>}/>
           <Route path="/registro-presencial" element={<RegisterForm role={'empleado'}/>}/>
           <Route path="/entregar-auto" element={<Entregar/>}/>

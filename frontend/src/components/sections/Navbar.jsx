@@ -237,6 +237,14 @@ export default function Navbar() {
                         Vehículos pendientes de entrega
                       </Link>
                     </li>
+                    <li>
+                      <Link
+                        to="/empleado/vehiculos-devolver"
+                        className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors duration-200"
+                      >
+                        Vehículos para devolver
+                      </Link>
+                    </li>
                   </>
                 )}
                 <li>
