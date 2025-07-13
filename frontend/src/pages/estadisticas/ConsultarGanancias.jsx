@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  createChart
-} from "lightweight-charts";
+import { createChart } from "lightweight-charts";
 
 const ConsultarGanancias = () => {
   const chartContainerRef = useRef(null);
@@ -24,7 +22,7 @@ const ConsultarGanancias = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/api/ganancias", {
+      const response = await fetch("http://localhost:3001/sucursales/ganancias", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ fechaInicio, fechaFin }),
@@ -39,6 +37,7 @@ const ConsultarGanancias = () => {
 
       if (result.length === 0) {
         setMensaje("📉 No hubo ganancias en ese período.");
+        return;
       }
 
       setDatos(result);
@@ -49,36 +48,46 @@ const ConsultarGanancias = () => {
   };
 
   useEffect(() => {
-    if (!chartContainerRef.current || datos.length === 0) return;
+     if (!chartContainerRef.current || datos.length === 0) return;
 
-    // Destruir el gráfico anterior si existe
-    chartContainerRef.current.innerHTML = "";
+  chartContainerRef.current.innerHTML = "";
 
-    chartRef.current = createChart(chartContainerRef.current, {
-      width: 600,
-      height: 300,
-    });
+  const chart = createChart(chartContainerRef.current, {
+    width: 600,
+    height: 300,
+    layout: {
+      background: { color: "#ffffff" },
+      textColor: "#000000",
+    },
+    grid: {
+      vertLines: { color: "#eee" },
+      horzLines: { color: "#eee" },
+    },
+    timeScale: {
+      borderColor: "#ccc",
+      timeVisible: false,
+    },
+  });
 
-    const barSeries = chartRef.current.addBarSeries();
+  const lineSeries = chart.addLineSeries({
+    color: "#4F46E5",
+    lineWidth: 2,
+  });
 
-    // Convertir datos a formato esperado
-    const seriesData = datos.map((item, index) => ({
-      time: index + 1,
-      open: 0,
-      high: item.total,
-      low: 0,
-      close: item.total,
-    }));
+  const seriesData = datos.map((item, index) => ({
+    time: index + 1,
+    value: item.total,
+  }));
 
-    barSeries.setData(seriesData);
-  }, [datos]);
+  lineSeries.setData(seriesData);
+
+  chartRef.current = chart;
+}, [datos]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-red-500 px-4">
       <div className="bg-white p-6 rounded-xl shadow-md w-full max-w-md mb-10">
-        <h2 className="text-2xl font-bold text-center mb-4">
-          Consultar Ganancias
-        </h2>
+        <h2 className="text-2xl font-bold text-center mb-4">Consultar Ganancias</h2>
 
         {mensaje && <p className="text-blue-600 text-center mb-2">{mensaje}</p>}
         {error && <p className="text-red-600 text-center mb-2">{error}</p>}
@@ -109,11 +118,16 @@ const ConsultarGanancias = () => {
       </div>
 
       {datos.length > 0 && (
-        <div className="bg-white p-4 rounded-xl shadow-md">
-          <h3 className="text-center font-semibold mb-2">
-            Ganancias por sucursal
-          </h3>
+        <div className="bg-white p-4 rounded-xl shadow-md w-full max-w-3xl">
+          <h3 className="text-center font-semibold mb-4">Ganancias por sucursal</h3>
           <div ref={chartContainerRef} />
+          <ul className="mt-4 text-sm text-gray-700 text-center grid grid-cols-2 gap-2 max-w-xs mx-auto">
+            {datos.map((item, index) => (
+              <li key={index}>
+                <strong>{index + 1}</strong>: {item.sucursal}
+              </li>
+            ))}
+          </ul>
         </div>
       )}
     </div>
