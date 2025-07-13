@@ -19,6 +19,7 @@ import { estadoReservaRepository } from "./routes/estadoReserva/estadoReservaRep
 import estadoReservaInfoRouter from "./routes/reservaEstado/reservaEstadoInfo.js";
 
 import usuarioRouter from "./routes/acceso/usuario.js";
+import empleadosInfoRouter from "./routes/acceso/empleados/empleados.js";
 
 
 
@@ -43,6 +44,10 @@ app.use("/acceso" , loginInfoRouter);
 app.use("/auth", autenticacionInfoRouter);
 app.use("/session", logoutInfoRouter);
 app.use("/admin" , usersInfoRouter);
+
+//EMPLEADOS
+app.use("/empleados", empleadosInfoRouter);
+
 // COOKIES
 app.use("/api/verify", logedUserCookiesRouter);
 app.get("/", (req, res) => {

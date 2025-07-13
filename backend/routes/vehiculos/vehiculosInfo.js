@@ -1,6 +1,8 @@
 import { Router } from "express";
 import { vehiculosRepository } from "../vehiculos/vehiculosRepository.js";
 import supabase from "../supabaseClient.js";
+import { autenticacionRepository } from "../acceso/autenticacionRepository.js";
+
 
 const autosInfoRouter = Router();
 
@@ -154,6 +156,55 @@ autosInfoRouter.get("/por-empleado/:idempleado", async (req, res) => {
         });
     }
 });
+
+autosInfoRouter.post("/por-email-empleado", async (req, res) => {
+  try {
+    const { email } = req.body;
+    console.log("📩 Email recibido en /por-email-empleado:", email);  // BORRAR
+
+    const empleado = await autenticacionRepository.obtenerId(email);
+    if (!empleado || !empleado.id) {
+      return res.status(404).json({ message: "Empleado no encontrado" });
+    }
+
+    const result = await vehiculosRepository.getAutosPorEmpleado(empleado.id);
+    console.log(result)
+    return res.status(result.status).json({
+      message: result.message,
+      metaData: result.metaData || null,
+    });
+  } catch (error) {
+    console.error("❌ Error en /por-email-empleado:", error);  // BORRAR
+    return res.status(500).json({
+      message: "Error al obtener vehículos por empleado",
+      metaData: error,
+    });
+  }
+});
+
+autosInfoRouter.post("/pendientes", async (req, res) => {
+  const { email } = req.body;
+
+  const resultado = await vehiculosRepository.getVehiculosPendientesPorEmail(email);
+
+  return res.status(resultado.status).json({
+    message: resultado.message,
+    metaData: resultado.metaData || [],
+  });
+});
+
+autosInfoRouter.post("/para-devolver", async (req, res) => {
+  const { email } = req.body;
+
+  const resultado = await vehiculosRepository.getVehiculosParaDevolverPorEmail(email);
+
+  return res.status(resultado.status).json({
+    message: resultado.message,
+    metaData: resultado.metaData || [],
+  });
+});
+
+
 
 
 export default autosInfoRouter;

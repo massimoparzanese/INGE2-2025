@@ -153,7 +153,7 @@ const AgregarVehiculo = () => {
                     >
                       <option value="">-- Seleccionar --</option>
                       {sucursales.map((sucursal) => (
-                        <option key={sucursal.id} value={sucursal.id}>
+                        <option key={sucursal.id} value={sucursal.nombre}>
                           {sucursal.nombre}
                         </option>
                       ))}

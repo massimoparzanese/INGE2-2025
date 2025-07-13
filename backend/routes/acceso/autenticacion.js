@@ -1,6 +1,7 @@
 import {Router} from "express";
 import { autenticacionRepository } from "./autenticacionRepository.js";
 import { PerteneceRepository } from "../pertenece/perteneceRepository.js";
+import { rolRepository } from "../rol/rolRepository.js";
 const autenticacionInfoRouter = Router();
 
 
@@ -20,14 +21,25 @@ autenticacionInfoRouter.post('/registro', async (req, res) => {
 
 autenticacionInfoRouter.post('/registro-empleado', async (req, res) => {
   try{
-    const { dni, nombre, apellido, email, fechanacimiento, rol, password, sucursal} = req.body;
-    const data = await autenticacionRepository.registroPresencial(
-      dni, nombre, apellido, email, fechanacimiento, rol);
-    let result;
-    if(data.status < 400){
-        result = await PerteneceRepository.agregarEmpleado(data.id,sucursal)
-    }
-    res.send(result !== null ? result : data);
+    const { dni, nombre, apellido, email, fechanacimiento, rol, sucursal} = req.body;
+    console.log(rol)
+    const insertarROl = await rolRepository.insertRol(rol);
+    if(insertarROl.status < 400){
+        const data = await autenticacionRepository.registroPresencial(
+        dni, nombre, apellido, email, fechanacimiento, rol);
+        let result;
+          if(data.status < 400){
+              console.log(sucursal)
+              result = await PerteneceRepository.agregarEmpleado(data.id,sucursal)
+              res.send(result)
+      }
+          else{
+          res.send(data)
+      }
+      }
+      else{
+        res.send(insertarROl)
+      }
 
   }
   catch (e){
@@ -47,5 +59,6 @@ autenticacionInfoRouter.post('/registro-presencial', async (req, res) => {
     res.send(e);
   }
 });
+
 
 export default autenticacionInfoRouter;

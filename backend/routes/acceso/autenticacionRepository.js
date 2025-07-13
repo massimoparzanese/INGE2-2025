@@ -481,4 +481,55 @@ export class autenticacionRepository {
       id: data[0].id
     }
   }
+  static async obtenerEmpleados(){
+    const {data, error} = await supabase
+    .from('Persona')
+    .select(`
+      nombre,
+      apellido, 
+      fechanacimiento, 
+      dni, 
+      email,
+      Pertenece 
+        (
+          Sucursal 
+            (nombre)
+          )
+          `) 
+      .textSearch('rol', 'empleado')
+
+
+    if(error){
+      return {
+        status:400,
+        message: 'error al obtener los empleados'
+      }
+    }
+    return {
+      status:200,
+      personas: data
+    }
+  }
+  static async obtenerPorDni(dni){
+    const {data, error} = await supabase
+    .from('Persona')
+    .select('email')
+    .eq('dni',dni)
+
+    if(error){
+      return {
+        status:400,
+        message: 'Error al validar cliente'
+      }
+    }
+    if(data.length === 0)
+      return {
+        status: 400,
+        message: 'El Dni no corresponde a un usuario del sistema'
+      }
+    return {
+      status:200,
+      email: data[0].email
+    }
+  }
 }

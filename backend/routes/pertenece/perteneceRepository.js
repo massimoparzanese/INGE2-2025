@@ -18,9 +18,10 @@ export class PerteneceRepository {
 
         const {data, error} = await supabase
         .from("Pertenece")
-        .insert({ idempleado:idEmpleado, idsucursal:idSucursal })
+        .insert({idsucursal:idSucursal, idempleado:idEmpleado})
         .select();
         if(error){
+            console.log(error)
             return {status: 400, message: "Error al vincular el empleado con la sucursal"}
         }
         return {status: 200, message: "Empleado vinculado con éxito"}
