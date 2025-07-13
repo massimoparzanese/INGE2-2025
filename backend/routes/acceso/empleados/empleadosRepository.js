@@ -42,4 +42,42 @@ export class empleadosRepository{
         }
         
     }
+
+   static async eliminarEmpleado(dni) {
+        const { data, error } = await supabase
+            .from("Persona")
+            .select("email")
+            .eq("dni", dni)
+            .single();
+
+        if (error || !data) {
+            return {
+            status: 404,
+            message: "Empleado no encontrado",
+            metaData: error || null,
+            };
+        }
+
+        const { error: updateError, data: updated } = await supabase
+            .from("Persona")
+            .update({
+            dni: `$${dni}`,
+            email: `$${data.email}`,
+            })
+            .eq("dni", dni); // usando directamente el dni
+
+        if (updateError) {
+            return {
+            status: 500,
+            message: "Error al eliminar lógicamente",
+            metaData: updateError,
+            };
+        }
+
+        return {
+            status: 200,
+            message: "Empleado eliminado lógicamente",
+            metaData: updated,
+        };
+    }
 }

@@ -497,6 +497,7 @@ export class autenticacionRepository {
           )
           `) 
       .textSearch('rol', 'empleado')
+      .not('dni', 'ilike', '$%');
 
 
     if(error){

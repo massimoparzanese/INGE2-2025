@@ -2,6 +2,7 @@
 import { Link} from 'react-router-dom';
 import { PencilIcon, Trash2Icon, Plus} from 'lucide-react';
 import useObtenerEmpleados from '../../hooks/useObtenerEmpleados.js';
+import eliminarEmpleado from './EliminarEmpleado.jsx';
 
 export default function AdminListadoEmpleados(){
     
@@ -49,8 +50,20 @@ export default function AdminListadoEmpleados(){
                                     >
                                     <PencilIcon />
                                     </Link>
-                                    <div className={`px-3 py-3 text-[#CDA053] bg-[#232129] rounded-full text-sm shadow-md transition hover:cursor-pointer hover:bg-[#CDA053] hover:text-[#232129] hover:scale-110 duration-300`} onClick={() => onDelete(vehiculo.patente)}>
-                                        <Trash2Icon />
+                                    <div
+                                      className={`px-3 py-3 text-[#CDA053] bg-[#232129] rounded-full text-sm shadow-md transition hover:cursor-pointer hover:bg-[#CDA053] hover:text-[#232129] hover:scale-110 duration-300`}
+                                      onClick={async () => {
+                                        const result = await eliminarEmpleado(empleado.dni);
+
+                                        if (result.ok) {
+                                          alert("Empleado eliminado con éxito");
+                                          window.location.reload(); // o usar una forma más reactiva si tenés hook
+                                        } else {
+                                          alert("Error: " + result.message);
+                                        }
+                                      }}
+                                    >
+                                      <Trash2Icon />
                                     </div>
                                 </div>
                             </div>
