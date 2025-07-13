@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { createChart } from "lightweight-charts";
+import { createChart, HistogramSeries } from "lightweight-charts";
 
 const ConsultarGanancias = () => {
   const chartContainerRef = useRef(null);
@@ -48,41 +48,43 @@ const ConsultarGanancias = () => {
   };
 
   useEffect(() => {
-     if (!chartContainerRef.current || datos.length === 0) return;
+    if (!chartContainerRef.current || datos.length === 0) return;
 
-  chartContainerRef.current.innerHTML = "";
+    chartContainerRef.current.innerHTML = ""; // limpiar contenedor
 
-  const chart = createChart(chartContainerRef.current, {
-    width: 600,
-    height: 300,
-    layout: {
-      background: { color: "#ffffff" },
-      textColor: "#000000",
-    },
-    grid: {
-      vertLines: { color: "#eee" },
-      horzLines: { color: "#eee" },
-    },
-    timeScale: {
-      borderColor: "#ccc",
-      timeVisible: false,
-    },
-  });
+    const chart = createChart(chartContainerRef.current, {
+      width: 600,
+      height: 300,
+      layout: {
+        background: { type: 'solid', color: "#ffffff" },
+        textColor: "#000000",
+      },
+      grid: {
+        vertLines: { color: "#eee" },
+        horzLines: { color: "#eee" },
+      },
+      timeScale: {
+        borderColor: "#ccc",
+        timeVisible: false,
+      },
+    });
 
-  const lineSeries = chart.addLineSeries({
-    color: "#4F46E5",
-    lineWidth: 2,
-  });
+    chartRef.current = chart;
 
-  const seriesData = datos.map((item, index) => ({
-    time: index + 1,
-    value: item.total,
-  }));
+    const histogramSeries = chart.addSeries(HistogramSeries, {
+      color: "#4F46E5",
+    });
 
-  lineSeries.setData(seriesData);
+    const seriesData = datos.map((item, index) => ({
+      time: index + 1, // fake time para que lo pinte ordenado
+      value: item.total,
+    }));
 
-  chartRef.current = chart;
-}, [datos]);
+    histogramSeries.setData(seriesData);
+    chart.timeScale().fitContent();
+
+    return () => chart.remove(); // cleanup
+  }, [datos]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-red-500 px-4">
@@ -107,7 +109,6 @@ const ConsultarGanancias = () => {
             className="w-full p-2 border rounded"
             required
           />
-
           <button
             type="submit"
             className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
@@ -135,3 +136,4 @@ const ConsultarGanancias = () => {
 };
 
 export default ConsultarGanancias;
+
