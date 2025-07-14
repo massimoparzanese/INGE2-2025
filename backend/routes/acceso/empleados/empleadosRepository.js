@@ -53,7 +53,7 @@ export class empleadosRepository{
 
         const emailOriginal = persona.email;
         const nuevoEmail = `$${emailOriginal}`;
-        const nuevoDni = `$${dni}`;
+        const nuevoDni = `999${dni}`;
 
         const { data: listaUsers, error: errorBuscarAuth } = await supabase.auth.admin.listUsers({
             email: emailOriginal,
@@ -66,8 +66,8 @@ export class empleadosRepository{
             metaData: errorBuscarAuth,
             };
         }
-
-        const userId = listaUsers[0].id;
+        
+        const userId = listaUsers.users[0].id;
 
         const { error: errorActualizarAuth } = await supabase.auth.admin.updateUserById(userId, {
             email: nuevoEmail,
@@ -82,6 +82,7 @@ export class empleadosRepository{
             };
         }
 
+        console.log('llegamos')
         const { error: errorActualizarPersona, data: actualizado } = await supabase
             .from("Persona")
             .update({
@@ -91,6 +92,7 @@ export class empleadosRepository{
             .eq("dni", dni);
 
         if (errorActualizarPersona) {
+            console.log(errorActualizarPersona)
             return {
             status: 500,
             message: "Error al actualizar Persona",

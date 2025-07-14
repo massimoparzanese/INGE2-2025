@@ -54,11 +54,12 @@ empleadosInfoRouter.delete('/:dni', async (req, res) => {
     const { dni } = req.params
     const data = await empleadosRepository.eliminarEmpleado(dni);
     
-    return res.status(result.status).json({
-      message: result.message,
-      metaData: result.metaData || null,
+    return res.status(data.status).json({
+      message: data.message,
+      metaData: data.metaData || null,
     });
   } catch (error) {
+      console.log(error)
       return res.status(500).json({
         message: "Error al intentar eliminar el empleado",
         metaData: error,
