@@ -1,79 +1,115 @@
-"use client"
+import { useEffect, useRef, useState } from 'react';
+import { createChart, AreaSeries } from 'lightweight-charts';
+import CalendarioFechaNacimiento from '../../components/CalendarioNacimiento';
 
-import { useState } from "react"
-import { TrendingUp } from "lucide-react"
-import { Bar, BarChart, CartesianGrid, Rectangle, XAxis } from "recharts"
-
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart"
-import CalendarioFechaNacimiento from "@/components/CalendarioNacimiento"
+const colores = [
+  { linea: 'blue', top: 'rgba(0, 0, 255, 0.4)', bottom: 'rgba(0, 0, 255, 0.1)' },
+  { linea: 'green', top: 'rgba(0, 128, 0, 0.4)', bottom: 'rgba(0, 128, 0, 0.1)' },
+  { linea: 'red', top: 'rgba(255, 0, 0, 0.4)', bottom: 'rgba(255, 0, 0, 0.1)' },
+  { linea: 'orange', top: 'rgba(255, 165, 0, 0.4)', bottom: 'rgba(255, 165, 0, 0.1)' },
+];
 
 export default function AlquileresEstadisticasPage() {
-  const [fechaInicio, setFechaInicio] = useState(null)
-  const [fechaFin, setFechaFin] = useState(null)
-  const [datosGrafico, setDatosGrafico] = useState([])
-  const [consultado, setConsultado] = useState(false)
+  const [fechaInicio, setFechaInicio] = useState(null);
+  const [fechaFin, setFechaFin] = useState(null);
+  const [datosPorTipo, setDatosPorTipo] = useState([]);
+  const [tipos, setTipos] = useState([]);
+  const [totalAlquileres, setTotalAlquileres] = useState(0);
+  const [promedioDiario, setPromedioDiario] = useState(0);
+  const chartRef = useRef(null);
+  const chartInstance = useRef(null);
 
-  const chartConfig = {
-    cantidad: {
-      label: "Cantidad de alquileres",
-    },
-  }
+  const fetchDatos = async () => {
+    const res = await fetch("http://localhost:3001/admin/alquileres/estadisticas", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fechaInicio, fechaFin }),
+    });
+    const data = await res.json();
 
-  const consultarDatos = async () => {
-    if (!fechaInicio || !fechaFin) {
-      alert("Por favor seleccioná ambas fechas.")
-      return
+    if (data.status === 200) {
+      const datos = data.metaData.datos;
+      const tipos = data.metaData.tipos;
+      setDatosPorTipo(datos);
+      setTipos(tipos);
+
+      // Calcular total y promedio
+      const total = datos.reduce((acum, fila) => {
+        return acum + tipos.reduce((sub, tipo) => sub + (fila[tipo] || 0), 0);
+      }, 0);
+
+      const dias = Math.max(1, (new Date(fechaFin) - new Date(fechaInicio)) / (1000 * 60 * 60 * 24));
+      const promedio = (total / dias).toFixed(2);
+
+      setTotalAlquileres(total);
+      setPromedioDiario(promedio);
     }
+  };
 
-    if (fechaFin < fechaInicio) {
-      alert("La fecha de fin no puede ser anterior a la fecha de inicio.")
-      return
-    }
+  useEffect(() => {
+    if (!chartRef.current || datosPorTipo.length === 0 || tipos.length === 0) return;
 
-    setConsultado(true)
+    const chart = createChart(chartRef.current, {
+      height: 400,
+      layout: {
+        textColor: 'white',
+        background: { type: 'solid', color: '#1e2a38' },
+      },
+      grid: {
+        vertLines: { color: '#2c3e50' },
+        horzLines: { color: '#2c3e50' },
+      },
+      timeScale: {
+        timeVisible: true,
+        secondsVisible: false,
+      },
+    });
 
-    try {
-      const res = await fetch("http://localhost:3001/alquileres/estadisticas", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          fechaInicio: fechaInicio.toISOString().split("T")[0],
-          fechaFin: fechaFin.toISOString().split("T")[0],
-        }),
-      })
+    chartInstance.current = chart;
 
-      const data = await res.json()
-      setDatosGrafico(data.metaData || [])
-    } catch (error) {
-      console.error("Error al consultar estadísticas:", error)
-    }
-  }
+    tipos.forEach((tipo, index) => {
+      const serie = chart.addSeries(AreaSeries, {
+        lineColor: colores[index % colores.length].linea,
+        topColor: colores[index % colores.length].top,
+        bottomColor: colores[index % colores.length].bottom,
+      });
+
+      const datos = datosPorTipo.map((fila) => ({
+        time: Math.floor(new Date(fila.mes + "-01").getTime() / 1000),
+        value: fila[tipo] || 0,
+      }));
+
+      serie.setData(datos);
+    });
+
+    return () => chart.remove();
+  }, [datosPorTipo, tipos]);
 
   return (
     <div className="flex justify-center items-center min-h-screen pt-40 px-4 pb-10">
-      <section className="bg-white rounded-lg shadow-lg w-full max-w-4xl p-6 space-y-6">
-        <h2 className="text-xl font-semibold text-center">
-          Estadísticas de Alquileres
+      <section className="bg-[#1e2a38] rounded-lg shadow-lg w-full max-w-4xl p-6 space-y-6">
+        <h2 className="text-xl font-semibold text-center text-white">
+          Estadísticas de Alquileres por Tipo de Vehículo
         </h2>
-        <p className="text-center text-muted-foreground">
-          Seleccioná un rango de fechas para visualizar cuántas veces se alquiló cada vehículo.
+        <p className='text-white text-center'>
+          Seleccioná un rango de fechas para visualizar la cantidad de alquileres por tipo de auto
         </p>
 
-        {/* Fechas y botón */}
+        {/* Leyenda */}
+        {tipos.length > 0 && (
+          <div className="flex justify-center gap-5 mb-2 font-bold font-sans text-white">
+            {tipos.map((tipo, index) => (
+              <div key={tipo} className="flex items-center gap-1.5">
+                <div className="w-4 h-4 rounded" style={{ backgroundColor: colores[index % colores.length].linea }}></div>
+                {tipo}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Fecha y botón */}
         <div className="space-y-4">
-          <label className="text-sm font-medium">Fecha de inicio:</label>
+          <label className="text-white text-sm">Fecha inicio:</label>
           <CalendarioFechaNacimiento
             value={fechaInicio}
             onChange={setFechaInicio}
@@ -83,7 +119,7 @@ export default function AlquileresEstadisticasPage() {
 
           {fechaInicio && (
             <>
-              <label className="text-sm font-medium">Fecha de fin:</label>
+              <label className="text-white text-sm">Fecha fin:</label>
               <CalendarioFechaNacimiento
                 value={fechaFin}
                 onChange={setFechaFin}
@@ -95,10 +131,10 @@ export default function AlquileresEstadisticasPage() {
           )}
 
           {fechaInicio && fechaFin && (
-            <div className="pt-2 text-center">
+            <div className="text-center pt-2">
               <button
                 className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
-                onClick={consultarDatos}
+                onClick={fetchDatos}
               >
                 Consultar
               </button>
@@ -106,65 +142,35 @@ export default function AlquileresEstadisticasPage() {
           )}
         </div>
 
+        {datosPorTipo.length === 0 && tipos.length === 0 && (
+            <p className="text-white text-center mt-4">
+                No hubo reservas registradas en el período seleccionado.
+            </p>
+            )}
+
+
         {/* Gráfico */}
-        {consultado && datosGrafico.length === 0 && (
-          <p className="text-center text-sm text-muted-foreground mt-4">
-            No se encontraron alquileres en el rango seleccionado.
-          </p>
-        )}
+        {datosPorTipo.length > 0 && (
+          <>
+            <div
+              ref={chartRef}
+              className="w-full h-[400px] bg-white border border-gray-300 rounded-lg shadow"
+            />
 
-        {datosGrafico.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Resultados</CardTitle>
-              <CardDescription>
-                Vehículos alquilados entre {fechaInicio?.toLocaleDateString()} y {fechaFin?.toLocaleDateString()}
-              </CardDescription>
-            </CardHeader>
-
-            <CardContent>
-              <ChartContainer config={chartConfig}>
-                <BarChart data={datosGrafico}>
-                  <CartesianGrid vertical={false} />
-                  <XAxis
-                    dataKey="vehiculo"
-                    tickLine={false}
-                    tickMargin={10}
-                    axisLine={false}
-                  />
-                  <ChartTooltip
-                    cursor={false}
-                    content={<ChartTooltipContent hideLabel />}
-                  />
-                  <Bar
-                    dataKey="cantidad"
-                    strokeWidth={2}
-                    radius={8}
-                    activeBar={({ ...props }) => (
-                      <Rectangle
-                        {...props}
-                        fillOpacity={0.8}
-                        stroke="#000"
-                        strokeDasharray={4}
-                        strokeDashoffset={4}
-                      />
-                    )}
-                  />
-                </BarChart>
-              </ChartContainer>
-            </CardContent>
-
-            <CardFooter className="flex-col items-start gap-2 text-sm">
-              <div className="flex gap-2 leading-none font-medium">
-                Datos consultados correctamente <TrendingUp className="h-4 w-4" />
+            {/* Indicadores */}
+            <div className="grid grid-cols-2 gap-4 text-center text-white pt-4">
+              <div className="bg-white p-4 rounded shadow text-black">
+                <p className="text-sm text-gray-500">Total de alquileres</p>
+                <p className="text-2xl font-bold text-green-700">{totalAlquileres}</p>
               </div>
-              <div className="text-muted-foreground leading-none">
-                Mostrando cantidad de alquileres por vehículo
+              <div className="bg-white p-4 rounded shadow text-black">
+                <p className="text-sm text-gray-500">Promedio diario</p>
+                <p className="text-2xl font-bold text-green-700">{promedioDiario}</p>
               </div>
-            </CardFooter>
-          </Card>
+            </div>
+          </>
         )}
       </section>
     </div>
-  )
+  );
 }

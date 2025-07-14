@@ -740,13 +740,23 @@ export class vehiculosRepository {
     }
   }
 
-  //Estadísticas de reservas
-  static async contarAlquileresEntreFechas(fechaInicio, fechaFin) {
+  //Estadísticas de reservas.
+  static async contarAlquileresEntreFechas (fechaInicio, fechaFin) {
     const { data, error } = await supabase
       .from("Reserva")
-      .select("vehiculo, id")
-      .lte("fechainicio", fechaFin)   // empieza antes o igual que el fin del rango
-      .gte("fechafin", fechaInicio);  // termina después o igual que el inicio del rango
+      .select(`
+        id,
+        fechainicio,
+        vehiculo,
+        Vehiculo (
+          patente,
+          Modelo (
+            nombre
+          )
+        )
+      `)
+      .lte("fechainicio", fechaFin)
+      .gte("fechafin", fechaInicio);
 
     if (error) {
       return {
@@ -756,60 +766,37 @@ export class vehiculosRepository {
       };
     }
 
-    // Agrupar por vehículo
-    const conteo = {};
+    const agrupado = {}; // { '2025-03': { 'SUV': 2, 'Sedán': 4 } }
+    const tiposSet = new Set();
+
     for (const reserva of data) {
-      const patente = reserva.vehiculo;
-      conteo[patente] = (conteo[patente] || 0) + 1;
+      const fecha = new Date(reserva.fechainicio);
+      const mes = fecha.toISOString().slice(0, 7); // "YYYY-MM"
+      const tipo = reserva.Vehiculo?.Modelo?.nombre || "Otro";
+
+      tiposSet.add(tipo);
+      if (!agrupado[mes]) agrupado[mes] = {};
+      agrupado[mes][tipo] = (agrupado[mes][tipo] || 0) + 1;
     }
 
-    // Obtener nombres de vehículos
-    const patentes = Object.keys(conteo);
-
-    if (patentes.length === 0) {
-      return {
-        status: 200,
-        message: "No hubo reservas en esas fechas",
-        metaData: [],
-      };
-    }
-
-    const { data: vehiculosData, error: errorVehiculos } = await supabase
-      .from("Vehiculo")
-      .select(`
-        patente,
-        Modelo (
-          nombre,
-          Marca (
-            nombre
-          )
-        )
-      `)
-      .in("patente", patentes);
-
-    if (errorVehiculos) {
-      return {
-        status: 500,
-        message: "Error al obtener nombres de vehículos",
-        metaData: errorVehiculos,
-      };
-    }
-
-    // Formatear resultado
-    const resultado = vehiculosData.map((vehiculo) => {
-      const nombreModelo = vehiculo.Modelo?.nombre || "Modelo";
-      const nombreMarca = vehiculo.Modelo?.Marca?.nombre || "Marca";
-      const nombreCompleto = `${nombreMarca} ${nombreModelo}`;
-      return {
-        vehiculo: nombreCompleto,
-        cantidad: conteo[vehiculo.patente] || 0,
-      };
-    });
+    const tipos = Array.from(tiposSet);
+    const resultado = Object.entries(agrupado)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([mes, conteos]) => {
+        const fila = { mes };
+        tipos.forEach((tipo) => {
+          fila[tipo] = conteos[tipo] || 0;
+        });
+        return fila;
+      });
 
     return {
       status: 200,
-      message: "Conteo de alquileres exitoso",
-      metaData: resultado,
+      message: "Conteo de alquileres por tipo y mes exitoso",
+      metaData: {
+        datos: resultado,
+        tipos,
+      },
     };
   }
 
