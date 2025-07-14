@@ -739,8 +739,7 @@ export class vehiculosRepository {
       };
     }
   }
-
-  //Estadísticas de reservas.
+  //Estadísticas de vehículos
   static async contarAlquileresEntreFechas (fechaInicio, fechaFin) {
     const { data, error } = await supabase
       .from("Reserva")
@@ -780,15 +779,33 @@ export class vehiculosRepository {
     }
 
     const tipos = Array.from(tiposSet);
-    const resultado = Object.entries(agrupado)
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([mes, conteos]) => {
-        const fila = { mes };
-        tipos.forEach((tipo) => {
-          fila[tipo] = conteos[tipo] || 0;
-        });
-        return fila;
+
+    // 🔹 Generar todos los meses del rango
+    function generarMesesEntre(inicioStr, finStr) {
+      const inicio = new Date(inicioStr);
+      const fin = new Date(finStr);
+      const meses = [];
+
+      inicio.setDate(1);
+      while (inicio <= fin) {
+        const mesStr = inicio.toISOString().slice(0, 7); // "YYYY-MM"
+        meses.push(mesStr);
+        inicio.setMonth(inicio.getMonth() + 1);
+      }
+
+      return meses;
+    }
+
+    const todosLosMeses = generarMesesEntre(fechaInicio, fechaFin);
+
+    // 🔹 Asegurar que cada tipo esté en cada mes
+    const resultado = todosLosMeses.map((mes) => {
+      const fila = { mes };
+      tipos.forEach((tipo) => {
+        fila[tipo] = agrupado[mes]?.[tipo] || 0;
       });
+      return fila;
+    });
 
     return {
       status: 200,
@@ -799,5 +816,6 @@ export class vehiculosRepository {
       },
     };
   }
+
 
 }
