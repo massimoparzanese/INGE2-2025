@@ -27,7 +27,6 @@ import AgregarEmpleado from "./pages/adminEmpleados/AgregarEmpleado.jsx";
 import VehiculosPendientesPage from "./pages/empleados/VehiculosPendientesPage.jsx";
 import EditarEmpleado from "./pages/adminEmpleados/EditarEmpleado.jsx";
 import VehiculosParaDevolverPage from "./pages/empleados/VehiculosParaDevolverPage.jsx";
-import AlquileresEstadisticasPage from "./pages/estadisticas/AlquileresEstadisticasPage.jsx";
 
 
 export default function App() {

@@ -1,6 +1,6 @@
 import {Router} from "express";
 import { autenticacionRepository } from "../autenticacionRepository.js";
-import { vehiculosRepository } from "../vehiculo/vehiculosRepository.js";
+import { vehiculosRepository } from "../../vehiculos/vehiculosRepository.js";
 const usersInfoRouter = Router();
 
 usersInfoRouter.post("/users", async (req,res) => {
