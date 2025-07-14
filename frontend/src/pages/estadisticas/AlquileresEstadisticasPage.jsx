@@ -16,35 +16,58 @@ export default function AlquileresEstadisticasPage() {
   const [tipos, setTipos] = useState([]);
   const [totalAlquileres, setTotalAlquileres] = useState(0);
   const [promedioDiario, setPromedioDiario] = useState(0);
+  const [busquedaRealizada, setBusquedaRealizada] = useState(false);
+  const [cargando, setCargando] = useState(false);
+  const [sinDatos, setSinDatos] = useState(false);
   const chartRef = useRef(null);
   const chartInstance = useRef(null);
 
   const fetchDatos = async () => {
-    const res = await fetch("http://localhost:3001/admin/alquileres/estadisticas", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ fechaInicio, fechaFin }),
-    });
-    const data = await res.json();
+    setBusquedaRealizada(true);
+    setCargando(true);
+    
 
-    if (data.status === 200) {
-      const datos = data.metaData.datos;
-      const tipos = data.metaData.tipos;
-      setDatosPorTipo(datos);
-      setTipos(tipos);
+    try {
+        const res = await fetch("http://localhost:3001/admin/alquileres/estadisticas", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fechaInicio, fechaFin }),
+        });
 
-      // Calcular total y promedio
-      const total = datos.reduce((acum, fila) => {
-        return acum + tipos.reduce((sub, tipo) => sub + (fila[tipo] || 0), 0);
-      }, 0);
+        const data = await res.json();
 
-      const dias = Math.max(1, (new Date(fechaFin) - new Date(fechaInicio)) / (1000 * 60 * 60 * 24));
-      const promedio = (total / dias).toFixed(2);
+        if (data.status === 200) {
+        const datos = data.metaData.datos;
+        const tipos = data.metaData.tipos;
+        setDatosPorTipo(datos);
+        setTipos(tipos);
+        setSinDatos(data.metaData.sinDatos);
 
-      setTotalAlquileres(total);
-      setPromedioDiario(promedio);
+        // Calcular total y promedio
+        const total = datos.reduce((acum, fila) => {
+            return acum + tipos.reduce((sub, tipo) => sub + (fila[tipo] || 0), 0);
+        }, 0);
+
+        const dias = Math.max(1, (new Date(fechaFin) - new Date(fechaInicio)) / (1000 * 60 * 60 * 24));
+        const promedio = (total / dias).toFixed(2);
+
+        setTotalAlquileres(total);
+        setPromedioDiario(promedio);
+        } else {
+        setDatosPorTipo([]);
+        setTipos([]);
+        setSinDatos(false);
+        }
+    } catch (error) {
+        console.error("Error consultando estadísticas:", error);
+        setDatosPorTipo([]);
+        setTipos([]);
+        setSinDatos(false);
+    } finally {
+        setCargando(false);
     }
-  };
+    };
+
 
   useEffect(() => {
     if (!chartRef.current || datosPorTipo.length === 0 || tipos.length === 0) return;
@@ -142,12 +165,11 @@ export default function AlquileresEstadisticasPage() {
           )}
         </div>
 
-        {datosPorTipo.length === 0 && tipos.length === 0 && (
-            <p className="text-white text-center mt-4">
-                No hubo reservas registradas en el período seleccionado.
-            </p>
-            )}
-
+        {busquedaRealizada && !cargando && sinDatos && (
+        <p className="text-white text-center mt-4">
+            No hubo reservas registradas en el período seleccionado.
+        </p>
+        )}
 
         {/* Gráfico */}
         {datosPorTipo.length > 0 && (

@@ -807,15 +807,22 @@ export class vehiculosRepository {
       return fila;
     });
 
+    // 🔴 Agregá este bloque antes del return final
+    const sinDatos = resultado.every(fila =>
+      Object.keys(fila)
+        .filter(key => key !== 'mes')
+        .every(tipo => fila[tipo] === 0)
+    );
+
     return {
       status: 200,
       message: "Conteo de alquileres por tipo y mes exitoso",
       metaData: {
         datos: resultado,
         tipos,
+        sinDatos,
       },
     };
   }
-
 
 }
