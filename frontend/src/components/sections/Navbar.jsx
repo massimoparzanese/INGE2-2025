@@ -203,21 +203,13 @@ export default function Navbar() {
               }`}
             >
               <ul>
-                <li>
-                  {
-                    isAuthenticated && role === 'admin' && (
-                  <>
-                  <li>
-                    <Link
-                      to="/agregar-vehiculo"
-                      className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors duration-200"
-                    >
-                      Agregar Vehículo
-                    </Link>
-                  </li>
-                  </>
+                  {isAuthenticated && role === 'admin' && (
+                    <li>
+                      <Link to="/agregar-vehiculo" className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors duration-200">
+                        Agregar Vehículo
+                      </Link>
+                    </li>
                 )} 
-                </li>
                 {isAuthenticated && role === 'empleado' && (
                   <>
                     <li>

@@ -19,10 +19,9 @@ empleadosInfoRouter.get('/obtener/empleados', async (req, res) => {
 })
 
 empleadosInfoRouter.put("/:dni", async (req, res) => {
-  const { dni } = req.params;
-  const { nombre, apellido, email, sucursal} = req.body;
-
   try {
+    const { dni } = req.params;
+    const { nombre, apellido, email, sucursal} = req.body;
     const result = await empleadosRepository.editarEmpleado(dni, nombre, apellido, email, sucursal);
 
     return res.status(result.status).json({
@@ -49,5 +48,23 @@ empleadosInfoRouter.get('/:dni', async (req,res) => {
     res.send({status: err.status, message: err})
   }
 })
+
+empleadosInfoRouter.delete('/:dni', async (req, res) => {
+  try{
+    const { dni } = req.params
+    const data = await empleadosRepository.eliminarEmpleado(dni);
+    
+    return res.status(data.status).json({
+      message: data.message,
+      metaData: data.metaData || null,
+    });
+  } catch (error) {
+      console.log(error)
+      return res.status(500).json({
+        message: "Error al intentar eliminar el empleado",
+        metaData: error,
+      });
+    }
+});
 
 export default empleadosInfoRouter;

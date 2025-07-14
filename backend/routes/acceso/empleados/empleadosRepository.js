@@ -42,4 +42,68 @@ export class empleadosRepository{
         }
         
     }
+
+   static async eliminarEmpleado(dni) {
+
+        const { data: persona, error } = await supabase
+            .from("Persona")
+            .select("email")
+            .eq("dni", dni)
+            .single();
+
+        const emailOriginal = persona.email;
+        const nuevoEmail = `$${emailOriginal}`;
+        const nuevoDni = `999${dni}`;
+
+        const { data: listaUsers, error: errorBuscarAuth } = await supabase.auth.admin.listUsers({
+            email: emailOriginal,
+        });
+
+        if (errorBuscarAuth || !listaUsers || listaUsers.length === 0) {
+            return {
+            status: 404,
+            message: "Usuario en Auth no encontrado",
+            metaData: errorBuscarAuth,
+            };
+        }
+        
+        const userId = listaUsers.users[0].id;
+
+        const { error: errorActualizarAuth } = await supabase.auth.admin.updateUserById(userId, {
+            email: nuevoEmail,
+            email_confirm: true,
+        });
+
+        if (errorActualizarAuth) {
+            return {
+            status: 500,
+            message: "Error al actualizar el email en Auth",
+            metaData: errorActualizarAuth,
+            };
+        }
+
+        console.log('llegamos')
+        const { error: errorActualizarPersona, data: actualizado } = await supabase
+            .from("Persona")
+            .update({
+            email: nuevoEmail,
+            dni: nuevoDni,
+            })
+            .eq("dni", dni);
+
+        if (errorActualizarPersona) {
+            console.log(errorActualizarPersona)
+            return {
+            status: 500,
+            message: "Error al actualizar Persona",
+            metaData: errorActualizarPersona,
+            };
+        }
+
+        return {
+            status: 200,
+            message: "Empleado eliminado lógicamente (marcado con $)",
+            metaData: actualizado,
+        };
+    }
 }
