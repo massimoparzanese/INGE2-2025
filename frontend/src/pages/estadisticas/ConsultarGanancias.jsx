@@ -135,13 +135,6 @@ const ConsultarGanancias = () => {
         <div className="bg-white p-4 rounded-xl shadow-md w-full max-w-3xl">
           <h3 className="text-center font-semibold mb-4">Ganancias por sucursal</h3>
           <div ref={chartContainerRef} />
-          <ul className="mt-4 text-sm text-gray-700 text-center grid grid-cols-2 gap-2 max-w-xs mx-auto">
-            {datos.map((item, index) => (
-              <li key={index}>
-                <strong>{index + 1}</strong>: {item.sucursal}
-              </li>
-            ))}
-          </ul>
         </div>
       )}
     </div>
