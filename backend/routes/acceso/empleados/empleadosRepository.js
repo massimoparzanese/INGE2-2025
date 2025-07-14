@@ -44,12 +44,19 @@ export class empleadosRepository{
     }
 
    static async eliminarEmpleado(dni) {
-
         const { data: persona, error } = await supabase
             .from("Persona")
             .select("email")
             .eq("dni", dni)
             .single();
+
+        if (error || !persona) {
+            return {
+                status: 404,
+                message: "Empleado no encontrado en Persona",
+                metaData: error,
+            };
+        }
 
         const emailOriginal = persona.email;
         const nuevoEmail = `$${emailOriginal}`;
@@ -59,14 +66,14 @@ export class empleadosRepository{
             email: emailOriginal,
         });
 
-        if (errorBuscarAuth || !listaUsers || listaUsers.length === 0) {
+        if (errorBuscarAuth || !listaUsers || listaUsers.users.length === 0) {
             return {
-            status: 404,
-            message: "Usuario en Auth no encontrado",
-            metaData: errorBuscarAuth,
+                status: 404,
+                message: "Usuario en Auth no encontrado",
+                metaData: errorBuscarAuth,
             };
         }
-        
+
         const userId = listaUsers.users[0].id;
 
         const { error: errorActualizarAuth } = await supabase.auth.admin.updateUserById(userId, {
@@ -76,27 +83,25 @@ export class empleadosRepository{
 
         if (errorActualizarAuth) {
             return {
-            status: 500,
-            message: "Error al actualizar el email en Auth",
-            metaData: errorActualizarAuth,
+                status: 500,
+                message: "Error al actualizar el email en Auth",
+                metaData: errorActualizarAuth,
             };
         }
 
-        console.log('llegamos')
         const { error: errorActualizarPersona, data: actualizado } = await supabase
             .from("Persona")
             .update({
-            email: nuevoEmail,
-            dni: nuevoDni,
+                email: nuevoEmail,
+                dni: nuevoDni,
             })
             .eq("dni", dni);
 
         if (errorActualizarPersona) {
-            console.log(errorActualizarPersona)
             return {
-            status: 500,
-            message: "Error al actualizar Persona",
-            metaData: errorActualizarPersona,
+                status: 500,
+                message: "Error al actualizar Persona",
+                metaData: errorActualizarPersona,
             };
         }
 
@@ -106,4 +111,5 @@ export class empleadosRepository{
             metaData: actualizado,
         };
     }
+
 }
