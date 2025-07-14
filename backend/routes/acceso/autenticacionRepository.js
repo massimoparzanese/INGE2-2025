@@ -496,7 +496,7 @@ export class autenticacionRepository {
             (nombre)
           )
           `) 
-      .textSearch('rol', 'empleado')
+      .eq('rol', 'empleado')
       .not('dni', 'ilike', '$%');
 
 
@@ -506,11 +506,15 @@ export class autenticacionRepository {
         message: 'error al obtener los empleados'
       }
     }
+    const personasFiltradas = data.filter(p => !p.dni.startsWith('$'));
+    console.log(personasFiltradas)
+
     return {
-      status:200,
-      personas: data
-    }
+      status: 200,
+      personas: personasFiltradas
+    };
   }
+
   static async obtenerPorDni(dni){
     const {data, error} = await supabase
     .from('Persona')

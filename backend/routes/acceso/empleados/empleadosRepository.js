@@ -44,40 +44,64 @@ export class empleadosRepository{
     }
 
    static async eliminarEmpleado(dni) {
-        const { data, error } = await supabase
+
+        const { data: persona, error } = await supabase
             .from("Persona")
             .select("email")
             .eq("dni", dni)
             .single();
 
-        if (error || !data) {
+        const emailOriginal = persona.email;
+        const nuevoEmail = `$${emailOriginal}`;
+        const nuevoDni = `$${dni}`;
+
+        const { data: listaUsers, error: errorBuscarAuth } = await supabase.auth.admin.listUsers({
+            email: emailOriginal,
+        });
+
+        if (errorBuscarAuth || !listaUsers || listaUsers.length === 0) {
             return {
             status: 404,
-            message: "Empleado no encontrado",
-            metaData: error || null,
+            message: "Usuario en Auth no encontrado",
+            metaData: errorBuscarAuth,
             };
         }
 
-        const { error: updateError, data: updated } = await supabase
-            .from("Persona")
-            .update({
-            dni: `$${dni}`,
-            email: `$${data.email}`,
-            })
-            .eq("dni", dni); // usando directamente el dni
+        const userId = listaUsers[0].id;
 
-        if (updateError) {
+        const { error: errorActualizarAuth } = await supabase.auth.admin.updateUserById(userId, {
+            email: nuevoEmail,
+            email_confirm: true,
+        });
+
+        if (errorActualizarAuth) {
             return {
             status: 500,
-            message: "Error al eliminar lógicamente",
-            metaData: updateError,
+            message: "Error al actualizar el email en Auth",
+            metaData: errorActualizarAuth,
+            };
+        }
+
+        const { error: errorActualizarPersona, data: actualizado } = await supabase
+            .from("Persona")
+            .update({
+            email: nuevoEmail,
+            dni: nuevoDni,
+            })
+            .eq("dni", dni);
+
+        if (errorActualizarPersona) {
+            return {
+            status: 500,
+            message: "Error al actualizar Persona",
+            metaData: errorActualizarPersona,
             };
         }
 
         return {
             status: 200,
-            message: "Empleado eliminado lógicamente",
-            metaData: updated,
+            message: "Empleado eliminado lógicamente (marcado con $)",
+            metaData: actualizado,
         };
     }
 }
