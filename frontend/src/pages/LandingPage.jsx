@@ -107,7 +107,7 @@ useEffect(() => {
            <p className="flex items-center justify-center text-white p-4">¿No tenés una cuenta?</p>
            }
           <div className="flex items-center justify-center mt-4 mb-4">
-           {role !== 'admin' && role !== 'empleado' && role && (
+           {role !== 'admin' && role !== 'empleado' && (
             <button
               className="nav-link inline-block px-4 py-2 rounded-md font-semibold transition-all duration-300 ease-in-out
                         bg-green-600 text-white hover:bg-green-500 hover:scale-105 shadow-md hover:shadow-lg cursor-pointer"
