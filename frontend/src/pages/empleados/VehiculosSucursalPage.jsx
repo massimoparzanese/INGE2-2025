@@ -48,9 +48,14 @@ export default function VehiculosSucursalPage (){
     <>
     {role === 'empleado' ? (
     cargando ? (
-      <div className="p-6">
-        <h2 className="text-xl font-semibold mb-4 pt-12 items-center justify-center flex flex-col text-white"></h2>
-        <p className='text-white'>Cargando vehículos de la sucursal...</p>
+      <div className="flex justify-center items-center min-h-screen bg-red-800 p-4 pt-20 pb-10">
+
+        <div className="relative w-full max-w-7xl mx-auto bg-white p-5 rounded-xl shadow-md">
+            <div className="text-center">
+              <p className="text-lg font-semibold mb-4">Cargando vehiculos de la sucursal...</p>
+              <div className="w-10 h-10 border-4 border-red-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+            </div>
+          </div>
       </div>
     ) : (
       <ListaVehiculosSucursal vehiculos={vehiculos} />

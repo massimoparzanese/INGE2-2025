@@ -1,7 +1,9 @@
     // UserChart.jsx
 import { useEffect, useRef, useState } from 'react';
-import { createChart,  AreaSeries, HistogramSeries  } from 'lightweight-charts';
+import { createChart,  AreaSeries} from 'lightweight-charts';
 import CalendarioFechaNacimiento from '../../components/CalendarioNacimiento';
+import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from 'react-router-dom';
 export default function ClienteEstadisticasPage() {
   const [isLoading,setIsLoading] = useState(true);
   const [fechaInicio,setFechaInicio] = useState(null);
@@ -11,10 +13,9 @@ export default function ClienteEstadisticasPage() {
   const [totalUsuarios, setTotalUsuarios] = useState(0);
   const [promedioUsuarios,setPromedioUsuarios] = useState(0);
   const areaChartRef = useRef(null);
-  const histogramChartRef = useRef(null);
   const areaChartInstance = useRef(null);
-  const histogramChartInstance = useRef(null);
-
+  const { isAuthenticated,role } = useAuth();
+  const navigate = useNavigate();
   const setUsuariosFetch = async () =>{
     const response = await fetch("http://localhost:3001/admin/users", {
           method: "POST",
@@ -98,32 +99,11 @@ export default function ClienteEstadisticasPage() {
       areaChartInstance.current = null;
     };
   }, [isLoading, users]);
-
   useEffect(() => {
-    if (isLoading || users.length === 0 || !histogramChartRef.current) return;
-
-    const chartOptions = {
-      layout: {
-        textColor: 'white',
-        background: { type: 'solid', color: 'black' },
-      },
-    };
-
-    const chart = createChart(histogramChartRef.current, chartOptions);
-    histogramChartInstance.current = chart;
-
-    const histogramSeries = chart.addSeries(HistogramSeries, {
-      color: '#26a69a',
-    });
-
-    histogramSeries.setData(users);
-    chart.timeScale().fitContent();
-
-    return () => {
-      chart.remove();
-      histogramChartInstance.current = null;
-    };
-  }, [isLoading, users]);
+    if(role !== "admin" && !isAuthenticated){
+      navigate("/");
+    }
+  }, [isAuthenticated,role, navigate]);
   return (
     <div className="flex justify-center items-center min-h-screen pt-40 px-4 pb-10">
       <section className="bg-[#1e2a38] rounded-lg shadow-lg w-full max-w-3xl p-6 relative space-y-6">
