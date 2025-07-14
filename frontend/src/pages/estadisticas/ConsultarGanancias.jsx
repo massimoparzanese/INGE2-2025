@@ -35,12 +35,19 @@ const ConsultarGanancias = () => {
         return;
       }
 
-      if (result.length === 0) {
+      const datosFiltrados = result
+        .filter((item) => item.sucursal && !isNaN(item.total))
+        .map((item) => ({
+          sucursal: item.sucursal.trim(),
+          total: Number(item.total),
+        }));
+
+      if (datosFiltrados.length === 0) {
         setMensaje("📉 No hubo ganancias en ese período.");
         return;
       }
 
-      setDatos(result);
+      setDatos(datosFiltrados);
     } catch (err) {
       console.error(err);
       setError("❌ Error inesperado.");
@@ -50,13 +57,13 @@ const ConsultarGanancias = () => {
   useEffect(() => {
     if (!chartContainerRef.current || datos.length === 0) return;
 
-    chartContainerRef.current.innerHTML = ""; // limpiar contenedor
+    chartContainerRef.current.innerHTML = "";
 
     const chart = createChart(chartContainerRef.current, {
       width: 600,
       height: 300,
       layout: {
-        background: { type: 'solid', color: "#ffffff" },
+        background: { type: "solid", color: "#ffffff" },
         textColor: "#000000",
       },
       grid: {
@@ -65,25 +72,31 @@ const ConsultarGanancias = () => {
       },
       timeScale: {
         borderColor: "#ccc",
-        timeVisible: false,
+        timeVisible: true,
+        tickMarkFormatter: (timestamp) => {
+          const index = timestamp - 1704067200; // 2025-01-01 en timestamp
+          return datos[index]?.sucursal || "";
+        },
       },
     });
-
-    chartRef.current = chart;
 
     const histogramSeries = chart.addSeries(HistogramSeries, {
       color: "#4F46E5",
     });
 
+    // Fecha base 2025-01-01 (en timestamp UTC segundos)
+    const baseTime = 1704067200;
+
     const seriesData = datos.map((item, index) => ({
-      time: index + 1, // fake time para que lo pinte ordenado
+      time: baseTime + index, // timestamps únicos
       value: item.total,
     }));
 
     histogramSeries.setData(seriesData);
     chart.timeScale().fitContent();
 
-    return () => chart.remove(); // cleanup
+    chartRef.current = chart;
+    return () => chart.remove();
   }, [datos]);
 
   return (
@@ -136,4 +149,3 @@ const ConsultarGanancias = () => {
 };
 
 export default ConsultarGanancias;
-
