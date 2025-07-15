@@ -124,18 +124,6 @@ export default function AlquileresEstadisticasPage() {
           Seleccioná un rango de fechas para visualizar la cantidad de alquileres por tipo de auto
         </p>
 
-        {/* Leyenda */}
-        {tipos.length > 0 && (
-          <div className="flex justify-center gap-5 mb-2 font-bold font-sans text-white">
-            {tipos.map((tipo, index) => (
-              <div key={tipo} className="flex items-center gap-1.5">
-                <div className="w-4 h-4 rounded" style={{ backgroundColor: colores[index % colores.length].linea }}></div>
-                {tipo}
-              </div>
-            ))}
-          </div>
-        )}
-
         {/* Fecha y botón */}
           <div className="space-y-4">
             <div className="flex gap-x-4">
@@ -173,6 +161,17 @@ export default function AlquileresEstadisticasPage() {
             )}
           </div>
 
+          {/* Leyenda */}
+            {tipos.length > 0 && (
+              <div className="flex justify-center gap-5 mb-2 font-bold font-sans text-white">
+                {tipos.map((tipo, index) => (
+                  <div key={tipo} className="flex items-center gap-1.5">
+                    <div className="w-4 h-4 rounded" style={{ backgroundColor: colores[index % colores.length].linea }}></div>
+                    {tipo}
+                  </div>
+                ))}
+              </div>
+            )}
 
         {busquedaRealizada && !cargando && sinDatos && (
         <p className="text-white text-center mt-4">
