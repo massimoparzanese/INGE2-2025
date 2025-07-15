@@ -739,4 +739,90 @@ export class vehiculosRepository {
       };
     }
   }
+  //Estadísticas de vehículos
+  static async contarAlquileresEntreFechas (fechaInicio, fechaFin) {
+    const { data, error } = await supabase
+      .from("Reserva")
+      .select(`
+        id,
+        fechainicio,
+        vehiculo,
+        Vehiculo (
+          patente,
+          Modelo (
+            nombre
+          )
+        )
+      `)
+      .lte("fechainicio", fechaFin)
+      .gte("fechafin", fechaInicio);
+
+    if (error) {
+      return {
+        status: 500,
+        message: "Error al obtener reservas",
+        metaData: error,
+      };
+    }
+
+    const agrupado = {}; // { '2025-03': { 'SUV': 2, 'Sedán': 4 } }
+    const tiposSet = new Set();
+
+    for (const reserva of data) {
+      const fecha = new Date(reserva.fechainicio);
+      const mes = fecha.toISOString().slice(0, 7); // "YYYY-MM"
+      const tipo = reserva.Vehiculo?.Modelo?.nombre || "Otro";
+
+      tiposSet.add(tipo);
+      if (!agrupado[mes]) agrupado[mes] = {};
+      agrupado[mes][tipo] = (agrupado[mes][tipo] || 0) + 1;
+    }
+
+    const tipos = Array.from(tiposSet);
+
+    // 🔹 Generar todos los meses del rango
+    function generarMesesEntre(inicioStr, finStr) {
+      const inicio = new Date(inicioStr);
+      const fin = new Date(finStr);
+      const meses = [];
+
+      inicio.setDate(1);
+      while (inicio <= fin) {
+        const mesStr = inicio.toISOString().slice(0, 7); // "YYYY-MM"
+        meses.push(mesStr);
+        inicio.setMonth(inicio.getMonth() + 1);
+      }
+
+      return meses;
+    }
+
+    const todosLosMeses = generarMesesEntre(fechaInicio, fechaFin);
+
+    // 🔹 Asegurar que cada tipo esté en cada mes
+    const resultado = todosLosMeses.map((mes) => {
+      const fila = { mes };
+      tipos.forEach((tipo) => {
+        fila[tipo] = agrupado[mes]?.[tipo] || 0;
+      });
+      return fila;
+    });
+
+    // 🔴 Agregá este bloque antes del return final
+    const sinDatos = resultado.every(fila =>
+      Object.keys(fila)
+        .filter(key => key !== 'mes')
+        .every(tipo => fila[tipo] === 0)
+    );
+
+    return {
+      status: 200,
+      message: "Conteo de alquileres por tipo y mes exitoso",
+      metaData: {
+        datos: resultado,
+        tipos,
+        sinDatos,
+      },
+    };
+  }
+
 }
