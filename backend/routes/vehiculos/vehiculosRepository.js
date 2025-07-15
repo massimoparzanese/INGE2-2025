@@ -2,6 +2,7 @@ import { estadoVehiculoRepository } from "../estadoVehiculo/estadoVehiculoReposi
 import { marcaRepository } from "../marca/marcaRepository.js";
 import { modeloRepository } from "../modelo/modeloRepository.js";
 import { politicaDeReembolsoRepository } from "../politicaDeReembolso/politicaDeReembolsoRepository.js";
+import { reservasRepository } from "../reservas/reservasRepository.js";
 import supabase from "../supabaseClient.js";
 import { vehiculoEstadoRepository } from "../vehiculoEstado/vehiculoEstadoRepository.js";
 
@@ -244,71 +245,118 @@ export class vehiculosRepository {
     }
 
     static async entregarAuto(patente, email) {{
-  // 1. Verificar que exista una reserva con esa patente
-  const { data: reserva, error: errorReserva } = await supabase
-    .from('Reserva')
-    .select('id, persona')
-    .eq('vehiculo', patente)
-    .maybeSingle();
+      const now = new Date().toISOString();
 
-  if (!reserva) {
-    return { status: 404, error: '❌ No existe una reserva para ese vehículo.' };
-  }
+      // 1. Verificar que exista una reserva con esa patente
+      const { data: reserva, error: errorReserva } = await supabase
+      .from('Reserva')
+      .select('id, persona, vehiculo, fechainicio, fechafin')
+      .eq('vehiculo', patente)
+      .maybeSingle();
 
-  // 2. Verificar que el email coincida con la persona de la reserva
-  if (reserva.persona !== email) {
-    return { status: 403, error: '❌ Esa reserva no corresponde al email ingresado.' };
-  }
+      if (!reserva) {
+      return { status: 404, error: '❌ No existe una reserva para ese vehículo.' };
+      }
 
-  const idReserva = reserva.id;
+      // 2. Verificar que el email coincida con la persona de la reserva
+      if (reserva.persona !== email) {
+      return { status: 403, error: '❌ Esa reserva no corresponde al email ingresado.' };
+      }
 
-  // 3. Verificar que exista un estado activo sin fechafin
-  const { data: estadoActivo } = await supabase
-    .from('reserva_estado')
-    .select('*')
-    .eq('reserva', idReserva)
-    .eq('estado', 'activa') // usamos directamente el texto
-    .is('fechafin', null)
-    .lte('fechainicio', new Date().toISOString())
-    .maybeSingle();
+      const idReserva = reserva.id;
 
-  if (!estadoActivo) {
-    return {
-      status: 400,
-      error: '❌ El vehículo ya fue entregado.'
-    };
-  }
+      // 3. Verificar que exista un estado activo sin fechafin
+      const { data: estadoActivo } = await supabase
+      .from('reserva_estado')
+      .select('*')
+      .eq('reserva', idReserva)
+      .eq('estado', 'activa')
+      .is('fechafin', null)
+      .lte('fechainicio', now)
+      .maybeSingle();
 
-  // 4. Cerrar el estado "activa" agregando la fecha de fin
-  const { error: errorUpdate } = await supabase
-  .from('reserva_estado')
-  .update({ fechafin: new Date().toISOString() })
-  .eq('reserva', idReserva)
-  .eq('estado', 'activa')
-  .is('fechafin', null);
+      if (!estadoActivo) {
+      // Ver si ya fue entregado
+      const { data: yaEntregado } = await supabase
+      .from('reserva_estado')
+      .select('*')
+      .eq('reserva', idReserva)
+      .eq('estado', 'entregada')
+      .is('fechafin', null)
+      .maybeSingle();
+          }
+          if (yaEntregado) {
+        // Buscar vehículo alternativo
+        const { data: vehiculoOriginal } = await supabase
+          .from('Vehiculo')
+          .select('precio, sucursal')
+          .eq('patente', patente)
+          .maybeSingle();
 
-  if (errorUpdate) {
-    return { status: 500, error: '❌ Error al cerrar el estado activo.' };
-  }
+        if (!vehiculoOriginal) {
+          return { status: 404, error: '❌ No se encontró el vehículo original.' };
+        }
 
-  // 5. Insertar nuevo estado "entregada"
-  const { error: errorInsert } = await supabase
-    .from('reserva_estado')
-    .insert([{
+        // Obtener patentes ocupadas en el período de la reserva
+        const patentesOcupadas = await reservasRepository.patenteEnReservas(reserva.fechainicio, reserva.fechafin, vehiculoOriginal.sucursal);
+        const patentesOcupadasSet = new Set(patentesOcupadas);
+
+        // Buscar vehículo alternativo
+        const { data: alternativas } = await supabase
+          .from('Vehiculo')
+          .select('id, patente')
+          .eq('sucursal', vehiculoOriginal.sucursal)
+          .gte('precio', vehiculoOriginal.precio);
+
+        const disponible = alternativas.find(v => !patentesOcupadasSet.has(v.patente));
+
+        if (!disponible) {
+          return { status: 400, error: '❌ El vehículo no está disponible y no se encontró uno alternativo.' };
+        }
+
+        // Reasignar el vehículo de la reserva
+        const { error: errorUpdateReserva } = await supabase
+          .from('Reserva')
+          .update({ vehiculo: disponible.patente })
+          .eq('id', idReserva);
+
+        if (errorUpdateReserva) {
+          return { status: 500, error: '❌ Error al reasignar vehículo alternativo.' };
+        }
+      } else {
+        return { status: 400, error: '❌ El vehículo no tiene una reserva activa para entregar.' };
+      }
+      }
+
+      // 4. Cerrar el estado "activa"
+      const { error: errorCerrarActiva } = await supabase
+      .from('reserva_estado')
+      .update({ fechafin: now })
+      .eq('reserva', idReserva)
+      .eq('estado', 'activa')
+      .is('fechafin', null);
+
+      if (errorCerrarActiva) {
+      return { status: 500, error: '❌ Error al cerrar el estado activo.' };
+      }
+
+      // 5. Insertar nuevo estado "entregada"
+      const { error: errorInsert } = await supabase
+      .from('reserva_estado')
+      .insert([{
       reserva: idReserva,
       estado: 'entregada',
-      fechainicio: new Date().toISOString()
-    }]);
+      fechainicio: now
+      }]);
 
-  if (errorInsert) {
-    return { status: 500, error: '❌ Error al registrar la entrega.' };
-  }
+      if (errorInsert) {
+      return { status: 500, error: '❌ Error al registrar la entrega.' };
+      }
 
-  return {
-    status: 200,
-    mensaje: '✅ Vehículo entregado correctamente.'
-  };
-}
+      return {
+      status: 200,
+      mensaje: '✅ Vehículo entregado correctamente.'
+      };
 
   }
     static async getAutosPorEmpleado(idEmpleado) {
