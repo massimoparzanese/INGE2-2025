@@ -1,55 +1,47 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useEffect } from "react";
 
-const ListaVehiculosSucursal = ({ idempleado }) => {
-  const [vehiculos, setVehiculos] = useState([]);
-  const [mensaje, setMensaje] = useState("");
-  const [cargando, setCargando] = useState(true);
-
+export default function ListaVehiculosSucursal({ vehiculos, titulo = "Vehículos de la Sucursal"}) {
   useEffect(() => {
-    const fetchVehiculos = async () => {
-      try {
-        const res = await axios.get(`http://localhost:3000/vehiculos/por-empleado/${idempleado}`);
-        const { message, metaData } = res.data;
+    console.log("🧾 Lista de vehículos de sucursal:");
+    console.log(vehiculos);
+  }, [vehiculos]);
 
-        if (!metaData || metaData.length === 0) {
-          setMensaje(message || "No se encontraron vehículos.");
-        } else {
-          setVehiculos(metaData);
-        }
-      } catch (err) {
-        console.error(err);
-        setMensaje("Error al obtener los vehículos.");
-      } finally {
-        setCargando(false);
-      }
-    };
-
-    fetchVehiculos();
-  }, [idempleado]);
-
-  if (cargando) return <p>Cargando vehículos...</p>;
-  if (mensaje) return <p>{mensaje}</p>;
+  if (!vehiculos || vehiculos.length === 0) {
+    return (
+      <p className="flex justify-center items-center min-h-screen bg-red-800 p-4 pt-20 pb-10 text-white">
+        No se encontraron vehículos.
+      </p>
+    );
+  }
 
   return (
-    <div>
-      <h2>Vehículos de tu sucursal</h2>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
-        {vehiculos.map((v) => (
-          <div key={v.patente} style={{ border: "1px solid #ccc", padding: "1rem", width: "300px" }}>
-            <img src={v.foto} alt="Vehículo" style={{ width: "100%", height: "150px", objectFit: "cover" }} />
-            <p><strong>Patente:</strong> {v.patente}</p>
-            <p><strong>Marca:</strong> {v.Modelo?.Marca?.nombre}</p>
-            <p><strong>Modelo:</strong> {v.Modelo?.nombre}</p>
-            <p><strong>Capacidad:</strong> {v.capacidad} personas</p>
-            <p><strong>Kilómetros:</strong> {v.kms} km</p>
-            <p><strong>Año:</strong> {v.anio}</p>
-            <p><strong>Precio:</strong> ${v.precio}</p>
-          </div>
-        ))}
+    <div className="flex justify-center items-start min-h-screen bg-red-800 p-4 pt-20 pb-10">
+      <div className="w-full max-w-6xl bg-white rounded-xl shadow-md p-6">
+        <h2 className="text-2xl font-bold text-red-700 mb-6">{titulo}</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {vehiculos.map((v) => (
+            <div
+              key={v.patente}
+              className="flex gap-4 items-center border rounded-lg p-4"
+            >
+              <img
+                src={v.foto}
+                alt={`Foto de ${v.Modelo?.Marca?.nombre} ${v.Modelo?.nombre}`}
+                className="w-36 h-24 object-cover rounded-md border"
+              />
+              <div>
+                <p className="font-semibold text-lg">{v.Modelo?.Marca?.nombre}</p>
+                <p className="text-sm text-gray-600">Modelo: {v.Modelo?.nombre}</p>
+                <p className="text-sm text-gray-600">Año: {v.anio}</p>
+                <p className="text-sm text-gray-600">Capacidad: {v.capacidad} personas</p>
+                <p className="text-sm text-gray-600">Precio por día (USD): ${v.precio}</p>
+                <p className="text-sm text-gray-600">Km: {v.kms}</p>
+                <p className="text-sm text-gray-600">Patente: {v.patente}</p>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
-};
-
-export default ListaVehiculosSucursal;
+}

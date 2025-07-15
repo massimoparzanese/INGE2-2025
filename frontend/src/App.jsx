@@ -17,10 +17,18 @@ import PagoExitoso from "./pages/pagos/PagoExitosoPage.jsx";
 import PagoFallido from "./pages/pagos/PagoFallidoPage.jsx";
 import MisReservas from "./pages/MisReservasPage.jsx";
 import ClienteEstadisticasPage from "./pages/estadisticas/ClientesEstadisticasPage.jsx";
+import AlquileresEstadisticasPage from "./pages/estadisticas/AlquileresEstadisticasPage.jsx";
 import VehiculosSucursalPage from "./pages/empleados/VehiculosSucursalPage.jsx";
 import Entregar from "./pages/EntregarAuto.jsx"
 import AlquilerPresencialPage from "./pages/empleados/AlquilerPresencial.jsx";
+import DevolverAutoPage from './pages/empleados/DevolverAuto.jsx';
+import ConsultarGanancias from './pages/estadisticas/ConsultarGanancias.jsx';
 
+import AdminListadoEmpleados from "./pages/adminEmpleados/AdminListadoEmpleados.jsx";
+import AgregarEmpleado from "./pages/adminEmpleados/AgregarEmpleado.jsx";
+import VehiculosPendientesPage from "./pages/empleados/VehiculosPendientesPage.jsx";
+import EditarEmpleado from "./pages/adminEmpleados/EditarEmpleado.jsx";
+import VehiculosParaDevolverPage from "./pages/empleados/VehiculosParaDevolverPage.jsx";
 
 
 export default function App() {
@@ -47,6 +55,11 @@ export default function App() {
           <Route path="/pago-fallido" element={<PagoFallido/>}/>
           <Route path="/misReservas" element={<MisReservas/>}/>
           <Route path="/estadisticas/clientes" element={<ClienteEstadisticasPage/>}/>
+          <Route path="/estadisticas/alquileres" element={<AlquileresEstadisticasPage/>}/>
+          <Route path="/listado-empleados" element={<AdminListadoEmpleados/>}/>
+          <Route path="/agregar-empleado" element={<AgregarEmpleado/>}/>
+          <Route path="/admin/editar-empleado/:dni" element={<EditarEmpleado />} />
+          <Route path="/admin/listado-empleados" element={<AdminListadoEmpleados />} />
           <Route
             path="/empleado/vehiculos"
             element={
@@ -55,9 +68,21 @@ export default function App() {
               </Verification>
             }
           />
+          <Route
+            path="/empleado/vehiculos-pendientes"
+            element={
+              <Verification>
+                <VehiculosPendientesPage />
+              </Verification>
+            }
+          />
+          <Route path="/empleado/vehiculos-devolver" element={  <Verification>  <VehiculosParaDevolverPage />  </Verification>  } />
           <Route path="/empleado/registrarAlquiler" element={<AlquilerPresencialPage/>}/>
           <Route path="/registro-presencial" element={<RegisterForm role={'empleado'}/>}/>
           <Route path="/entregar-auto" element={<Entregar/>}/>
+          <Route path="/devolver-auto" element={<DevolverAutoPage />} />
+          <Route path="/consultar-ganancias" element={<ConsultarGanancias />} />
+          
         </Routes>
         <Footer/>
        </AuthContextProvider>

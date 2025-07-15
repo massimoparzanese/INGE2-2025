@@ -25,7 +25,7 @@ export default function AuthContextProvider({ children }) {
         console.log(data)
         setIsAuthenticated(true);
         setUser(data.nombre)
-        setRole(data.rol.rol);
+        setRole(data.rol.rol.trim());
       } catch (e) {
          console.log('Error al comunicarse con el servidor', e);
       }

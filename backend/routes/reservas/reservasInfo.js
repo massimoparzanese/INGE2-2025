@@ -16,12 +16,13 @@ reservasInfoRouter.post("/disponibles", async(req, res) => {
     }
 });
 
-reservasInfoRouter.post("/disponibles-presencial", async(req, res) => {
+reservasInfoRouter.post("/disponibles/presencial", async(req, res) => {
     try{
         const {email,fechaFin} = req.body;
         const response = await autenticacionRepository.obtenerId(email);
         const result = await PerteneceRepository.obtenerSucursalEmpleado(response.id);
         const data = await reservasRepository.patenteEnReservas(Date.now(),fechaFin, result.sucursal);
+        console.log("Llegó la petición")
         res.send(data);
     }
     catch(e){
@@ -73,6 +74,33 @@ reservasInfoRouter.post("/:email", async (req, res) => {
     }
 
 });
+
+reservasInfoRouter.post("/pendientes-entrega", async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: "Email requerido" });
+    }
+
+    // Obtener id de persona desde el email
+    const response = await autenticacionRepository.obtenerId(email);
+    const idpersona = response.id;
+
+    // Obtener sucursal a la que pertenece la persona
+    const result = await PerteneceRepository.obtenerSucursalEmpleado(idpersona);
+    const sucursal = result.sucursal;
+
+    // Obtener vehículos pendientes de entrega de esa sucursal
+    const data = await reservasRepository.vehiculosPendientesEntrega(sucursal);
+
+    res.send(data);
+  } catch (e) {
+    console.error("Error en /pendientes-entrega:", e);
+    res.status(500).send({ message: "Error interno al obtener vehículos pendientes", metaData: e.message });
+  }
+});
+
 
 export default reservasInfoRouter;
 
