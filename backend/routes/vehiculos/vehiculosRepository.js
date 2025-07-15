@@ -739,6 +739,7 @@ export class vehiculosRepository {
       };
     }
   }
+
   //Estadísticas de vehículos
   static async contarAlquileresEntreFechas (fechaInicio, fechaFin) {
     const { data, error } = await supabase
@@ -770,39 +771,38 @@ export class vehiculosRepository {
 
     for (const reserva of data) {
       const fecha = new Date(reserva.fechainicio);
-      const mes = fecha.toISOString().slice(0, 7); // "YYYY-MM"
+      const dia = fecha.toISOString().slice(0, 10); // "YYYY-MM-DD"
       const tipo = reserva.Vehiculo?.Modelo?.nombre || "Otro";
 
       tiposSet.add(tipo);
-      if (!agrupado[mes]) agrupado[mes] = {};
-      agrupado[mes][tipo] = (agrupado[mes][tipo] || 0) + 1;
+      if (!agrupado[dia]) agrupado[dia] = {};
+      agrupado[dia][tipo] = (agrupado[dia][tipo] || 0) + 1;
     }
 
     const tipos = Array.from(tiposSet);
 
     // 🔹 Generar todos los meses del rango
-    function generarMesesEntre(inicioStr, finStr) {
+    function generarDiasEntre(inicioStr, finStr) {
       const inicio = new Date(inicioStr);
       const fin = new Date(finStr);
-      const meses = [];
+      const dias = [];
 
-      inicio.setDate(1);
       while (inicio <= fin) {
-        const mesStr = inicio.toISOString().slice(0, 7); // "YYYY-MM"
-        meses.push(mesStr);
-        inicio.setMonth(inicio.getMonth() + 1);
+        const diaStr = inicio.toISOString().slice(0, 10); // "YYYY-MM-DD"
+        dias.push(diaStr);
+        inicio.setDate(inicio.getDate() + 1);
       }
 
-      return meses;
+      return dias;
     }
 
-    const todosLosMeses = generarMesesEntre(fechaInicio, fechaFin);
+    const todosLosDias = generarDiasEntre(fechaInicio, fechaFin);
 
     // 🔹 Asegurar que cada tipo esté en cada mes
-    const resultado = todosLosMeses.map((mes) => {
-      const fila = { mes };
+    const resultado = todosLosDias.map((dia) => {
+      const fila = { dia };
       tipos.forEach((tipo) => {
-        fila[tipo] = agrupado[mes]?.[tipo] || 0;
+        fila[tipo] = agrupado[dia]?.[tipo] || 0;
       });
       return fila;
     });
@@ -810,13 +810,13 @@ export class vehiculosRepository {
     // 🔴 Agregá este bloque antes del return final
     const sinDatos = resultado.every(fila =>
       Object.keys(fila)
-        .filter(key => key !== 'mes')
+        .filter(key => key !== 'dia')
         .every(tipo => fila[tipo] === 0)
     );
 
     return {
       status: 200,
-      message: "Conteo de alquileres por tipo y mes exitoso",
+      message: "Conteo de alquileres por tipo y día exitoso",
       metaData: {
         datos: resultado,
         tipos,

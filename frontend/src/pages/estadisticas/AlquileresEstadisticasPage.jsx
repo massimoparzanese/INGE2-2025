@@ -76,7 +76,7 @@ export default function AlquileresEstadisticasPage() {
       height: 400,
       layout: {
         textColor: 'white',
-        background: { type: 'solid', color: '#1e2a38' },
+        background: { type: 'solid', color: '#030e1aff' }, //'#041529ff'
       },
       grid: {
         vertLines: { color: '#2c3e50' },
@@ -86,6 +86,8 @@ export default function AlquileresEstadisticasPage() {
         timeVisible: true,
         secondsVisible: false,
       },
+      //handleScroll: false, //agregue este y el de abajo. ver de borrar
+      //handleScale: false,
     });
 
     chartInstance.current = chart;
@@ -95,10 +97,14 @@ export default function AlquileresEstadisticasPage() {
         lineColor: colores[index % colores.length].linea,
         topColor: colores[index % colores.length].top,
         bottomColor: colores[index % colores.length].bottom,
+        lineWidth: 3, // más grosor
+        lastValueVisible: true,     // muestra la etiqueta de valor actual
+        priceLineVisible: true,     // muestra la línea horizontal del último valor
       });
 
+
       const datos = datosPorTipo.map((fila) => ({
-        time: Math.floor(new Date(fila.mes + "-01").getTime() / 1000),
+        time: Math.floor(new Date(fila.dia).getTime() / 1000),
         value: fila[tipo] || 0,
       }));
 
@@ -133,14 +139,17 @@ export default function AlquileresEstadisticasPage() {
         {/* Fecha y botón */}
           <div className="space-y-4">
             <div className="flex gap-x-4">
+              <div className="relative z-20">
                 <CalendarioFechaNacimiento
                   value={fechaInicio}
                   onChange={setFechaInicio}
                   placeholder="Fecha de inicio"
                   minDate={new Date('2000-01-01')}
                 />
+              </div>
 
               {fechaInicio && (
+                <div className="relative z-20">
                   <CalendarioFechaNacimiento
                     value={fechaFin}
                     onChange={setFechaFin}
@@ -148,6 +157,7 @@ export default function AlquileresEstadisticasPage() {
                     minDate={fechaInicio}
                     maxDate={new Date()}
                   />
+                </div>
               )}
             </div>
 
@@ -175,8 +185,9 @@ export default function AlquileresEstadisticasPage() {
           <>
             <div
               ref={chartRef}
-              className="w-full h-[400px] bg-white border border-gray-300 rounded-lg shadow"
+              className="w-full h-[400px] bg-black rounded-lg"
             />
+
 
             {/* Indicadores */}
             <div className="grid grid-cols-2 gap-4 text-center text-white pt-4">

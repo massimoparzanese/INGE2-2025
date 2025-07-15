@@ -4,6 +4,7 @@ import { createChart,  AreaSeries} from 'lightweight-charts';
 import CalendarioFechaNacimiento from '../../components/CalendarioNacimiento';
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from 'react-router-dom';
+import { Home } from 'lucide-react';
 export default function ClienteEstadisticasPage() {
   const [isLoading,setIsLoading] = useState(true);
   const [fechaInicio,setFechaInicio] = useState(null);
@@ -101,9 +102,9 @@ export default function ClienteEstadisticasPage() {
   }, [isLoading, users]);
   useEffect(() => {
     if(role !== "admin" && !isAuthenticated){
-      navigate("/");
+      //navigate("/");
     }
-  }, [isAuthenticated,role, navigate]);
+  }, [isAuthenticated,role]);
   return (
     <div className="flex justify-center items-center min-h-screen pt-40 px-4 pb-10">
       <section className="bg-[#1e2a38] rounded-lg shadow-lg w-full max-w-3xl p-6 relative space-y-6">
