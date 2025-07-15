@@ -154,11 +154,11 @@ export class vehiculosRepository {
   static async eliminarVehiculo(patente){
       const hoy = new Date().toISOString();
 
-      const { data: reservas, error: errorReservas } = await supabase
-          .from("Reserva")
-          .select("*")
-          .eq("vehiculo", patente)
-          .gte("fechafin", hoy);
+       const { data: reservas, error: errorReservas } = await supabase
+        .from("Reserva")
+        .select("id")
+        .eq("vehiculo", patente)
+        .gte("fechafin", hoy);
 
       if(errorReservas){
           return {
@@ -168,13 +168,30 @@ export class vehiculosRepository {
           };
       }
 
-      if (reservas.length > 0) {
-          return {
-              status: 400,
-              message: "No se puede eliminar el vehículo porque tiene reservas activas o futuras",
-              metaData: reservas,
-          };
-      }
+      // 2. Para cada reserva, verificar si alguna fue cancelada
+        for (const reserva of reservas) {
+            const { data: estados, error: errorEstados } = await supabase
+                .from("reserva_estado")
+                .select("estado")
+                .eq("reserva", reserva.id);
+
+            if (errorEstados) {
+                return {
+                    status: 500,
+                    message: `Error al obtener estados de la reserva ${reserva.id}`,
+                    metaData: errorEstados,
+                };
+            }
+
+            const estadosEnMinuscula = estados.map(e => e.estado?.toLowerCase() || "");
+            if (!estadosEnMinuscula.includes("cancelada")) {
+                return {
+                    status: 400,
+                    message: `No se puede eliminar el vehículo porque la reserva ${reserva.id} no está cancelada`,
+                    metaData: { reserva: reserva.id, estados: estadosEnMinuscula },
+                };
+            }
+        }
 
       const { data: estadoData, error: errorEstado } = await supabase
           .from("vehiculo_estado")
@@ -781,7 +798,7 @@ export class vehiculosRepository {
 
     const tipos = Array.from(tiposSet);
 
-    // 🔹 Generar todos los meses del rango
+    //Generar todos los meses del rango
     function generarDiasEntre(inicioStr, finStr) {
       const inicio = new Date(inicioStr);
       const fin = new Date(finStr);
@@ -798,7 +815,7 @@ export class vehiculosRepository {
 
     const todosLosDias = generarDiasEntre(fechaInicio, fechaFin);
 
-    // 🔹 Asegurar que cada tipo esté en cada mes
+    //Asegurarse que cada tipo esté en cada mes
     const resultado = todosLosDias.map((dia) => {
       const fila = { dia };
       tipos.forEach((tipo) => {
@@ -807,7 +824,6 @@ export class vehiculosRepository {
       return fila;
     });
 
-    // 🔴 Agregá este bloque antes del return final
     const sinDatos = resultado.every(fila =>
       Object.keys(fila)
         .filter(key => key !== 'dia')
