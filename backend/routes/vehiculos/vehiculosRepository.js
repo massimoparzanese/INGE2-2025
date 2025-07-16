@@ -242,32 +242,93 @@ export class vehiculosRepository {
 
 
   //editar vehiculo
-  static async editarVehiculo (patente, nuevosDatos){
-      const { data, error } = await supabase
-      .from ('Vehiculo')
+  static async editarVehiculo(patente, nuevosDatos) {
+    const { data: vehiculoData, error: errorVehiculo } = await supabase
+      .from('Vehiculo')
       .update({
-          modelo: nuevosDatos.modelo,
-          foto: nuevosDatos.foto,
-          capacidad: nuevosDatos.capacidad,
-          kms: nuevosDatos.kms,
-          sucursal: nuevosDatos.sucursal,
-          precio: nuevosDatos.precio
+        modelo: nuevosDatos.modelo,
+        foto: nuevosDatos.foto,
+        capacidad: nuevosDatos.capacidad,
+        kms: nuevosDatos.kms,
+        sucursal: nuevosDatos.sucursal,
+        precio: nuevosDatos.precio
       })
-      .eq('patente', patente);
+      .eq('patente', patente)
+      .select();
 
-      if(error) {
-          return {
-              status: 400,
-              message: "Error al actualizar el vehículo",
-              metaData: error,
-          };
-      }
-
+    if (errorVehiculo) {
       return {
-          status: 200,
-          message: "Vehículo actualizado correctamente",
-          metaData: data,
+        status: 400,
+        message: "Error al actualizar el vehículo",
+        metaData: errorVehiculo,
+      };
+    }
+
+    // Actualizar estado si es distinto del actual
+    if (nuevosDatos.estado) {
+      const estadoNuevo = nuevosDatos.estado; // "Disponible" o "NoDisponible"
+      const ahora = new Date().toISOString();
+
+      // 0. Obtener estado actual
+      const { data: estadoActualData, error: errorEstadoActual } = await supabase
+        .from("vehiculo_estado")
+        .select("idestado")
+        .eq("idauto", patente)
+        .is("fechafin", null)
+        .maybeSingle();
+
+      if (errorEstadoActual) {
+        return {
+          status: 500,
+          message: "Error al verificar el estado actual del vehículo",
+          metaData: errorEstadoActual,
+        };
       }
+
+      const estadoActual = estadoActualData?.idestado;
+
+      // Si es distinto, lo actualizamos
+      if (estadoActual !== estadoNuevo) {
+        // 1. Cerrar estado actual
+        const { error: errorCerrarEstado } = await supabase
+          .from("vehiculo_estado")
+          .update({ fechafin: ahora })
+          .eq("idauto", patente)
+          .is("fechafin", null);
+
+        if (errorCerrarEstado) {
+          return {
+            status: 500,
+            message: "Error al cerrar el estado actual del vehículo",
+            metaData: errorCerrarEstado,
+          };
+        }
+
+        // 2. Insertar nuevo estado
+        const { error: errorInsertarEstado } = await supabase
+          .from("vehiculo_estado")
+          .insert({
+            idauto: patente,
+            idestado: estadoNuevo,
+            fechainicio: ahora,
+            fechafin: null,
+          });
+
+        if (errorInsertarEstado) {
+          return {
+            status: 500,
+            message: "Error al insertar el nuevo estado del vehículo",
+            metaData: errorInsertarEstado,
+          };
+        }
+      }
+    }
+
+    return {
+      status: 200,
+      message: "Vehículo actualizado correctamente",
+      metaData: vehiculoData,
+    };
   }
 
   static async agregarVehiculo(nuevoVehiculo) {
