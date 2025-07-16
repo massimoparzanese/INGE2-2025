@@ -30,6 +30,12 @@ export default function RegistroUsuario({role}){
     e.preventDefault();
     setMensaje('');
     setError('');
+      const formDataLower = {
+      ...formData,
+      nombre: formData.nombre.toLowerCase(),
+      apellido: formData.apellido.toLowerCase(),
+      email: formData.email.toLowerCase(),
+    };
     const url = role === 'empleado' ? 'auth/registro-presencial' : 'auth/registro';
     try {
       const response = await fetch(`http://localhost:3001/${url}`, {
@@ -37,7 +43,7 @@ export default function RegistroUsuario({role}){
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(formDataLower)
       });
 
       const result = await response.json();
@@ -59,8 +65,8 @@ export default function RegistroUsuario({role}){
     }, [isAuthenticated, navigate, role]);
 
   return (
-    <section className="pt-10 pb-10">
-    <div className="max-w-md mx-auto mt-10 bg-white p-6  rounded-2xl shadow-md ">
+    <section className="min-h-screen flex items-center justify-center pt-10 pb-10">
+      <div className="max-w-md mx-auto bg-white p-6 rounded-2xl shadow-md">
       <h2 className="text-2xl font-bold mb-4 text-center ">Registro de Usuario</h2>
 
       {mensaje && <p className="text-green-600 mb-2 text-center">{mensaje}</p>}

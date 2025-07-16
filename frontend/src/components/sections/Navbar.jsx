@@ -486,11 +486,28 @@ export default function Navbar() {
 
                 {/* Admin */}
                 {isAuthenticated && role === 'admin' && (
+                 <>
                   <li>
                     <Link to="/listado-empleados" onClick={() => setIsMobileMenuOpen(false)}>
                       Ver empleados
                     </Link>
                   </li>
+                  <li>
+                  <Link to="/estadisticas/clientes" onClick={() => setIsMobileMenuOpen(false)}>
+                    Consultar clientes
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/estadisticas/alquileres" onClick={() => setIsMobileMenuOpen(false)}>
+                    Consultar alquileres
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/estadisticas/ganancias" onClick={() => setIsMobileMenuOpen(false)}>
+                    Consultar ganancias
+                  </Link>
+                </li>
+                </>
                 )}
               </ul>
             </div>
