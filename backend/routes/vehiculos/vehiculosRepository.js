@@ -58,14 +58,14 @@ export class vehiculosRepository {
         marca
       ),
       vehiculo_estado (
-        estado,
+        idestado,
         fechainicio,
         fechafin
       )
     `)
     .eq('sucursal', sucursal)
     .eq('eliminado', false)
-    .filter('vehiculo_estado.estado', 'eq', 'Disponible')
+    .filter('vehiculo_estado.idestado', 'eq', 'Disponible')
     .is('vehiculo_estado.fechafin', null);
 
 
