@@ -49,6 +49,7 @@ export default function EditarEmpleado() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setEnviando(true);
+    setMensaje(""); // limpia mensaje anterior
 
     try {
       const res = await fetch(`http://localhost:3001/empleados/${dni}`, {
@@ -59,15 +60,22 @@ export default function EditarEmpleado() {
       });
 
       const json = await res.json();
-      setMensaje(json.message || "Empleado actualizado correctamente.");
+
+      if (!res.ok) {
+        setMensaje(json.message || "Error al actualizar el empleado.");
+        return; 
+      }
+
+      setMensaje("Empleado actualizado correctamente.");
       setTimeout(() => navigate("/admin/listado-empleados"), 2000);
     } catch (err) {
-      setMensaje("Error al actualizar empleado.");
+      setMensaje("Error de conexión con el servidor.");
       console.error(err);
     } finally {
       setEnviando(false);
     }
   };
+
 
   return (
     <div

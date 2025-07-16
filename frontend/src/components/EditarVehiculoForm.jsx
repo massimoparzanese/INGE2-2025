@@ -8,6 +8,7 @@ export default function EditarVehiculoForm({ patenteSeleccionada, onVolver }){
         kms: "",
         sucursal: "",
         precio: "",
+        estado: "",
     });
 
     useEffect(() => {
@@ -127,6 +128,19 @@ export default function EditarVehiculoForm({ patenteSeleccionada, onVolver }){
         />
       </div>
 
+      <div className="mb-4">
+        <label className="block mb-1">Estado</label>
+        <select
+          name="estado"
+          value={vehiculo.estado}
+          onChange={handleChange}
+          className="border p-2 w-full rounded"
+        >
+          <option value="">Seleccionar estado</option>
+          <option value="Disponible">Disponible</option>
+          <option value="NoDisponible">No disponible</option>
+        </select>
+      </div>
 
       <div className="flex justify-between">
         <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">

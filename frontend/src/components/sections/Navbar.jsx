@@ -321,7 +321,54 @@ export default function Navbar() {
             </li>
 
           )}
-            { isAuthenticated && role === 'admin' && (
+
+        { isAuthenticated && role === 'admin' && (
+        <li className="relative cursor-pointer z-50">
+                    <div
+                      onClick={() => toggleMenu('estadisticas')}
+                      className="flex items-center"
+                    >
+                      <ChevronRight
+                        className={`ml-1 h-4 w-4 text-white transition-transform duration-300 ${
+                          menuAbierto === 'estadisticas' ? 'rotate-90 text-yellow-600' : ''
+                        }`}
+                      />
+                      <span className="text-white font-medium transition-colors duration-200 hover:text-yellow-600">
+                        Estadísticas
+                      </span>
+                    </div>
+                    
+                    <div
+                      className={`absolute right-0 mt-2 w-60 max-w-[92vw] bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden transition-all duration-300 ease-in-out ${
+                        menuAbierto === 'estadisticas' ? 'opacity-100 scale-100 max-h-[400px]' : 'opacity-0 scale-95 max-h-0 pointer-events-none'
+                      }`}
+                    >
+                      <ul>
+                        
+                          <li className="hidden md:block">
+                            <Link to="/estadisticas/clientes" 
+                            className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 rounded-b-xl transition-colors duration-200">
+                              Consultar clientes
+                            </Link>
+                            <Link to="/estadisticas/alquileres" 
+                            className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 rounded-b-xl transition-colors duration-200">
+                              Consultar alquileres
+                            </Link>
+                            <Link to="/estadisticas/ganancias" 
+                            className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 rounded-b-xl transition-colors duration-200">
+                              Consultar ganancias
+                            </Link>
+                        </li>
+                        
+                        
+                        
+                      </ul>
+                    </div>
+                    
+                  </li>
+              )}
+
+             { isAuthenticated && role === 'admin' && (
                 <Link to="/listado-empleados">
                 <button className="bg-red-600 px-3 py-2 rounded hover:bg-red-500 text-white">
                   Ver empleados

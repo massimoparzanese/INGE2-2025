@@ -389,7 +389,8 @@ export class autenticacionRepository {
     .from('Persona')
     .select()
     .gte('created_at', fechaInicio)
-    .lte('created_at', fechaFin);
+    .lte('created_at', fechaFin)
+    .eq('rol', 'cliente');
     if(error){
       return {status: 400, message: "Error al obtener datos"}
     }

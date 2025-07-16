@@ -2,33 +2,89 @@ import supabase from "../../supabaseClient.js";
 
 export class empleadosRepository{
 
-    static async editarEmpleado(dni, nombre, apellido, email, idSucursal){
+    static async editarEmpleado(dni, nombre, apellido, emailNuevo, idSucursal) {
+        // 1. Obtener email original
+        const { data: personaOriginal, error: errorBuscarOriginal } = await supabase
+            .from("Persona")
+            .select("email")
+            .eq("dni", dni)
+            .single();
+
+        if (errorBuscarOriginal || !personaOriginal) {
+            return {
+                status: 404,
+                message: "Empleado no encontrado para editar",
+                metaData: errorBuscarOriginal,
+            };
+        }
+
+        const emailOriginal = personaOriginal.email;
+
+        // 2. Actualizar tabla Persona
         const { data: dataPersona, error: errorPersona } = await supabase
             .from("Persona")
-            .update({
-                nombre,
-                apellido,
-                email
-            })
+            .update({ nombre, apellido, email: emailNuevo })
             .eq("dni", dni)
             .select("id");
 
-        if(errorPersona) {
+        if (errorPersona) {
+            const esEmailDuplicado = errorPersona.message?.includes("Persona_email_key");
             return {
                 status: 400,
-                message: "Error al actualizar la tabla Persona",
+                message: esEmailDuplicado
+                ? "Ya existe un usuario con ese email."
+                : "Error al actualizar la tabla Persona",
                 metaData: errorPersona,
             };
         }
 
+        if (!dataPersona || dataPersona.length === 0) {
+            return {
+                status: 400,
+                message: "No se pudo actualizar el empleado. El email ya se encuentra registrado en el sistema.",
+                metaData: dataPersona,
+            };
+        }
 
-        console.log(dataPersona[0].id)
-        const { data: dataPertenece, error: errorPertenece} = await supabase
+
+
+        // 3. Actualizar Auth si el email cambió
+        if (emailOriginal !== emailNuevo) {
+            const { data: listaUsers, error: errorBuscarAuth } = await supabase.auth.admin.listUsers({
+                email: emailOriginal,
+            });
+
+            if (errorBuscarAuth || !listaUsers || listaUsers.users.length === 0) {
+                return {
+                    status: 404,
+                    message: "Usuario en Auth no encontrado",
+                    metaData: errorBuscarAuth,
+                };
+            }
+
+            const userId = listaUsers.users[0].id;
+
+            const { error: errorActualizarAuth } = await supabase.auth.admin.updateUserById(userId, {
+                email: emailNuevo,
+                email_confirm: true,
+            });
+
+            if (errorActualizarAuth) {
+                return {
+                    status: 500,
+                    message: "Error al actualizar el email en Auth",
+                    metaData: errorActualizarAuth,
+                };
+            }
+        }
+
+        // 4. Actualizar tabla Pertenece
+        const { data: dataPertenece, error: errorPertenece } = await supabase
             .from("Pertenece")
-            .update({idsucursal: idSucursal})
-            .eq('idempleado', dataPersona[0].id)
+            .update({ idsucursal: idSucursal })
+            .eq("idempleado", dataPersona[0].id);
 
-        if(errorPertenece) {
+        if (errorPertenece) {
             return {
                 status: 400,
                 message: "Error al actualizar la tabla Pertenece",
@@ -39,9 +95,9 @@ export class empleadosRepository{
         return {
             status: 200,
             message: "Empleado actualizado correctamente",
-        }
-        
+        };
     }
+
 
    static async eliminarEmpleado(dni) {
         const { data: persona, error } = await supabase

@@ -81,7 +81,7 @@ export default function App() {
           <Route path="/registro-presencial" element={<RegisterForm role={'empleado'}/>}/>
           <Route path="/entregar-auto" element={<Entregar/>}/>
           <Route path="/devolver-auto" element={<DevolverAutoPage />} />
-          <Route path="/consultar-ganancias" element={<ConsultarGanancias />} />
+          <Route path="/estadisticas/ganancias" element={<ConsultarGanancias />} />
           
         </Routes>
         <Footer/>
