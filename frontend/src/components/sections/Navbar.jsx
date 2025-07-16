@@ -321,13 +321,8 @@ export default function Navbar() {
             </li>
 
           )}
-            { isAuthenticated && role === 'admin' && (
-                <Link to="/listado-empleados">
-                <button className="bg-red-600 px-3 py-2 rounded hover:bg-red-500 text-white">
-                  Ver empleados
-                </button>
-            </Link>
-              )}
+
+        { isAuthenticated && role === 'admin' && (
         <li className="relative cursor-pointer z-50">
                     <div
                       onClick={() => toggleMenu('estadisticas')}
@@ -371,6 +366,15 @@ export default function Navbar() {
                     </div>
                     
                   </li>
+              )}
+
+             { isAuthenticated && role === 'admin' && (
+                <Link to="/listado-empleados">
+                <button className="bg-red-600 px-3 py-2 rounded hover:bg-red-500 text-white">
+                  Ver empleados
+                </button>
+            </Link>
+              )}
 
         </ul>
         {/* Menú mobile colapsable */}
