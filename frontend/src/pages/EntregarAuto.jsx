@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { useAuth } from "../context/AuthContext";
 
 const EntregarAuto = () => {
+  const { user } = useAuth();
   const [patente, setPatente] = useState('');
   const [email, setEmail] = useState('');
   const [mensaje, setMensaje] = useState('');
@@ -15,7 +17,7 @@ const EntregarAuto = () => {
       const res = await fetch('http://localhost:3001/vehiculos/entregar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ patente, email })
+        body: JSON.stringify({ patente, email, emailEmpleado : user})
       });
 
       const data = await res.json();

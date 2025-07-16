@@ -5,6 +5,8 @@ import { politicaDeReembolsoRepository } from "../politicaDeReembolso/politicaDe
 import { reservasRepository } from "../reservas/reservasRepository.js";
 import supabase from "../supabaseClient.js";
 import { vehiculoEstadoRepository } from "../vehiculoEstado/vehiculoEstadoRepository.js";
+import { autenticacionRepository } from "../acceso/autenticacionRepository.js";
+import { PerteneceRepository } from "../pertenece/perteneceRepository.js";
 
 export class vehiculosRepository {
 
@@ -412,15 +414,18 @@ export class vehiculosRepository {
 
   }
 
-    static async entregarAuto(patente, email, sucursalEmpleado) {
+    static async entregarAuto(patente, email, emailEmpleado) {
   // 1. Verificar que exista una reserva con esa patente
   const { data: reserva, error: errorReserva } = await supabase
     .from('Reserva')
     .select('id, persona, vehiculo')
     .eq('vehiculo', patente)
-    .maybeSingle();
+    .eq('persona' , email)
+    .maybeSingle()
 
-  if (!reserva) {
+  console.log(reserva)
+  
+  if (reserva.length < 1) {
     return { status: 404, error: '❌ No existe una reserva para ese vehículo.' };
   }
 
@@ -430,13 +435,19 @@ export class vehiculosRepository {
   }
 
   // 🔍 3. Verificar que el vehículo reservado pertenezca a la sucursal del empleado
+
+  const idEmpleado = await autenticacionRepository.obtenerId(emailEmpleado)
+  console.log(idEmpleado.id)
+  const sucursalEmpleado = await PerteneceRepository.obtenerSucursalEmpleado(idEmpleado.id)
+
+  console.log(sucursalEmpleado)
   const { data: vehiculo, error: errorVehiculo } = await supabase
-    .from('vehiculo')
+    .from('Vehiculo')
     .select('sucursal')
-    .eq('id', reserva.vehiculo)
+    .eq('patente', reserva.vehiculo)
     .maybeSingle();
 
-  if (!vehiculo || vehiculo.sucursal !== sucursalEmpleado) {
+  if (!vehiculo || vehiculo.sucursal !== sucursalEmpleado.sucursal) {
     return {
       status: 403,
       error: '❌ El vehículo no pertenece a la sucursal del empleado.'
