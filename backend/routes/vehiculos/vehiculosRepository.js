@@ -421,17 +421,9 @@ export class vehiculosRepository {
     .select('id, persona, vehiculo')
     .eq('vehiculo', patente)
     .eq('persona' , email)
-    .maybeSingle()
-
-  console.log(reserva)
   
-  if (reserva.length < 1) {
-    return { status: 404, error: '❌ No existe una reserva para ese vehículo.' };
-  }
-
-  // 2. Verificar que el email coincida con la persona de la reserva
-  if (reserva.persona !== email) {
-    return { status: 403, error: '❌ Esa reserva no corresponde al email ingresado.' };
+  if (!reserva) {
+    return { status: 404, error: '❌ El email no tiene registrada ninguna reserva activa de esa patente' };
   }
 
   // 🔍 3. Verificar que el vehículo reservado pertenezca a la sucursal del empleado
