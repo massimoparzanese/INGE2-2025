@@ -45,21 +45,29 @@ export class vehiculosRepository {
 
   static async getSpecifyAutosInfo(sucursal) {
     const { data, error } = await supabase
-      .from('Vehiculo')
-      .select(`
-        patente,
-        modelo,
-        foto,
-        capacidad,
-        kms,
-        precio,
-        anio,
-        Modelo (
-          marca
-        )
-      `)
-      .eq('sucursal', sucursal)
-      .eq('eliminado', false);
+    .from('Vehiculo')
+    .select(`
+      patente,
+      modelo,
+      foto,
+      capacidad,
+      kms,
+      precio,
+      anio,
+      Modelo (
+        marca
+      ),
+      vehiculo_estado (
+        estado,
+        fechainicio,
+        fechafin
+      )
+    `)
+    .eq('sucursal', sucursal)
+    .eq('eliminado', false)
+    .filter('vehiculo_estado.estado', 'eq', 'Disponible')
+    .is('vehiculo_estado.fechafin', null);
+
 
     if (error) {
       return {
