@@ -236,6 +236,14 @@ export default function Navbar() {
                         Vehículos para devolver
                       </Link>
                     </li>
+                    <li>
+                    <Link
+                      to="/empleado/registrarAlquiler"
+                      className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors duration-200"
+                    >
+                      Ver vehículos disponibles
+                    </Link>
+                  </li>
                   </>
                 )}
                 {role != 'empleado' &&(
@@ -290,14 +298,6 @@ export default function Navbar() {
                       className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors duration-200"
                     >
                       Registrar cliente
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/empleado/registrarAlquiler"
-                      className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors duration-200"
-                    >
-                      Ver vehículos disponibles
                     </Link>
                   </li>
                   <li>

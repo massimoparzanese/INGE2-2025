@@ -13,7 +13,7 @@ class ReservaUtils {
     const end2 = new Date(t2);
 
     // Versión simple y correcta
-    return start1 <= end2 && start2 <= end1;
+    return start1 < end2 && start2 < end1;
   }
 }
 
