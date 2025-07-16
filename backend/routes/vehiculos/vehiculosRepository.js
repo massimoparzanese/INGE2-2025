@@ -383,7 +383,7 @@ export class vehiculosRepository {
       .eq('estado', 'entregada')
       .is('fechafin', null)
       .maybeSingle();
-          }
+          
           if (yaEntregado) {
         // Buscar vehículo alternativo
         const { data: vehiculoOriginal } = await supabase
@@ -456,7 +456,7 @@ export class vehiculosRepository {
       status: 200,
       mensaje: '✅ Vehículo entregado correctamente.'
       };
-
+    }
     }
 
   static async devolverAuto(patente) {
