@@ -9,7 +9,8 @@ export default function MisReservas() {
   const navigate = useNavigate();
   const [modalAbierto, setModalAbierto] = useState(false);
   const [reservas,setReservas] = useState([]);
-  const [cargando, setCargando] = useState(true)
+  const [cargando, setCargando] = useState(true);
+  const [reservaAEliminar, setReservaAEliminar] = useState(null);
   const cancelarReserva = async (id) => {
     console.log(id)
     try {
@@ -81,6 +82,11 @@ export default function MisReservas() {
     fetchAutos();
     
   } ,[isAuthenticated, user, navigate])
+
+  function obtenerMensaje() {
+   const dinero = (reservas.find(r => r.id === reservaAEliminar)?.Vehiculo.politica * reservas.find(r => r.id === reservaAEliminar)?.monto) / 100;
+  return `Se le reintegrará la suma de dinero de ${dinero}USD de la reserva.`;
+  }
   
   return (
     <div className="flex flex-col items-center justify-center min-h-screen w-full">
@@ -99,10 +105,8 @@ export default function MisReservas() {
                 </div>
               ) : (
                 reservas.map((reserva, i) => {
-                let estado1 = reserva.reserva_estado[1]?.estado
-                let estado0 = reserva.reserva_estado[0]?.estado
+                let estadoActual = reserva.reserva_estado?.[reserva.reserva_estado.length - 1]?.estado;
 
-                let estadoActual = estado1 ? estado1 : estado0
                   return(
                   <div
                     key={reserva.id}
@@ -127,6 +131,9 @@ export default function MisReservas() {
                       </p>
                       <p className="text-sm text-gray-700">
                         Desde: {reserva.fechainicio} | Hasta: {reserva.fechafin}
+                      </p>
+                      <p className="text-sm text-gray-700">
+                        Monto: {reserva.monto} USD
                       </p>
                       <p className="text-sm text-gray-700">
                         Politica de reembolso: {reserva.Vehiculo.politica}%
@@ -156,10 +163,7 @@ export default function MisReservas() {
                     <div className="flex flex-col gap-2 mt-2 md:mt-0 md:ml-auto">
                       {estadoActual === 'activa' && (
                         <button
-                          onClick={() => {
-                            cancelarReserva(reserva.id);
-                            
-                          }}
+                          onClick={() => setReservaAEliminar(reserva.id)}
                           className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium"
                         >
                           Cancelar
@@ -170,6 +174,33 @@ export default function MisReservas() {
                   </div>
                 )})
               )}
+              {reservaAEliminar && (
+              <div className="fixed inset-0 backdrop-blur-sm backdrop-brightness-75 bg-opacity-50 flex items-center justify-center z-50">
+                <div className="bg-white p-6 rounded-lg shadow-lg text-center max-w-sm w-full">
+                  <h2 className="text-lg font-semibold mb-4">¿Confirmar cancelación?</h2>
+                  <p className="mb-6">¿Estás seguro de que querés cancelar esta reserva?</p>
+                  <p className="mb-6">{obtenerMensaje()}</p>
+                  <p className="mb-6">Tenga en cuenta que luego de la confirmación, no hay reclamos</p>
+                  <div className="flex justify-end gap-4">
+                    <button
+                      onClick={() => setReservaAEliminar(null)}
+                      className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
+                    >
+                      No
+                    </button>
+                    <button
+                      onClick={() => {
+                        cancelarReserva(reservaAEliminar);
+                        setReservaAEliminar(null);
+                      }}
+                      className="px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-white"
+                    >
+                      Sí, cancelar.
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
 
               {modalAbierto && (
                 <AgregarConductorModal onCerrar={() => setModalAbierto(false)} />
