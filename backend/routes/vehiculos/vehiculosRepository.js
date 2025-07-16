@@ -481,7 +481,7 @@ export class vehiculosRepository {
       .maybeSingle();
 
     if (!reserva) {
-      return { status: 404, error: "❌ No existe una reserva para ese vehículo." };
+      return { status: 404, error: "❌ No existe una devolucion pendiente para ese vehículo." };
     }
 
     const idReserva = reserva.id;
