@@ -108,6 +108,7 @@ const ConsultarGanancias = () => {
         {error && <p className="text-red-600 text-center mb-2">{error}</p>}
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          <label>Fecha inicio</label>
           <input
             type="date"
             value={fechaInicio}
@@ -115,6 +116,7 @@ const ConsultarGanancias = () => {
             className="w-full p-2 border rounded"
             required
           />
+          <label>Fecha fin</label>
           <input
             type="date"
             value={fechaFin}
