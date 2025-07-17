@@ -103,7 +103,10 @@ const ConsultarGanancias = () => {
     <div className="flex flex-col items-center justify-center min-h-screen bg-red-500 px-4">
       <div className="bg-white p-6 rounded-xl shadow-md w-full max-w-md mb-10">
         <h2 className="text-2xl font-bold text-center mb-4">Consultar Ganancias</h2>
-
+        <p className="text-black">
+          En este apartado podrá ingresar un período de fechas para ver las ganancias de
+          cada sucursal <br />
+        </p>
         {mensaje && <p className="text-blue-600 text-center mb-2">{mensaje}</p>}
         {error && <p className="text-red-600 text-center mb-2">{error}</p>}
 
