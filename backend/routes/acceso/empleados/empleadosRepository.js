@@ -21,9 +21,18 @@ export class empleadosRepository{
         const emailOriginal = personaOriginal.email;
 
         // 2. Actualizar tabla Persona
+        const datosActualizados = {
+        nombre,
+        apellido,
+        };
+
+        // Solo actualiza el email si cambió
+        if (emailNuevo !== emailOriginal) {
+        datosActualizados.email = emailNuevo;
+        }
         const { data: dataPersona, error: errorPersona } = await supabase
             .from("Persona")
-            .update({ nombre, apellido, email: emailNuevo })
+            .update(datosActualizados)
             .eq("dni", dni)
             .select("id");
 
@@ -45,6 +54,7 @@ export class empleadosRepository{
                 metaData: dataPersona,
             };
         }
+    
 
 
 

@@ -497,8 +497,11 @@ export class autenticacionRepository {
             (nombre)
           )
           `) 
-      .eq('rol', 'empleado')
-      .not('email', 'ilike', '$%')
+      .neq('rol', 'admin')
+      .neq('rol', 'cliente')
+
+      console.log(data)
+
 
 
     if(error){
@@ -507,12 +510,12 @@ export class autenticacionRepository {
         message: 'error al obtener los empleados'
       }
     }
-    //const personasFiltradas = data.filter(p => !p.dni.startsWith('$'));
+    const personasFiltradas = data.filter(p => !p.email.startsWith('$'));
     //console.log(personasFiltradas)
 
     return {
       status: 200,
-      personas: data
+      personas: personasFiltradas
     };
   }
 
